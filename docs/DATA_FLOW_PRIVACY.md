@@ -328,55 +328,78 @@ Pattern Sources:
 • Seasonal trends
 ```
 
-**NO Real-Time User Tracking:**
+**Real-Time Tracking with Privacy Protection:**
 ```
-What We DON'T Do:
-✗ Track who's loaded and heading where
-✗ Share "User X is en route"
-✗ Monitor individual movements in real-time
-✗ Tell other users about your trips
+What We DO Track (Backend):
+✓ Which elevator you're heading to
+✓ Your estimated arrival time
+✓ Your historical avg unload time
+✓ Anonymous count of trucks en route
+✓ Current lineup state at elevators
 
-What We DO:
-✓ Learn patterns from historical data
-✓ Predict based on time/day/season
-✓ Show confidence levels
-✓ Update patterns as more data collected
-```
+What Other Farmers SEE:
+✓ "4 trucks waiting at Richardson" (count only)
+✓ "Est wait time: 3hr 18min" (their personal prediction)
+✓ "16% busier than usual" (aggregate comparison)
 
-#### Pattern-Based Prediction Example
-
-**Example: You're loading corn at 6:00 AM on Tuesday in October**
-
-```
-6:00 AM - You open app BEFORE loading:
-┌─────────────────────────────────────────────────┐
-│ Prairie Co-op                                   │
-│ Predicted lineup when you arrive (~6:15 AM):   │
-│ • 2-3 trucks expected (15-20 min wait)         │
-│                                                  │
-│ Based on historical patterns:                   │
-│ • Tuesday 6:15 AM average: 2.3 trucks          │
-│ • October harvest: typically busier            │
-│ • Last week same time: 2 trucks (16 min wait) │
-│ • Confidence: High (65 data points)            │
-│                                                  │
-│ Alternative elevators:                          │
-│ • Valley Grain: 3-4 trucks (25 min)           │
-│ • Metro Hub: 1-2 trucks (10 min) +5km farther │
-└─────────────────────────────────────────────────┘
+What Other Farmers DON'T SEE:
+✗ Your identity or who you are
+✗ Your farm location or where you're coming from
+✗ Your specific load details
+✗ Your route or movements
+✗ Any personally identifiable information
 ```
 
-**How We Know:**
-- Historical data shows Tuesday mornings typically have 2-3 trucks
-- Past 2 weeks of data at this time slot
-- Seasonal adjustment for harvest
-- NO tracking of who's currently loaded or heading there
+#### Real-Time Prediction Example
 
-**What Makes It Useful:**
-- Check BEFORE loading, make informed decision
-- Compare multiple elevators
-- See confidence level (how much data backs prediction)
-- No need for real-time updates or tracking
+**Example: You're loading corn at 2:30 PM on Tuesday in October**
+
+```
+2:30 PM - You open app BEFORE loading:
+┌──────────────────────────────────────────────────┐
+│ Richardson Pioneer                               │
+│ Current lineup: 4 trucks (confirmed by app)      │
+│                                                   │
+│ Your predicted experience:                       │
+│ • Arrive at: 2:45 PM                            │
+│ • Est wait time: 3hr 18min                      │
+│ • Complete by: 6:03 PM                          │
+│                                                   │
+│ [████████████░░░░░░░░] 16% busier than usual     │
+│                                                   │
+│ Based on:                                         │
+│ • 4 trucks in line now                          │
+│ • 3 app users en route (arrive before you)      │
+│ • Typical Tuesday 2PM: 2hr 45min                │
+│                                                   │
+│ Alternative elevators:                           │
+│ • Valley Grain: 2 trucks (1hr 40min)            │
+│ • Metro Hub: 6 trucks (4hr 10min) +5km farther  │
+└──────────────────────────────────────────────────┘
+```
+
+**How We Know (Backend Tracking):**
+- Real-time: 4 app users at Richardson confirmed they're in line
+- Real-time: 3 app users are loaded and heading there (anonymous)
+- Real-time: Their ETAs are 2:35, 2:40, 2:42 (all before your 2:45)
+- Historical: Tuesday 2PM typically has 2hr 45min wait
+- Calculation: 4 current + 3 en route + you = 8 trucks total
+- Prediction: Your position (8th) × avg times = 3hr 18min
+
+**What YOU See:**
+- ✓ Aggregate count: "4 trucks in line"
+- ✓ Your personal prediction: "3hr 18min wait"
+- ✓ Status comparison: "16% busier than usual"
+- ✗ NOT who the other farmers are
+- ✗ NOT where they're coming from
+- ✗ NOT their load details
+
+**Privacy Protection:**
+- Backend knows 3 anonymous users are en route
+- You just see the final prediction for YOUR wait
+- Other farmers are completely anonymous
+- Your farm location stays private
+- Everyone benefits from aggregate data
 
 #### Personalized ETA Calculations (Your Data Only)
 

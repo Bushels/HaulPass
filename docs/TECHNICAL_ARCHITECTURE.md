@@ -316,6 +316,29 @@ CREATE TABLE location_tracks (
   recorded_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Active trips (for real-time queue predictions)
+CREATE TABLE active_trips (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id),
+  load_id UUID REFERENCES loads(id),
+  elevator_id UUID REFERENCES elevators(id),
+
+  current_status TEXT CHECK (current_status IN ('loaded', 'en_route', 'in_line', 'unloading')) NOT NULL,
+  estimated_arrival_time TIMESTAMP,
+  estimated_load_weight_lbs INTEGER,
+  truck_type TEXT,
+  historical_avg_unload_min INTEGER, -- this user's typical unload time
+
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+
+  -- Cleanup old trips automatically
+  CONSTRAINT active_trips_not_too_old CHECK (created_at > NOW() - INTERVAL '24 hours')
+);
+
+-- Index for fast lookups by elevator (for queue predictions)
+CREATE INDEX idx_active_trips_elevator ON active_trips(elevator_id, current_status);
+
 -- Historical unload times (for pattern learning)
 CREATE TABLE unload_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

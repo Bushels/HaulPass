@@ -29,37 +29,48 @@ Farmers waste hours every day sitting in grain elevator lineups without knowing 
 
 ### 2. Predictive Queue Intelligence
 
-**Pattern-Based Predictions:**
-The app uses historical data to predict what lineups will look like based on:
-- **Time of day patterns**: "Prairie Co-op typically has 2-3 trucks at 6 AM"
-- **Day of week trends**: "Mondays are busier after the weekend"
-- **Seasonal patterns**: "October harvest = longer lineups in mornings"
-- **Current state**: "Right now there are 2 trucks in line"
-- **Historical throughput**: "This elevator averages 8 min per truck"
+**Real-Time Tracking + Pattern Learning:**
+The app combines real-time data with historical patterns for the most accurate predictions:
 
-**Learning Algorithm:**
-- Tracks actual lineup times at each elevator
-- Learns busy vs slow periods
-- Identifies seasonal trends
-- Improves predictions as more data is collected
-- Uses aggregate anonymous data from all users
+**Backend Tracking (Anonymous):**
+- Tracks which users are loaded and heading to which elevator
+- Knows estimated arrival times based on GPS distance
+- Tracks current lineup state from users at elevators
+- Combines with historical patterns for confidence
 
-**What Farmers See BEFORE Loading:**
+**What Farmers See (Focused on Their Experience):**
 ```
-Prairie Co-op
-Current lineup: 2 trucks (estimated 16 min wait)
+Richardson Pioneer
+Current lineup: 4 trucks (confirmed by app users)
+Est wait time: 3hr 18min
+Status: 16% busier than usual for Tuesday 2 PM
 
-When you arrive (~15 min from now):
-Predicted lineup: 1-2 trucks (estimated 8-16 min wait)
-Based on: Historical patterns for this time/day
-Confidence: High (50+ data points this week)
+Your predicted experience:
+• Arrive at: 2:45 PM
+• Position in line: 7th
+• Est unload time: 6:20 PM
+• Total time: 3hr 35min
 ```
 
-**No Real-Time Tracking:**
-- App does NOT tell you "User X is heading there"
-- Does NOT track who's loaded or en route
-- Predictions based on patterns, not live user movements
-- More privacy-friendly approach
+**What You DON'T See:**
+- Who else is hauling
+- Where other farmers are coming from
+- Other users' load details
+- Identity of other haulers
+
+**Status Bar Visualization:**
+```
+[████████████░░░░░░░░] 16% busier than usual
+Your wait: 3hr 18min | Typical: 2hr 45min
+```
+
+**How It Works:**
+- App knows 6 trucks are en route (anonymous)
+- Knows 4 trucks currently in line (reported by users there)
+- Calculates your position when you arrive
+- Estimates each truck's unload time
+- Shows YOU when YOU'll be done
+- Doesn't tell you about other farmers' specifics
 
 ### 3. En Route to Elevator
 
@@ -72,7 +83,10 @@ Confidence: High (50+ data points this week)
 **User sees:**
 - Live map showing route
 - Updated ETA
-- Current predicted lineup (based on patterns, not live tracking)
+- Real-time lineup updates:
+  - "5 trucks now waiting at Richardson"
+  - "Your est wait: 3hr 25min" (updates as conditions change)
+  - "2 trucks just arrived" (anonymous count updates)
 
 ### 4. Arrival at Elevator
 
@@ -109,10 +123,27 @@ Confidence: High (50+ data points this week)
 - Shows estimated time to unload
 
 **Unload Time Estimates:**
-- Based on truck type (if you selected types when you arrived)
-- Uses historical averages for this elevator
-- Factors in typical unload times by truck size
-- Learns from actual unload times over time
+
+**For trucks WITH HaulPass (in front of you):**
+- Uses their actual historical avg unload time
+- Factors in their reported load weight
+- More accurate predictions
+
+**For trucks WITHOUT HaulPass:**
+- Uses truck type (if you selected when arriving)
+- Uses elevator's historical average for that truck type
+- Assumes typical load size
+
+**Your Display:**
+```
+Position: 3rd in line
+Trucks ahead:
+• Truck 1: ~8 min (unloading now)
+• Truck 2: ~7 min (app user, known avg time)
+• You're next: ~8 min (your avg unload time)
+
+Est completion: 4:42 PM
+```
 
 **Movement Detection:**
 - GPS detects forward movement in line
@@ -315,48 +346,57 @@ Confidence: High (50+ data points this week)
 
 ### Queue Time Prediction
 
+**Real-Time Prediction Algorithm:**
+
 **Input Data:**
-- Current trucks in lineup (when you arrive and report count)
-- Historical elevator throughput at this time/day
-- Time of day/week patterns
-- Seasonal demand patterns (harvest vs off-season)
-- Day-specific patterns (Monday rush, Friday slowdowns)
-- Weather conditions (rain delays, harvest intensity)
+- **Current lineup**: Trucks at elevator now (reported by app users there)
+- **En route trucks**: Anonymous count of app users heading there with ETAs
+- **Historical patterns**: Typical wait times for this day/time
+- **Seasonal factors**: Harvest vs off-season multipliers
+- **Truck types**: Known types for better unload time estimates
 
-**Prediction Models:**
-
-**Current State Prediction:**
+**Calculation for YOUR Wait Time:**
 ```
-Current Wait Time =
-  (Reported Trucks in Line × Avg Unload Time for Truck Types) +
-  Movement Time Through Line
-```
-
-**Future State Prediction (when you'll arrive):**
-```
-Predicted Wait Time =
-  Historical Average for [Day/Time] +
-  Seasonal Adjustment (harvest factor) +
-  Weather Impact +
-  Confidence Interval
+Your Predicted Wait =
+  Current Trucks in Line × (Their Avg Unload Times) +
+  Trucks Arriving Before You × (Their Avg Unload Times) +
+  Movement Time Through Line +
+  Your Unload Time
 ```
 
-**Example:**
+**Example Breakdown:**
 ```
-Prairie Co-op - Tuesday 6:15 AM - October (Harvest)
-Historical average: 2.3 trucks in line at this time
-Historical wait: 18 minutes average
-Today's prediction: 15-20 minutes (2-3 trucks)
-Confidence: High (65 data points from past 2 weeks)
+Richardson Pioneer - Tuesday 2:30 PM - October
+You're loading now, will arrive at 2:45 PM
+
+Current state (2:30 PM):
+• 4 trucks in line (confirmed by app users there)
+• 3 app users en route, arriving before you
+• 2 non-app trucks estimated
+
+When you arrive (2:45 PM):
+• Position: 7th in line
+• Trucks with app (known avg times): 6 trucks × 8 min = 48 min
+• Trucks without app (estimated): 2 trucks × 10 min = 20 min
+• Your unload time: 8 min
+• Total wait: 3hr 18min
+• Complete by: 6:03 PM
+
+Status bar: 16% busier than usual (Typical Tuesday 2 PM: 2hr 45min)
 ```
 
-**Continuous Improvement:**
-- Compare predicted vs actual wait times for all users
-- Learn elevator-specific efficiency patterns
-- Identify busy periods vs slow periods
-- Adjust for seasonal variations
-- Account for weather impact on arrival patterns
-- No tracking of specific users - only aggregate patterns
+**Real-Time Updates:**
+- As trucks arrive, position updates
+- As trucks complete unloading, wait time decreases
+- Anonymous count shown: "5 trucks now waiting"
+- Your personal prediction updates continuously
+- Comparison to historical average shown
+
+**Privacy-Focused Display:**
+- You see truck COUNTS, not identities
+- You see YOUR predicted time, not others' details
+- Status bar shows relative busyness
+- All other users are anonymous
 
 ### Unload Position Detection
 
@@ -387,13 +427,13 @@ Confidence: High (65 data points from past 2 weeks)
 - Destination elevator
 
 **Location Data:**
-- GPS coordinates during hauling
-- Route taken
-- Travel time
-- Arrival time at elevator
+- GPS coordinates during hauling (for YOUR route learning)
+- Route taken (private to your account)
+- Travel time (for YOUR ETA improvement)
+- Arrival time at elevator (anonymous for pattern learning)
 - Position in lineup
-- Unload location
-- Return route (for next load)
+- Unload location (for automatic detection)
+- **Destination elevator** (anonymous - for real-time queue predictions)
 
 **Timing Data:**
 - Load start time
@@ -419,25 +459,36 @@ Confidence: High (65 data points from past 2 weeks)
 
 ## 🔒 Privacy & Data Sharing
 
-**Anonymous by Default:**
-- All shared predictions use aggregate anonymous data
-- No personal information in leaderboards
-- Farm locations not shared with other users
-- Individual routes remain private
+**What the App Tracks (Backend):**
+- ✓ Which elevator you're heading to (for queue predictions)
+- ✓ Your ETA (for lineup position calculation)
+- ✓ Your historical avg unload time (for accurate estimates)
+- ✓ Your load weight (optional, for unload time estimates)
+- ✓ Your GPS route (for YOUR ETA learning only)
 
-**What's Shared (Anonymous):**
-- "A truck is loaded and heading to Elevator X"
-- "Estimated arrival time window"
-- "Approximate load weight category"
-- "Historical unload time for this truck type"
+**What Other Farmers See:**
+- ✗ NOT who you are
+- ✗ NOT where your farm is
+- ✗ NOT your specific load details
+- ✓ "4 trucks waiting" (anonymous count)
+- ✓ "16% busier than usual" (aggregate comparison)
+- ✓ Their own predicted wait time (calculated using your data anonymously)
 
-**What's NOT Shared:**
-- Farmer identity
+**Your Private Data:**
 - Farm location
 - Exact routes
-- Specific load weights
-- Financial data
-- Elevator ticket details
+- Load weights
+- Prices received
+- Dockage percentages
+- Financial information
+- Personal identity
+
+**Shared Anonymously for Predictions:**
+- Elevator destination
+- ETA arrival time
+- Historical avg unload time
+- Truck type
+- Anonymous contribution to "X trucks en route"
 
 **Future Opt-In Sharing:**
 - Share data with farm manager/owner

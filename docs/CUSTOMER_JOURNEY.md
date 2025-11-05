@@ -173,10 +173,10 @@ Users should experience the core value within 3 minutes of first opening the app
 
 1. **6:00 AM - App Launch** (10 seconds)
    - Opens app BEFORE loading to check which elevator to choose
-   - Home screen shows favorite elevators with predicted wait times:
-     - Prairie Co-op: **15-20 min wait** (2-3 trucks expected at 6:15 AM)
-     - Valley Grain: **25 min wait** (3-4 trucks typical Tuesday mornings)
-     - Metro Hub: **10 min wait** (1-2 trucks, but 5km farther)
+   - Home screen shows favorite elevators with REAL-TIME predictions:
+     - Prairie Co-op: **2 trucks waiting** | Est wait: **18 min** | ✓ Normal for Tuesday 6 AM
+     - Valley Grain: **5 trucks waiting** | Est wait: **42 min** | ⚠️ 25% busier than usual
+     - Metro Hub: **1 truck waiting** | Est wait: **8 min** | ✓ Slower than usual (+5km farther)
 
 2. **Load Entry** (60 seconds)
    - Mike decides on Prairie Co-op (closest with reasonable wait)
@@ -185,17 +185,31 @@ Users should experience the core value within 3 minutes of first opening the app
    - Enters moisture: 15.2%
    - Enters scale weight: 52,340 lbs (optional - Mike has scales)
    - Selects destination: "Prairie Co-op"
-   - App instantly shows:
-     - **ETA: 6:18 AM** (12 min drive based on his historical times with this load weight)
-     - **Predicted wait when you arrive: 15-20 min** (based on historical patterns)
-     - **Confidence: High** (65 data points from past 2 weeks at this time)
-     - **Total time: ~35 min** (drive + wait + 8 min unload)
+   - App instantly shows HIS predicted experience:
+     ```
+     Your trip to Prairie Co-op:
+     • ETA: 6:18 AM (12 min drive)
+     • Position when you arrive: 4th in line
+     • Est wait time: 24 min
+     • Complete by: 6:50 AM
+     • Total time: 50 min
+
+     [████████░░░░░░░░░░] 5% busier than usual
+
+     Based on:
+     • 2 trucks there now (confirmed)
+     • 1 app user arriving before you
+     • Your avg drive time: 12 min
+     • Your avg unload: 8 min
+     ```
 
 3. **Decision** (10 seconds)
-   - Mike sees Prairie Co-op is best option
-   - Could wait and leave later if lineup typically clears by 7 AM
+   - Mike can see his complete predicted experience
+   - Knows exactly when he'll be done
    - Decides to go now
    - Taps "Start Trip"
+   - **Backend now tracks (anonymous)**: Mike is en route to Prairie Co-op, ETA 6:18 AM
+   - **Other farmers see**: "3 trucks waiting" (count updated)
 
 4. **Departure** (automatic)
    - GPS tracking begins automatically
@@ -223,18 +237,30 @@ Users should experience the core value within 3 minutes of first opening the app
 2. App prompts: "Have you arrived at Prairie Co-op?"
 3. Mike taps "Yes"
 4. App asks: "How many trucks ahead of you (not counting the one unloading)?"
-5. Mike sees 2 trucks ahead, taps "2"
-6. App shows truck type buttons: Mike selects "Triaxle with trailer" for both
+5. Mike sees 3 trucks ahead, taps "3"
+6. App shows truck type buttons: Mike selects truck types for accuracy
 7. App now shows:
-   - **Position: 3rd in line** (not counting truck currently unloading)
-   - **Estimated wait: 16 min** (based on selected truck types and historical unload times)
-   - **Prediction was close!** Historical estimate was 15-20 min, actual lineup matches
+   ```
+   Position: 4th in line
+   Est wait time: 26 min
+   Complete by: 6:51 AM
 
-**How This Data Helps Everyone:**
-- Mike's arrival data (Tuesday 6:17 AM, 2 trucks in line) gets added to historical patterns
-- Future predictions for "Tuesday morning" improve with this data point
-- Completely anonymous - no one knows it was Mike
-- Helps all farmers make better decisions tomorrow
+   Trucks ahead:
+   • Truck 1: ~8 min (unloading now)
+   • Truck 2: ~6 min (app user)
+   • Truck 3: ~8 min (estimated)
+   • YOU: ~8 min (your avg)
+
+   Prediction was accurate! ✓
+   Estimated 24 min, actual 26 min
+   ```
+
+**How This Helps Everyone (Behind the Scenes):**
+- **Mike's status changes**: Backend marks him as "in_line" instead of "en_route"
+- **Other farmers' predictions update**: "4 trucks waiting at Prairie Co-op" (was 3)
+- **Future farmers see**: More accurate count for their decisions
+- **Mike's data is anonymous**: No one knows it's Mike who arrived
+- **Validation data**: System learns prediction was accurate (24 min predicted, 26 min actual)
 
 **Waiting in Line** (automatic):
 - GPS detects forward movement
