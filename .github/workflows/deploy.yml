@@ -1,0 +1,277 @@
+name: Deploy HaulPass to GitHub Pages
+
+# Trigger the workflow on pushes to the main branch
+on:
+  push:
+    branches:
+      - main
+  # Allow manual triggering
+  workflow_dispatch:
+
+# Set permissions for the workflow
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow this job to clone the repo and create a page artifact
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Job to build and deploy the Flutter web app
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for proper versioning
+
+      # Set up Flutter with web support
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'  # Use specific Flutter version
+          channel: 'stable'
+          web-javascript-engine: 'wasm'  # Enable WebAssembly for better performance
+
+      # Cache Flutter dependencies for faster builds
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.tool_cache }}/flutter
+            ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+            ${{ runner.os }}-
+
+      # Get Flutter dependencies
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # Generate code (for Riverpod, JSON serialization, etc.)
+      - name: Generate code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      # Analyze code for potential issues
+      - name: Analyze code
+        run: flutter analyze
+
+      # Run tests
+      - name: Run tests
+        run: flutter test --reporter expanded
+
+      # Configure web build with environment variables from secrets
+      - name: Configure web build
+        run: |
+          echo "Building HaulPass web app..."
+          echo "Supabase URL: ${SUPABASE_URL:0:30}..."  # Log partial URL for verification
+          
+          # Set build-time environment variables
+          export SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+          export SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+          
+          # Verify secrets are set
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Error: Missing required secrets"
+            echo "Please ensure SUPABASE_URL and SUPABASE_ANON_KEY are set in repository secrets"
+            exit 1
+          fi
+
+      # Build the web version with PWA support and optimization
+      - name: Build web app
+        run: |
+          # Set build-time environment variables
+          export SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+          export SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+          
+          # Build with web optimizations
+          flutter build web \
+            --release \
+            --web-renderer html \
+            --web-javascript-engine wasm \
+            --web-experimental-https \
+            --source-maps \
+            --tree-shake-icons \
+            --dart-define=SUPABASE_URL="$SUPABASE_URL" \
+            --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
+            --dart-define=ENVIRONMENT=production \
+            --dart-define=API_BASE_URL="${{ secrets.SUPABASE_URL }}"
+
+      # Create PWA manifest and service worker if they don't exist
+      - name: Setup PWA support
+        run: |
+          cd build/web
+          
+          # Create manifest.json if it doesn't exist
+          if [ ! -f "manifest.json" ]; then
+            cat > manifest.json << EOF
+          {
+            "name": "HaulPass - Grain Hauling Logistics",
+            "short_name": "HaulPass",
+            "description": "Professional grain hauling logistics management",
+            "start_url": "/",
+            "display": "standalone",
+            "background_color": "#1976D2",
+            "theme_color": "#1976D2",
+            "orientation": "portrait-primary",
+            "icons": [
+              {
+                "src": "icons/Icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png"
+              },
+              {
+                "src": "icons/Icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png"
+              }
+            ]
+          }
+          EOF
+          fi
+
+      # Create a simple service worker for offline support
+      - name: Create service worker
+        run: |
+          cd build/web
+          
+          # Create service-worker.js
+          cat > service-worker.js << 'EOF'
+          const CACHE_NAME = 'haulpass-v1';
+          const urlsToCache = [
+            '/',
+            '/index.html',
+            '/manifest.json',
+            '/main.dart.js',
+            '/assets/AssetManifest.json'
+          ];
+
+          self.addEventListener('install', (event) => {
+            event.waitUntil(
+              caches.open(CACHE_NAME)
+                .then((cache) => cache.addAll(urlsToCache))
+            );
+          });
+
+          self.addEventListener('fetch', (event) => {
+            event.respondWith(
+              caches.match(event.request)
+                .then((response) => {
+                  // Return cached version or fetch from network
+                  return response || fetch(event.request);
+                })
+            );
+          });
+          EOF
+
+      # Update index.html to include PWA metadata
+      - name: Update index.html
+        run: |
+          cd build/web
+          
+          # Add PWA meta tags and manifest link to index.html
+          if [ -f "index.html" ]; then
+            # Add manifest link if not present
+            if ! grep -q "manifest.json" index.html; then
+              sed -i 's/<head>/<head>\n    <link rel="manifest" href="manifest.json">/' index.html
+            fi
+            
+            # Add theme color meta tag if not present
+            if ! grep -q "theme-color" index.html; then
+              sed -i 's/<head>/<head>\n    <meta name="theme-color" content="#1976D2">/' index.html
+            fi
+            
+            # Add apple touch icon if not present
+            if ! grep -q "apple-touch-icon" index.html; then
+              sed -i 's/<head>/<head>\n    <link rel="apple-touch-icon" href="icons\/Icon-192.png">/' index.html
+            fi
+          fi
+
+      # Verify build output
+      - name: Verify build output
+        run: |
+          echo "Build output contents:"
+          ls -la build/web/
+          echo "Total build size:"
+          du -sh build/web/
+
+      # Configure Git for deployment
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Deploy to GitHub Pages using peaceiris/actions-gh-pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: success()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          publish_branch: gh-pages
+          force_orphan: true  # Clean gh-pages branch
+          cname: ${{ steps.deployment.outputs.page_url }}
+
+      # Get the deployment URL for notifications
+      - name: Get deployment URL
+        id: deployment
+        run: |
+          echo "page_url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_OUTPUT
+
+      # Notify on success
+      - name: Notify success
+        if: success()
+        run: |
+          echo "🎉 HaulPass successfully deployed to GitHub Pages!"
+          echo "🔗 URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "📱 The web app includes PWA support for offline functionality"
+
+  # Job to handle deployment failures
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: failure()
+    
+    steps:
+      - name: Notify deployment failure
+        run: |
+          echo "❌ HaulPass deployment failed!"
+          echo "Please check the build logs for details."
+          echo "Common issues:"
+          echo "- Missing environment secrets (SUPABASE_URL, SUPABASE_ANON_KEY)"
+          echo "- Flutter build errors"
+          echo "- Dependency issues"
+          echo ""
+          echo "To fix secrets, go to repository Settings > Secrets and variables > Actions"
+          echo "Add the following secrets:"
+          echo "- SUPABASE_URL: Your Supabase project URL"
+          echo "- SUPABASE_ANON_KEY: Your Supabase anonymous key"
+          
+          # This will cause the workflow to show as failed
+          exit 1
+
+  # Job to update deployment status
+  update-status:
+    runs-on: ubuntu-latest
+    needs: [build-and-deploy, notify-failure]
+    if: always()
+    
+    steps:
+      - name: Update deployment status
+        run: |
+          if [ "${{ needs.build-and-deploy.result }}" == "success" ]; then
+            echo "✅ Deployment completed successfully"
+          else
+            echo "❌ Deployment failed"
+          fi
