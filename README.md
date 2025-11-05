@@ -15,18 +15,20 @@
 
 ## 🎯 Overview
 
-HaulPass is a comprehensive Flutter application designed specifically for the grain hauling industry. It provides professional logistics management, real-time elevator tracking, GPS-enabled load monitoring, and timer-based hauling sessions.
+HaulPass is a smart grain hauling application that **reduces elevator lineup wait times** by predicting queue lengths before farmers leave their yards. Using a combination of real-time user data and machine learning, HaulPass tells you exactly when to leave and which elevator to choose, saving hours every day.
 
 ### ✨ Key Features
 
+- **🔮 Predictive Queue Times**: See estimated wait times before you leave the yard
+- **📍 Smart Load Tracking**: Enter grain type, moisture, weight, and destination
+- **🚚 Automatic ETA Calculation**: Learns your routes and adjusts for load weight
+- **📊 Real-Time Position**: Track your spot in line with live updates
+- **⚖️ Load Comparison**: Compare your scale weight vs elevator weight
+- **💰 Revenue Tracking**: Calculate load value and track daily earnings
+- **📈 Daily Summaries**: Total weight, kms driven, time breakdown (driving/lineup/unloading)
+- **🏆 Leaderboards**: See anonymous daily stats for most grain hauled and kms driven
 - **📱 Cross-Platform**: Web, iOS, and Android support
-- **🌍 Real-Time Tracking**: GPS-based location monitoring
-- **🏢 Elevator Integration**: Live elevator status and wait times
-- **⏱️ Load Timer**: Precise hauling session timing
-- **📊 Analytics**: Performance insights and reporting
-- **🔐 Secure Authentication**: Supabase-powered user management
-- **💾 Offline Support**: PWA capabilities for unreliable connectivity
-- **🎨 Modern UI**: Clean, professional Material 3 design
+- **💾 Offline Support**: Record data offline, sync when service returns
 
 ## 🚀 Quick Start
 

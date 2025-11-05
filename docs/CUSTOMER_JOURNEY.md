@@ -1,42 +1,48 @@
-# HaulPass 2.0 - Customer Journey Documentation
+# HaulPass - Customer Journey Documentation
 
 ## 🎯 Journey Overview
 
-This document maps the complete customer experience from first discovery through daily usage, focusing on friction points, value moments, and success metrics.
+This document maps the complete farmer experience from first load of the day through daily summary, focusing on time savings, accurate predictions, and effortless data tracking.
 
 ## 👥 User Personas
 
-### Primary Persona: Independent Hauler
-**Name**: Mike Johnson  
-**Age**: 45  
-**Experience**: 15 years hauling grain  
-**Pain Points**: 
-- Wasting 2-4 hours daily on unnecessary trips
-- Manual record keeping for tax purposes
-- Inefficient routing leading to fuel costs
-- Missing elevator closures until arrival
-
-**Goals**:
-- Maximize earnings through efficient operations
-- Professional record keeping
-- Reduce operational costs
-- Improve customer relationships
-
-### Secondary Persona: Fleet Manager  
-**Name**: Sarah Chen  
-**Role**: Operations Manager at Midwest Grain Transport  
-**Fleet Size**: 25 trucks  
+### Primary Persona: Grain Farmer with Own Hauling
+**Name**: Mike Johnson
+**Age**: 45
+**Farm**: 3,200 acres (corn and soybeans)
+**Equipment**: 2001 Kenworth with triaxle trailer
+**Experience**: 15 years farming and hauling own grain
 **Pain Points**:
-- No real-time visibility into fleet operations
-- Manual reporting for customers
-- Difficulty optimizing routes across fleet
-- High administrative overhead
+- Wastes 2-3 hours daily sitting in elevator lineups
+- Never knows which elevator will be fastest
+- Drives to elevator only to find huge lineup
+- No easy way to track loads for tax records
+- Can't compare elevator efficiency
 
 **Goals**:
-- Reduce operational costs
-- Improve customer satisfaction
-- Make data-driven decisions
-- Streamline administrative tasks
+- Minimize time wasted in lineups
+- Know before leaving which elevator to choose
+- Accurate daily hauling records
+- Compare performance across elevators
+- Maximize loads per day during harvest
+
+### Secondary Persona: Custom Hauler
+**Name**: Dave Schmidt
+**Role**: Custom grain hauler for multiple farms
+**Equipment**: Super-B semi, 3 triaxle trucks
+**Pain Points**:
+- Manages multiple trucks and routes
+- Customers ask for delivery updates
+- Hard to optimize routes for efficiency
+- Manual tracking of loads and revenue
+- Needs proof of delivery times
+
+**Goals**:
+- Optimize truck routing to maximize loads per day
+- Provide real-time updates to customers
+- Accurate load tracking for billing
+- Compare driver efficiency
+- Professional reporting
 
 ## 📱 Complete Customer Journey
 
@@ -162,30 +168,37 @@ Users should experience the core value within 3 minutes of first opening the app
 
 ### Stage 4: Daily Usage Patterns
 
-#### Morning Routine (5 minutes)
-**Typical Day**: Mike starts hauling at 6 AM
+#### Morning Routine - First Load (2 minutes)
+**Typical Day**: Mike starts hauling at 6 AM during harvest
 
-1. **6:00 AM - App Launch** (30 seconds)
-   - Auto-login from previous session
-   - Home screen shows current location
-   - "Good morning, Mike" personalized greeting
+1. **6:00 AM - App Launch** (10 seconds)
+   - Opens app while truck is being loaded
+   - Home screen shows favorite elevators with current wait times:
+     - Prairie Co-op: **8 min wait**
+     - Valley Grain: **22 min wait**
+     - Metro Hub: **15 min wait**
 
-2. **Route Planning** (2 minutes)
-   - Check today's delivery locations
-   - App suggests optimal route considering:
-     - Elevator wait times
-     - Grain type compatibility  
-     - Distance and fuel efficiency
-   - Mike accepts or modifies suggestions
+2. **Load Entry** (60 seconds)
+   - Taps "New Load" button
+   - Selects "Corn" from grain type dropdown
+   - Enters moisture: 15.2%
+   - Enters scale weight: 52,340 lbs (optional - Mike has scales)
+   - Selects destination: "Prairie Co-op"
+   - App instantly shows:
+     - **ETA: 6:18 AM** (12 min drive based on his historical times with this load weight)
+     - **Predicted wait when you arrive: 5 min** (app knows who's heading there)
+     - **Total time: ~25 min** (drive + wait + 8 min unload)
 
-3. **Status Review** (2 minutes)
-   - Quick scan of elevator status updates
-   - Any notifications about route changes
-   - Weather conditions affecting hauling
+3. **Decision** (10 seconds)
+   - Mike can see that even though Prairie has 8 min wait now, by the time he arrives it will be only 5 min
+   - Valley Grain shows 22 min now, but 18 min when he'd arrive
+   - Prairie is still best choice
+   - Taps "Start Trip"
 
-4. **Departure** (30 seconds)
-   - Start GPS tracking
-   - "On the road" status automatically set
+4. **Departure** (automatic)
+   - GPS tracking begins automatically
+   - App runs in background
+   - Mike drives to elevator
 
 #### On the Road Experience (Continuous)
 
@@ -201,43 +214,145 @@ Users should experience the core value within 3 minutes of first opening the app
 - Emergency notifications
 - Customer communication
 
-#### At Elevator Workflow (2-3 minutes total)
+#### At Elevator Workflow
 
 **Arrival Process** (30 seconds):
-1. GPS automatically detects arrival at elevator
-2. Prompt: "Are you at Prairie Elevator Co.?"
-3. Single tap confirmation or auto-accept
-4. Timer automatically starts
+1. **6:17 AM** - GPS automatically detects arrival at Prairie Co-op
+2. App prompts: "Have you arrived at Prairie Co-op?"
+3. Mike taps "Yes"
+4. App asks: "How many trucks ahead of you (not counting the one unloading)?"
+5. Mike sees 2 trucks ahead, taps "2"
+6. App shows truck type buttons: Mike selects "Triaxle with trailer" for both
+7. App now shows:
+   - **Position: 3rd in line** (not counting truck currently unloading)
+   - **Estimated wait: 12 min** (adjusted based on actual lineup vs prediction)
+   - One truck has HaulPass (6 min unload predicted)
+   - One truck without app (8 min estimated)
 
-**Loading Process** (ongoing):
-- **Event Buttons** (quick actions):
-  - "In Line" (if waiting)
-  - "Loading Started" 
-  - "Loading Complete"
-  - "Left Facility"
+**Waiting in Line** (automatic):
+- GPS detects forward movement
+- App updates: "You're now 2nd in line - ~6 min"
+- App updates: "You're next! ~3 min"
+- Mike can glance at phone to see progress, no interaction needed
 
-- **Voice Notes** (optional):
-  - "Elevator running 20 minutes behind"
-  - "Quality issues with load #2"
-  - Voice-to-text for quick documentation
+**Unloading Process**:
 
-**Departure** (30 seconds):
-- Timer automatically stops when GPS detects departure
-- Session summary displayed
-- One tap to "Complete Session"
+**Option A - Manual (Mike remembers):**
+1. **6:29 AM** - Mike's truck reaches unload position
+2. Mike taps "Unloading Now" button
+3. Unload timer starts
 
-#### Evening Wrap-up (1 minute)
+**Option B - Automatic (Mike forgets):**
+1. GPS detects truck is at exact unload location (learned from previous users)
+2. App prompts: "Are you unloading now?"
+3. Mike taps "Yes" or app auto-confirms after 30 seconds
+4. Unload timer starts
 
-**Automatic Summary Generation**:
-- Total time hauling vs waiting
-- Elevators visited
-- Route efficiency metrics
-- Fuel consumption estimates
+**During Unload** (8 minutes):
+- Timer runs in background
+- Other users' predictions update: "Prairie Co-op wait time: 6 min (1 truck in line)"
+- Mike doesn't need to do anything
 
-**Quick Review**:
-- Mike reviews session summary
-- Makes any necessary notes
-- Shares data with fleet manager (if applicable)
+**Post-Unload Data Entry** (60 seconds):
+1. **6:37 AM** - Unload completes
+2. App prompts: "Unload complete?"
+3. Mike taps "Yes"
+4. App shows data entry form (all optional):
+   - **Elevator weight**: 51,890 lbs (Mike enters from ticket)
+   - **Weight difference**: -450 lbs (app calculates: his scale vs elevator)
+   - **Dockage**: 0.8% (Mike enters from ticket)
+   - **Price**: $4.85/bushel (Mike enters current price)
+   - **Total value**: $2,441 (app calculates)
+5. Mike taps "Save Load"
+
+**Trip Summary Shown**:
+- Total time: 27 minutes (drive: 12 min, wait: 10 min, unload: 8 min)
+- Weight: 51,890 lbs (1,471 bushels)
+- Revenue: $2,441
+- Next step options:
+  - "New Load" button (start another trip)
+  - "Done for Today" button
+  - "View Summary" button
+
+#### Multiple Loads Throughout the Day
+
+**Mike completes 8 loads during the day:**
+- Load 1: 6:00 AM - Prairie Co-op
+- Load 2: 7:15 AM - Prairie Co-op (wait time was 4 min - perfect!)
+- Load 3: 8:30 AM - Switched to Metro Hub (Prairie wait jumped to 25 min)
+- Load 4: 9:50 AM - Back to Prairie Co-op
+- Load 5: 11:10 AM - Prairie Co-op
+- Load 6: 1:30 PM - Valley Grain (closest after lunch)
+- Load 7: 2:45 PM - Prairie Co-op
+- Load 8: 4:00 PM - Prairie Co-op
+
+**Between loads:**
+- Mike just taps "New Load" after each trip
+- App pre-fills grain type (corn)
+- Mike enters new weight and moisture each time
+- App continues predicting best elevator
+- Running daily totals visible on home screen
+
+#### End of Day - Done Hauling (5:15 PM)
+
+**Mike taps "Done Hauling for Today"**
+
+**Daily Summary Displayed**:
+
+```
+📊 DAILY SUMMARY - October 15, 2024
+
+🚜 HAULING STATS
+Total Loads: 8
+Total Weight: 414,720 lbs (11,769 bushels)
+Average Load: 51,840 lbs (1,471 bushels)
+
+🚗 DISTANCE
+Total Distance: 192 km (round trips)
+Average per Load: 24 km
+
+⏱️ TIME BREAKDOWN
+Total Time: 4h 15min
+  • Driving: 1h 36min (38%)
+  • In Lineup: 58min (23%)
+  • Unloading: 1h 4min (25%)
+  • Between Loads: 37min (14%)
+
+💰 REVENUE
+Total Revenue: $19,532
+Average per Load: $2,442
+Price per Bushel: $4.85
+
+📈 EFFICIENCY
+Loads per Hour: 1.88
+Best Trip: Load #2 (22 min total)
+Worst Trip: Load #3 (38 min - lineup longer than predicted)
+Time Saved vs No App: ~47 min (estimated)
+
+🏢 ELEVATORS VISITED
+Prairie Co-op: 6 loads (avg wait: 8 min)
+Metro Hub: 1 load (wait: 18 min)
+Valley Grain: 1 load (wait: 12 min)
+
+⚖️ SCALE COMPARISON
+Your Scale Avg: 52,120 lbs
+Elevator Avg: 51,840 lbs
+Difference: -280 lbs (-0.5%)
+Total Dockage Avg: 0.9%
+
+🏆 LEADERBOARD
+Daily Corn Hauling:
+  #4 - Most weight hauled today
+  #7 - Most loads completed
+  #12 - Most km driven
+```
+
+**Actions Available**:
+- 📧 Email summary to accountant
+- 📊 View detailed load breakdown
+- 📈 Compare to previous days
+- 🔄 Share with farm manager
+- 💾 Export to CSV
 
 ### Stage 5: Advanced Usage & Optimization
 

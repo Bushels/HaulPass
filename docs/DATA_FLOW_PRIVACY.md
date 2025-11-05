@@ -1,8 +1,15 @@
-# HaulPass 2.0 - Data Flow & Privacy Documentation
+# HaulPass - Data Flow & Privacy Documentation
 
 ## 🔒 Data Philosophy
 
-At HaulPass, we believe **your data belongs to you**. This document explains exactly what data we collect, how we use it to improve your experience, how we protect it, and how you control it.
+At HaulPass, we believe **your data belongs to you**. This document explains exactly what data we collect, how we use it to improve your experience and predict lineups, how we protect it, and how you control it.
+
+**Core Privacy Principles:**
+- ✅ **Anonymous by Default**: Queue predictions use aggregate anonymous data
+- ✅ **Your Farm, Your Business**: Farm locations and routes stay private
+- ✅ **You Choose What to Share**: Optional data sharing with managers/accountants
+- ✅ **No Selling Ever**: Your data is never sold to third parties
+- ✅ **Transparent Predictions**: You see what data powers the predictions
 
 ## 📊 Data Categories & Collection Points
 
@@ -44,34 +51,59 @@ User Control: Editable, optional
 ```
 Data Type: GPS coordinates (latitude, longitude)
 Collection Frequency: Every 30 seconds during active hauling
-Purpose: Route optimization, arrival detection, timer automation
-Storage: Local device + encrypted cloud backup
-Retention: 90 days (configurable)
-User Control: Pause tracking, delete history, location permissions
+Purpose: Route learning, arrival detection, lineup position tracking
+Storage: Local device + encrypted cloud
+Retention: 90 days (or until trip completes, whichever is shorter)
+User Control: Location permissions required, can pause tracking
 ```
 
-#### Location Context
+**What's Shared Anonymously:**
+- "A truck is en route to Prairie Co-op, ETA 10 minutes"
+- "Truck type: triaxle with trailer"
+- "Estimated load weight category: 50,000-55,000 lbs"
+
+**What's NEVER Shared:**
+- Your farm location
+- Your specific route
+- Your identity
+- Your exact load weight
+
+#### Route Learning (For ETA Calculations)
 ```
-Data Type: Speed, direction, accuracy
-Collection Frequency: With GPS coordinates
-Purpose: Distinguish driving vs stationary, route validation
-Storage: Local device + encrypted cloud backup  
-Retention: 90 days
-User Control: Same as GPS data
+Data Type: Start/end GPS coordinates, travel time, load weight
+Collection Frequency: Each completed trip
+Purpose: Predict YOUR future drive times on similar routes with similar loads
+Storage: Encrypted, tied to your account only
+Retention: Indefinitely (improves your predictions over time)
+User Control: Can clear route history, disables personalized ETAs
 ```
 
-#### Place Recognition
+**Privacy Protection:**
+- Route data is NOT shared with other users
+- Used only to predict YOUR future trips
+- App learns that YOUR truck takes X minutes with Y weight
+- Farm location coordinates stay in your account only
+
+#### Elevator Proximity (For Lineup Predictions)
 ```
-Data Type: Known locations (elevators, farms, delivery points)
-Collection Frequency: When user visits frequently
-Purpose: Smart location detection, address completion
-Storage: Local device only
-Retention: Until manually cleared
-User Control: Clear location history, disable place learning
+Data Type: Distance to elevator, arrival detection
+Collection Frequency: Continuous while en route
+Purpose: Update queue predictions as trucks arrive
+Storage: Temporary (cleared after trip)
+Retention: Real-time only, not stored long-term
+User Control: Automatic with location permission
 ```
 
-**Privacy Impact**: ⭐⭐⭐⭐ (High) - Detailed movement patterns
-**Business Value**: Core app functionality, route optimization
+**What's Shared:**
+- "Truck arriving at Prairie Co-op in 5 minutes" (anonymous)
+- Updates queue prediction for all users
+
+**What's Private:**
+- Where you came from
+- Your route to get there
+
+**Privacy Impact**: ⭐⭐⭐ (Medium) - Location shared only near elevators, anonymously
+**Business Value**: Core app functionality, queue predictions
 **Compliance**: Requires explicit consent, clear privacy policy
 
 ### 3. Operational Data (User-Inputted & System-Derived)
@@ -259,36 +291,97 @@ Right to Object      ✓ Users can opt-out of processing
 
 ## 🎯 How We Use Your Data
 
-### Personalization & Recommendations
+### Queue Prediction System (The Core Value)
 
-#### Route Optimization
+#### How Anonymous Data Powers Predictions
+
+**The Challenge:**
+Farmers waste hours in lineups because they don't know how long the wait will be BEFORE they leave the yard.
+
+**The Solution:**
+HaulPass uses anonymous aggregate data from all users to predict future queue states.
+
+#### What Data Goes Into Predictions
+
+**From Users WITH HaulPass (Anonymous):**
 ```
-Your Data Used:
-• Historical routes and timing
-• Elevator wait times you've experienced  
-• Grain type compatibility preferences
-• Load patterns and delivery schedules
+Collected:
+• "User X is loaded and heading to Prairie Co-op"
+• "ETA: 10 minutes from now"
+• "Truck type: Triaxle with trailer"
+• "Estimated weight: 50,000-55,000 lbs"
+• "Historical unload time for this user: 7-9 minutes"
+
+NOT Collected:
+• User identity
+• Farm location
+• Exact route
+• Exact weight
+```
+
+**From Users Without HaulPass (Estimated):**
+```
+When You Arrive:
+• You report: "2 trucks ahead of me"
+• You select their types: "Triaxle", "Super-B"
+
+App Estimates:
+• Unknown truck #1: ~8 min unload (triaxle average)
+• Unknown truck #2: ~12 min unload (super-B average)
+• Assumes they're hauling the same grain type as majority
+```
+
+#### Real-Time Prediction Updates
+
+**Example: You're loading corn at 6:00 AM**
+
+```
+6:00 AM - You open app:
+┌─────────────────────────────────────────────────┐
+│ Prairie Co-op                                   │
+│ Current wait: 8 minutes                         │
+│ • 1 truck in line (with app, 6 min unload est.)│
+│                                                  │
+│ When YOU arrive (6:12 AM):                      │
+│ Predicted wait: 5 minutes                       │
+│ • Current truck will be done                    │
+│ • 2 trucks arriving before you will take ~10min│
+│ • You'll be 3rd when you arrive                 │
+└─────────────────────────────────────────────────┘
+```
+
+**How We Know:**
+- Current truck has HaulPass → we know their actual avg unload time
+- 2 users with HaulPass are en route, arriving at 6:08 and 6:10
+- Their ETAs are based on their GPS distance + their historical drive times
+- Their unload times predicted from their weight + historical patterns
+
+**What You DON'T See:**
+- Who the other farmers are
+- Where they're coming from
+- Their exact weights
+- Their farm locations
+
+#### Personalized ETA Calculations (Your Data Only)
+
+```
+Your Data Used (NOT Shared):
+• Your historical drive times from various starting points
+• How your drive time changes with load weight
+• Your typical driving patterns
+• Your truck's performance characteristics
 
 How It Helps You:
-• Suggests optimal pickup/delivery sequences
-• Predicts best departure times
-• Avoids historically busy elevators
-• Minimizes total trip time and fuel costs
-```
+• "Based on your history, this trip takes 12 minutes with a 52,000 lb load"
+• "Last time you went here with similar weight, it took 11 minutes"
+• App learns YOUR specific patterns, not generic averages
+• Accounts for your truck, your driving style, your routes
 
-#### Wait Time Predictions
-```
-Your Data Used:
-• Your reported wait times
-• Real-time elevator status updates
-• Similar haulers' experiences
-• Seasonal and time-of-day patterns
-
-How It Helps You:
-• More accurate wait time estimates
-• Better elevator selection
-• Improved trip planning
-• Reduced waiting at elevators
+Privacy Protection:
+• This data stays in YOUR account
+• Other users don't see your patterns
+• You're not compared to other drivers
+• Your routes remain private
 ```
 
 ### Industry Intelligence & Analytics

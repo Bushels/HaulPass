@@ -192,6 +192,10 @@ CREATE TABLE profiles (
   full_name TEXT,
   truck_number TEXT,
   company TEXT,
+  truck_type TEXT CHECK (truck_type IN ('super_b', 'triaxle_trailer', 'triaxle', 'dual_axle', 'single_axle')),
+  default_grain_type TEXT,
+  has_scales BOOLEAN DEFAULT false,
+  preferred_elevators UUID[],
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -200,49 +204,149 @@ CREATE TABLE profiles (
 CREATE TABLE elevators (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
-  company TEXT NOT NULL,
+  company TEXT,
   location GEOGRAPHY(POINT, 4326) NOT NULL,
   address TEXT,
+  phone TEXT,
   accepted_grains TEXT[],
-  capacity_bushels INTEGER,
+  unload_area_location GEOGRAPHY(POINT, 4326), -- exact GPS of unload spot
+  unload_area_radius FLOAT DEFAULT 10.0, -- meters
+  average_unload_time INTEGER DEFAULT 8, -- minutes
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Real-time status
-CREATE TABLE elevator_status (
+-- Real-time elevator queue predictions
+CREATE TABLE elevator_queue_state (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   elevator_id UUID REFERENCES elevators(id),
-  current_wait_time INTEGER, -- minutes
-  trucks_in_line INTEGER DEFAULT 0,
-  accepting_grain TEXT,
-  status TEXT CHECK (status IN ('open', 'full', 'closed', 'maintenance')),
-  last_updated TIMESTAMP DEFAULT NOW()
+  current_trucks_in_line INTEGER DEFAULT 0,
+  trucks_with_app INTEGER DEFAULT 0,
+  current_wait_time INTEGER DEFAULT 0, -- minutes
+  predicted_wait_5min INTEGER, -- predicted wait in 5 min
+  predicted_wait_10min INTEGER, -- predicted wait in 10 min
+  predicted_wait_15min INTEGER, -- predicted wait in 15 min
+  last_updated TIMESTAMP DEFAULT NOW(),
+  UNIQUE(elevator_id)
 );
 
--- Tracking sessions
-CREATE TABLE hauling_sessions (
+-- Individual loads (replaces hauling_sessions)
+CREATE TABLE loads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES profiles(id),
   elevator_id UUID REFERENCES elevators(id),
-  start_time TIMESTAMP NOT NULL,
-  end_time TIMESTAMP,
-  grain_type TEXT,
-  status TEXT CHECK (status IN ('active', 'completed', 'cancelled')),
-  notes TEXT,
+
+  -- Load details
+  grain_type TEXT NOT NULL,
+  moisture_percent DECIMAL(4,2),
+  farmer_scale_weight_lbs INTEGER, -- optional
+  elevator_scale_weight_lbs INTEGER, -- optional
+  dockage_percent DECIMAL(4,2),
+  price_per_bushel DECIMAL(6,2),
+
+  -- Timing
+  load_started_at TIMESTAMP NOT NULL, -- when "New Load" tapped
+  left_yard_at TIMESTAMP, -- when GPS shows movement
+  arrived_at_elevator_at TIMESTAMP,
+  unload_started_at TIMESTAMP,
+  unload_completed_at TIMESTAMP,
+
+  -- Lineup tracking
+  trucks_ahead_on_arrival INTEGER,
+  truck_types_in_line JSONB, -- [{type: 'triaxle', position: 1}, ...]
+  position_updates JSONB, -- [{position: 3, timestamp: '...'}, ...]
+
+  -- Calculated fields
+  drive_time_minutes INTEGER,
+  lineup_wait_minutes INTEGER,
+  unload_duration_minutes INTEGER,
+  total_trip_minutes INTEGER,
+  distance_km DECIMAL(6,2),
+  calculated_bushels DECIMAL(10,2),
+  calculated_revenue DECIMAL(10,2),
+
+  status TEXT CHECK (status IN ('loading', 'en_route', 'in_line', 'unloading', 'completed', 'cancelled')) DEFAULT 'loading',
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Location tracking
+-- Daily hauling summaries
+CREATE TABLE daily_summaries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id),
+  date DATE NOT NULL,
+
+  -- Summary stats
+  total_loads INTEGER DEFAULT 0,
+  total_weight_lbs INTEGER DEFAULT 0,
+  total_bushels DECIMAL(10,2) DEFAULT 0,
+  total_distance_km DECIMAL(8,2) DEFAULT 0,
+  total_time_minutes INTEGER DEFAULT 0,
+  drive_time_minutes INTEGER DEFAULT 0,
+  lineup_time_minutes INTEGER DEFAULT 0,
+  unload_time_minutes INTEGER DEFAULT 0,
+  total_revenue DECIMAL(12,2) DEFAULT 0,
+
+  -- Efficiency
+  avg_loads_per_hour DECIMAL(4,2),
+  time_saved_minutes INTEGER, -- estimated vs no app
+
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, date)
+);
+
+-- Location tracking (GPS breadcrumbs)
 CREATE TABLE location_tracks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  session_id UUID REFERENCES hauling_sessions(id),
+  load_id UUID REFERENCES loads(id),
   user_id UUID REFERENCES profiles(id),
   location GEOGRAPHY(POINT, 4326) NOT NULL,
   accuracy FLOAT,
-  speed FLOAT,
+  speed FLOAT, -- km/h
+  heading FLOAT, -- degrees
   recorded_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Active trips (for queue predictions)
+CREATE TABLE active_trips (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id),
+  load_id UUID REFERENCES loads(id),
+  elevator_id UUID REFERENCES elevators(id),
+
+  current_status TEXT CHECK (current_status IN ('loaded', 'en_route', 'in_line', 'unloading')),
+  estimated_arrival_time TIMESTAMP,
+  estimated_load_weight_lbs INTEGER,
+  truck_type TEXT,
+
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Historical unload times (for ML predictions)
+CREATE TABLE unload_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id),
+  elevator_id UUID REFERENCES elevators(id),
+  load_id UUID REFERENCES loads(id),
+
+  weight_lbs INTEGER,
+  grain_type TEXT,
+  truck_type TEXT,
+  unload_duration_minutes INTEGER,
+  timestamp TIMESTAMP DEFAULT NOW()
+);
+
+-- Route learning (for ETA predictions)
+CREATE TABLE route_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id),
+  start_location GEOGRAPHY(POINT, 4326),
+  end_location GEOGRAPHY(POINT, 4326),
+  load_weight_lbs INTEGER,
+  travel_time_minutes INTEGER,
+  distance_km DECIMAL(6,2),
+  timestamp TIMESTAMP DEFAULT NOW()
 );
 ```
 
