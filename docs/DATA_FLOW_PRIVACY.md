@@ -84,26 +84,34 @@ User Control: Can clear route history, disables personalized ETAs
 - App learns that YOUR truck takes X minutes with Y weight
 - Farm location coordinates stay in your account only
 
-#### Elevator Proximity (For Lineup Predictions)
+#### Arrival Pattern Learning
 ```
-Data Type: Distance to elevator, arrival detection
-Collection Frequency: Continuous while en route
-Purpose: Update queue predictions as trucks arrive
-Storage: Temporary (cleared after trip)
-Retention: Real-time only, not stored long-term
+Data Type: Arrival time at elevator, lineup count at arrival
+Collection Frequency: When you arrive and confirm
+Purpose: Build historical patterns of busy/slow times
+Storage: Aggregate anonymous data only
+Retention: Indefinitely (for pattern learning)
 User Control: Automatic with location permission
 ```
 
-**What's Shared:**
-- "Truck arriving at Prairie Co-op in 5 minutes" (anonymous)
-- Updates queue prediction for all users
+**What's Collected (Anonymous):**
+- "At Prairie Co-op, Tuesday 6:15 AM, there were 2 trucks in line"
+- "Wait time was 16 minutes"
+- "Unload took 8 minutes"
 
-**What's Private:**
-- Where you came from
-- Your route to get there
+**What's NOT Collected:**
+- Who arrived
+- Where they came from
+- Their identity
+- Individual movements
 
-**Privacy Impact**: ⭐⭐⭐ (Medium) - Location shared only near elevators, anonymously
-**Business Value**: Core app functionality, queue predictions
+**How It's Used:**
+- Builds patterns: "Prairie Co-op typically has 2-3 trucks Tuesday mornings"
+- No real-time tracking of individuals
+- You check predictions before loading, not live updates
+
+**Privacy Impact**: ⭐⭐ (Low) - Only aggregate historical patterns, no individual tracking
+**Business Value**: Core app functionality, pattern-based queue predictions
 **Compliance**: Requires explicit consent, clear privacy policy
 
 ### 3. Operational Data (User-Inputted & System-Derived)
@@ -293,74 +301,82 @@ Right to Object      ✓ Users can opt-out of processing
 
 ### Queue Prediction System (The Core Value)
 
-#### How Anonymous Data Powers Predictions
+#### How Historical Patterns Power Predictions
 
 **The Challenge:**
 Farmers waste hours in lineups because they don't know how long the wait will be BEFORE they leave the yard.
 
 **The Solution:**
-HaulPass uses anonymous aggregate data from all users to predict future queue states.
+HaulPass uses historical pattern data to predict what lineups will look like based on time of day, day of week, and seasonal trends.
 
 #### What Data Goes Into Predictions
 
-**From Users WITH HaulPass (Anonymous):**
+**Historical Pattern Data (Aggregate Anonymous):**
 ```
-Collected:
-• "User X is loaded and heading to Prairie Co-op"
-• "ETA: 10 minutes from now"
-• "Truck type: Triaxle with trailer"
-• "Estimated weight: 50,000-55,000 lbs"
-• "Historical unload time for this user: 7-9 minutes"
+Collected Over Time:
+• "Prairie Co-op on Tuesday mornings: average 2.3 trucks in line"
+• "Average wait time at 6 AM: 18 minutes"
+• "Peak times: 7-9 AM (3-5 trucks typical)"
+• "Slow times: 2-4 PM (0-1 trucks typical)"
+• "Harvest season factor: +30% longer waits"
 
-NOT Collected:
-• User identity
-• Farm location
-• Exact route
-• Exact weight
-```
-
-**From Users Without HaulPass (Estimated):**
-```
-When You Arrive:
-• You report: "2 trucks ahead of me"
-• You select their types: "Triaxle", "Super-B"
-
-App Estimates:
-• Unknown truck #1: ~8 min unload (triaxle average)
-• Unknown truck #2: ~12 min unload (super-B average)
-• Assumes they're hauling the same grain type as majority
+Pattern Sources:
+• When users arrive and report truck counts
+• Actual wait times experienced
+• Unload duration data
+• Time-stamped arrival data
+• Seasonal trends
 ```
 
-#### Real-Time Prediction Updates
+**NO Real-Time User Tracking:**
+```
+What We DON'T Do:
+✗ Track who's loaded and heading where
+✗ Share "User X is en route"
+✗ Monitor individual movements in real-time
+✗ Tell other users about your trips
 
-**Example: You're loading corn at 6:00 AM**
+What We DO:
+✓ Learn patterns from historical data
+✓ Predict based on time/day/season
+✓ Show confidence levels
+✓ Update patterns as more data collected
+```
+
+#### Pattern-Based Prediction Example
+
+**Example: You're loading corn at 6:00 AM on Tuesday in October**
 
 ```
-6:00 AM - You open app:
+6:00 AM - You open app BEFORE loading:
 ┌─────────────────────────────────────────────────┐
 │ Prairie Co-op                                   │
-│ Current wait: 8 minutes                         │
-│ • 1 truck in line (with app, 6 min unload est.)│
+│ Predicted lineup when you arrive (~6:15 AM):   │
+│ • 2-3 trucks expected (15-20 min wait)         │
 │                                                  │
-│ When YOU arrive (6:12 AM):                      │
-│ Predicted wait: 5 minutes                       │
-│ • Current truck will be done                    │
-│ • 2 trucks arriving before you will take ~10min│
-│ • You'll be 3rd when you arrive                 │
+│ Based on historical patterns:                   │
+│ • Tuesday 6:15 AM average: 2.3 trucks          │
+│ • October harvest: typically busier            │
+│ • Last week same time: 2 trucks (16 min wait) │
+│ • Confidence: High (65 data points)            │
+│                                                  │
+│ Alternative elevators:                          │
+│ • Valley Grain: 3-4 trucks (25 min)           │
+│ • Metro Hub: 1-2 trucks (10 min) +5km farther │
 └─────────────────────────────────────────────────┘
 ```
 
 **How We Know:**
-- Current truck has HaulPass → we know their actual avg unload time
-- 2 users with HaulPass are en route, arriving at 6:08 and 6:10
-- Their ETAs are based on their GPS distance + their historical drive times
-- Their unload times predicted from their weight + historical patterns
+- Historical data shows Tuesday mornings typically have 2-3 trucks
+- Past 2 weeks of data at this time slot
+- Seasonal adjustment for harvest
+- NO tracking of who's currently loaded or heading there
 
-**What You DON'T See:**
-- Who the other farmers are
-- Where they're coming from
-- Their exact weights
-- Their farm locations
+**What Makes It Useful:**
+- Check BEFORE loading, make informed decision
+- Compare multiple elevators
+- See confidence level (how much data backs prediction)
+- No need for real-time updates or tracking
 
 #### Personalized ETA Calculations (Your Data Only)
 

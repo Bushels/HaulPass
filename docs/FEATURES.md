@@ -25,27 +25,41 @@ Farmers waste hours every day sitting in grain elevator lineups without knowing 
   - Historical drive times from this location
   - Load weight (learns that heavier loads = slower travel)
   - Current route conditions
-- App updates predicted lineup times at all elevators based on who's loaded and heading where
+- Shows predicted lineup times at all elevators based on historical patterns for this time/day
 
 ### 2. Predictive Queue Intelligence
 
-**The app knows across all users:**
-- Who is currently loaded
-- How much they're hauling
-- Which elevator they're heading to
-- Historical unload times for those users
+**Pattern-Based Predictions:**
+The app uses historical data to predict what lineups will look like based on:
+- **Time of day patterns**: "Prairie Co-op typically has 2-3 trucks at 6 AM"
+- **Day of week trends**: "Mondays are busier after the weekend"
+- **Seasonal patterns**: "October harvest = longer lineups in mornings"
+- **Current state**: "Right now there are 2 trucks in line"
+- **Historical throughput**: "This elevator averages 8 min per truck"
 
-**Prediction Algorithm:**
-- Calculates future lineup state at each elevator
-- Estimates when each truck will arrive
-- Predicts unload times based on weight and truck type
-- Gets more accurate over time with more data
-- Updates predictions in real-time as conditions change
+**Learning Algorithm:**
+- Tracks actual lineup times at each elevator
+- Learns busy vs slow periods
+- Identifies seasonal trends
+- Improves predictions as more data is collected
+- Uses aggregate anonymous data from all users
 
-**Farmers can see:**
-- Current wait time at each elevator
-- Predicted wait time when THEY will arrive
-- Which elevator will be fastest for their specific situation
+**What Farmers See BEFORE Loading:**
+```
+Prairie Co-op
+Current lineup: 2 trucks (estimated 16 min wait)
+
+When you arrive (~15 min from now):
+Predicted lineup: 1-2 trucks (estimated 8-16 min wait)
+Based on: Historical patterns for this time/day
+Confidence: High (50+ data points this week)
+```
+
+**No Real-Time Tracking:**
+- App does NOT tell you "User X is heading there"
+- Does NOT track who's loaded or en route
+- Predictions based on patterns, not live user movements
+- More privacy-friendly approach
 
 ### 3. En Route to Elevator
 
@@ -58,8 +72,7 @@ Farmers waste hours every day sitting in grain elevator lineups without knowing 
 **User sees:**
 - Live map showing route
 - Updated ETA
-- Updated lineup prediction as other trucks arrive/depart
-- Current position of trucks ahead (if they have the app)
+- Current predicted lineup (based on patterns, not live tracking)
 
 ### 4. Arrival at Elevator
 
@@ -95,15 +108,11 @@ Farmers waste hours every day sitting in grain elevator lineups without knowing 
 - Updates position as trucks move up
 - Shows estimated time to unload
 
-**For trucks WITH the app:**
-- Uses their actual unload times and weights
-- Predicts unload duration based on load size
-- Accounts for weight-dependent unload times
-
-**For trucks WITHOUT the app:**
-- Estimates unload time based on truck type
-- Uses historical averages for that elevator
-- Assumes hauling same grain type as majority
+**Unload Time Estimates:**
+- Based on truck type (if you selected types when you arrived)
+- Uses historical averages for this elevator
+- Factors in typical unload times by truck size
+- Learns from actual unload times over time
 
 **Movement Detection:**
 - GPS detects forward movement in line
@@ -307,38 +316,47 @@ Farmers waste hours every day sitting in grain elevator lineups without knowing 
 ### Queue Time Prediction
 
 **Input Data:**
-- Current trucks in lineup (observed)
-- Trucks en route with app (known)
-- Estimated trucks without app (inferred)
-- Historical elevator throughput
+- Current trucks in lineup (when you arrive and report count)
+- Historical elevator throughput at this time/day
 - Time of day/week patterns
-- Grain type being processed
-- Seasonal demand patterns
+- Seasonal demand patterns (harvest vs off-season)
+- Day-specific patterns (Monday rush, Friday slowdowns)
+- Weather conditions (rain delays, harvest intensity)
 
-**Calculation:**
+**Prediction Models:**
+
+**Current State Prediction:**
+```
+Current Wait Time =
+  (Reported Trucks in Line × Avg Unload Time for Truck Types) +
+  Movement Time Through Line
+```
+
+**Future State Prediction (when you'll arrive):**
 ```
 Predicted Wait Time =
-  (Trucks Ahead × Avg Unload Time) +
-  (Trucks Arriving Before You × Avg Unload Time) +
-  Movement Time Through Line +
-  Buffer Time (uncertainty factor)
+  Historical Average for [Day/Time] +
+  Seasonal Adjustment (harvest factor) +
+  Weather Impact +
+  Confidence Interval
 ```
 
-**For Users With App:**
-- Use their actual average unload time
-- Factor in their current load weight
-- Account for their historical patterns
-
-**For Users Without App:**
-- Estimate based on truck type (if visible)
-- Use elevator average unload time
-- Add uncertainty buffer
+**Example:**
+```
+Prairie Co-op - Tuesday 6:15 AM - October (Harvest)
+Historical average: 2.3 trucks in line at this time
+Historical wait: 18 minutes average
+Today's prediction: 15-20 minutes (2-3 trucks)
+Confidence: High (65 data points from past 2 weeks)
+```
 
 **Continuous Improvement:**
-- Compare predicted vs actual wait times
-- Adjust algorithm weights based on accuracy
-- Learn elevator-specific patterns
-- Account for operator efficiency differences
+- Compare predicted vs actual wait times for all users
+- Learn elevator-specific efficiency patterns
+- Identify busy periods vs slow periods
+- Adjust for seasonal variations
+- Account for weather impact on arrival patterns
+- No tracking of specific users - only aggregate patterns
 
 ### Unload Position Detection
 

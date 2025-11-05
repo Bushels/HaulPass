@@ -217,18 +217,27 @@ CREATE TABLE elevators (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Real-time elevator queue predictions
-CREATE TABLE elevator_queue_state (
+-- Historical pattern data for queue predictions
+CREATE TABLE elevator_queue_patterns (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   elevator_id UUID REFERENCES elevators(id),
-  current_trucks_in_line INTEGER DEFAULT 0,
-  trucks_with_app INTEGER DEFAULT 0,
-  current_wait_time INTEGER DEFAULT 0, -- minutes
-  predicted_wait_5min INTEGER, -- predicted wait in 5 min
-  predicted_wait_10min INTEGER, -- predicted wait in 10 min
-  predicted_wait_15min INTEGER, -- predicted wait in 15 min
+  day_of_week INTEGER, -- 0=Sunday, 6=Saturday
+  hour_of_day INTEGER, -- 0-23
+  month INTEGER, -- 1-12 for seasonal patterns
+
+  -- Historical averages
+  avg_trucks_in_line DECIMAL(3,1),
+  avg_wait_time_minutes INTEGER,
+  avg_unload_time_minutes INTEGER,
+  sample_count INTEGER, -- how many data points
+
+  -- Statistical data
+  min_trucks INTEGER,
+  max_trucks INTEGER,
+  std_deviation DECIMAL(3,1),
+
   last_updated TIMESTAMP DEFAULT NOW(),
-  UNIQUE(elevator_id)
+  UNIQUE(elevator_id, day_of_week, hour_of_day, month)
 );
 
 -- Individual loads (replaces hauling_sessions)
@@ -307,23 +316,7 @@ CREATE TABLE location_tracks (
   recorded_at TIMESTAMP DEFAULT NOW()
 );
 
--- Active trips (for queue predictions)
-CREATE TABLE active_trips (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES profiles(id),
-  load_id UUID REFERENCES loads(id),
-  elevator_id UUID REFERENCES elevators(id),
-
-  current_status TEXT CHECK (current_status IN ('loaded', 'en_route', 'in_line', 'unloading')),
-  estimated_arrival_time TIMESTAMP,
-  estimated_load_weight_lbs INTEGER,
-  truck_type TEXT,
-
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Historical unload times (for ML predictions)
+-- Historical unload times (for pattern learning)
 CREATE TABLE unload_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES profiles(id),

@@ -172,13 +172,14 @@ Users should experience the core value within 3 minutes of first opening the app
 **Typical Day**: Mike starts hauling at 6 AM during harvest
 
 1. **6:00 AM - App Launch** (10 seconds)
-   - Opens app while truck is being loaded
-   - Home screen shows favorite elevators with current wait times:
-     - Prairie Co-op: **8 min wait**
-     - Valley Grain: **22 min wait**
-     - Metro Hub: **15 min wait**
+   - Opens app BEFORE loading to check which elevator to choose
+   - Home screen shows favorite elevators with predicted wait times:
+     - Prairie Co-op: **15-20 min wait** (2-3 trucks expected at 6:15 AM)
+     - Valley Grain: **25 min wait** (3-4 trucks typical Tuesday mornings)
+     - Metro Hub: **10 min wait** (1-2 trucks, but 5km farther)
 
 2. **Load Entry** (60 seconds)
+   - Mike decides on Prairie Co-op (closest with reasonable wait)
    - Taps "New Load" button
    - Selects "Corn" from grain type dropdown
    - Enters moisture: 15.2%
@@ -186,13 +187,14 @@ Users should experience the core value within 3 minutes of first opening the app
    - Selects destination: "Prairie Co-op"
    - App instantly shows:
      - **ETA: 6:18 AM** (12 min drive based on his historical times with this load weight)
-     - **Predicted wait when you arrive: 5 min** (app knows who's heading there)
-     - **Total time: ~25 min** (drive + wait + 8 min unload)
+     - **Predicted wait when you arrive: 15-20 min** (based on historical patterns)
+     - **Confidence: High** (65 data points from past 2 weeks at this time)
+     - **Total time: ~35 min** (drive + wait + 8 min unload)
 
 3. **Decision** (10 seconds)
-   - Mike can see that even though Prairie has 8 min wait now, by the time he arrives it will be only 5 min
-   - Valley Grain shows 22 min now, but 18 min when he'd arrive
-   - Prairie is still best choice
+   - Mike sees Prairie Co-op is best option
+   - Could wait and leave later if lineup typically clears by 7 AM
+   - Decides to go now
    - Taps "Start Trip"
 
 4. **Departure** (automatic)
@@ -225,9 +227,14 @@ Users should experience the core value within 3 minutes of first opening the app
 6. App shows truck type buttons: Mike selects "Triaxle with trailer" for both
 7. App now shows:
    - **Position: 3rd in line** (not counting truck currently unloading)
-   - **Estimated wait: 12 min** (adjusted based on actual lineup vs prediction)
-   - One truck has HaulPass (6 min unload predicted)
-   - One truck without app (8 min estimated)
+   - **Estimated wait: 16 min** (based on selected truck types and historical unload times)
+   - **Prediction was close!** Historical estimate was 15-20 min, actual lineup matches
+
+**How This Data Helps Everyone:**
+- Mike's arrival data (Tuesday 6:17 AM, 2 trucks in line) gets added to historical patterns
+- Future predictions for "Tuesday morning" improve with this data point
+- Completely anonymous - no one knows it was Mike
+- Helps all farmers make better decisions tomorrow
 
 **Waiting in Line** (automatic):
 - GPS detects forward movement
@@ -250,8 +257,8 @@ Users should experience the core value within 3 minutes of first opening the app
 
 **During Unload** (8 minutes):
 - Timer runs in background
-- Other users' predictions update: "Prairie Co-op wait time: 6 min (1 truck in line)"
 - Mike doesn't need to do anything
+- Unload duration data will help improve future predictions for this elevator
 
 **Post-Unload Data Entry** (60 seconds):
 1. **6:37 AM** - Unload completes
