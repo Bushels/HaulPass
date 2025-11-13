@@ -130,7 +130,7 @@ void main() async {
   
   try {
     // Initialize environment service for secure configuration loading
-    await EnvironmentService.instance.validateAll();
+    EnvironmentService.instance.validateAll();
     
     // Load Supabase configuration from environment variables
     final env = EnvironmentService.instance;
@@ -142,7 +142,7 @@ void main() async {
     // Validate that we have valid configuration (not placeholder values)
     if (supabaseUrl == 'https://your-project.supabase.co' || 
         supabaseAnonKey == 'your-anon-key-here') {
-      throw EnvironmentException(
+      throw const EnvironmentException(
         'Supabase configuration not properly set. Please update your environment variables '
         'with actual Supabase URL and anonymous key before running the app.'
       );

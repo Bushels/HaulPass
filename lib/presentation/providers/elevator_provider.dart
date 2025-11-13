@@ -4,7 +4,7 @@ import '../../data/models/elevator_models.dart';
 import '../../data/models/location_models.dart';
 import '../../core/services/supabase_config.dart';
 import 'auth_provider.dart';
-import 'location_provider.dart';
+import 'location_provider.dart' hide AppLocation, AppLocationHistory;
 import 'dart:math';
 
 part 'elevator_provider.g.dart';
@@ -15,7 +15,7 @@ class ElevatorNotifier extends _$ElevatorNotifier {
   @override
   ElevatorState build() {
     _initializeRealtimeSubscription();
-    return const ElevatorState();
+    return ElevatorState();
   }
 
   void _initializeRealtimeSubscription() {
@@ -25,7 +25,7 @@ class ElevatorNotifier extends _$ElevatorNotifier {
         .onPostgresChanges(
           event: PostgresChangeEvent.update,
           schema: 'public',
-          table: 'elevators',
+          table: 'elevators_import',
           callback: _handleElevatorUpdate,
         )
         .onPostgresChanges(
@@ -77,12 +77,8 @@ class ElevatorNotifier extends _$ElevatorNotifier {
       state = state.copyWith(isLoading: true, error: null);
 
       final response = await Supabase.instance.client
-          .from('elevators')
-          .select('''
-            *,
-            elevator_status(*)
-          ''')
-          .eq('is_active', true)
+          .from('elevators_import')
+          .select('*')
           .order('name');
 
       final elevators = response.map((json) => Elevator.fromJson(json)).toList();
@@ -128,7 +124,7 @@ class ElevatorNotifier extends _$ElevatorNotifier {
 
   /// Get nearby elevators based on current location
   Future<List<NearbyElevator>> getNearbyElevators({
-    Location? centerLocation,
+    AppLocation? centerLocation,
     double radiusKm = 50.0,
     List<String>? grainTypes,
   }) async {
@@ -141,12 +137,8 @@ class ElevatorNotifier extends _$ElevatorNotifier {
 
       // Query elevators using PostGIS for spatial proximity
       var query = Supabase.instance.client
-          .from('elevators')
-          .select('''
-            *,
-            elevator_status(*)
-          ''')
-          .eq('is_active', true);
+          .from('elevators_import')
+          .select('*');
 
       // Add grain type filter if specified
       if (grainTypes != null && grainTypes.isNotEmpty) {
@@ -188,7 +180,7 @@ class ElevatorNotifier extends _$ElevatorNotifier {
               dockageRate: status?.dockageRate,
               availableGrains: elevator.acceptedGrains,
               isActive: elevator.isActive,
-              lastUpdated: status?.lastUpdated ?? elevator.lastUpdated,
+              lastUpdated: status?.lastUpdated ?? elevator.lastUpdated ?? DateTime.now(),
             ));
           }
         } catch (e) {
@@ -213,11 +205,8 @@ class ElevatorNotifier extends _$ElevatorNotifier {
   Future<Elevator?> getElevatorById(String elevatorId) async {
     try {
       final response = await Supabase.instance.client
-          .from('elevators')
-          .select('''
-            *,
-            elevator_status(*)
-          ''')
+          .from('elevators_import')
+          .select('*')
           .eq('id', elevatorId)
           .single();
 
@@ -250,7 +239,7 @@ class ElevatorNotifier extends _$ElevatorNotifier {
   ) async {
     try {
       final response = await Supabase.instance.client
-          .rpc('get_elevator_predictions', {
+          .rpc('get_elevator_predictions', params: {
             'elevator_id': elevatorId,
           });
 
@@ -287,13 +276,9 @@ class ElevatorNotifier extends _$ElevatorNotifier {
   Future<List<Elevator>> searchElevators(String query) async {
     try {
       final response = await Supabase.instance.client
-          .from('elevators')
-          .select('''
-            *,
-            elevator_status(*)
-          ''')
+          .from('elevators_import')
+          .select('*')
           .or('name.ilike.%$query%,company.ilike.%$query%')
-          .eq('is_active', true)
           .order('name')
           .limit(20);
 
@@ -343,17 +328,104 @@ class ElevatorNotifier extends _$ElevatorNotifier {
     return degrees * (3.141592653589793 / 180);
   }
 
+  /// Get user's favorite elevators
+  Future<List<Elevator>> getFavoriteElevators() async {
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return [];
+
+      final response = await Supabase.instance.client
+          .from('favorite_elevators')
+          .select('elevator_id, elevators_import(*)')
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false);
+
+      final favorites = <Elevator>[];
+      for (final row in response) {
+        try {
+          if (row['elevators_import'] != null) {
+            favorites.add(Elevator.fromJson(row['elevators_import'] as Map<String, dynamic>));
+          }
+        } catch (e) {
+          print('Error parsing favorite elevator: $e');
+        }
+      }
+
+      return favorites;
+    } catch (e) {
+      print('Error getting favorite elevators: $e');
+      return [];
+    }
+  }
+
+  /// Add elevator to favorites
+  Future<bool> addToFavorites(String elevatorId) async {
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return false;
+
+      // Convert string ID to int for BIGINT column
+      final elevatorIdInt = int.parse(elevatorId);
+
+      await Supabase.instance.client.from('favorite_elevators').insert({
+        'user_id': user.id,
+        'elevator_id': elevatorIdInt,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      return true;
+    } catch (e) {
+      print('Error adding to favorites: $e');
+      state = state.copyWith(error: 'Failed to add to favorites: $e');
+      return false;
+    }
+  }
+
+  /// Remove elevator from favorites
+  Future<bool> removeFromFavorites(String elevatorId) async {
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return false;
+
+      await Supabase.instance.client
+          .from('favorite_elevators')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('elevator_id', elevatorId);
+
+      return true;
+    } catch (e) {
+      print('Error removing from favorites: $e');
+      state = state.copyWith(error: 'Failed to remove from favorites: $e');
+      return false;
+    }
+  }
+
+  /// Check if elevator is favorited
+  Future<bool> isFavorite(String elevatorId) async {
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return false;
+
+      final response = await Supabase.instance.client
+          .from('favorite_elevators')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('elevator_id', elevatorId)
+          .maybeSingle();
+
+      return response != null;
+    } catch (e) {
+      print('Error checking favorite status: $e');
+      return false;
+    }
+  }
+
   /// Clear error state
   void clearError() {
     state = state.copyWith(error: null);
   }
 
-  @override
-  void dispose() {
-    // Clean up realtime subscriptions
-    Supabase.instance.client.channel('elevator_updates').unsubscribe();
-    super.dispose();
-  }
 }
 
 /// Elevator state model
@@ -361,7 +433,7 @@ class ElevatorNotifier extends _$ElevatorNotifier {
 class ElevatorState extends _$ElevatorState {
   @override
   ElevatorState build() {
-    return const ElevatorState();
+    return ElevatorState();
   }
 
   ElevatorState copyWith({
@@ -372,7 +444,7 @@ class ElevatorState extends _$ElevatorState {
     bool isSearching = false,
     String? error,
     String? searchQuery,
-    Location? searchCenter,
+    AppLocation? searchCenter,
     double? searchRadius,
     List<String>? selectedGrainTypes,
   }) {
@@ -390,7 +462,7 @@ class ElevatorState extends _$ElevatorState {
     );
   }
 
-  const ElevatorState({
+  ElevatorState({
     this.elevators = const [],
     this.elevatorStatuses = const {},
     this.predictions = const {},
@@ -410,7 +482,7 @@ class ElevatorState extends _$ElevatorState {
   final bool isSearching;
   final String? error;
   final String? searchQuery;
-  final Location? searchCenter;
+  final AppLocation? searchCenter;
   final double? searchRadius;
   final List<String> selectedGrainTypes;
 }
@@ -424,7 +496,7 @@ List<Elevator> elevators(ElevatorsRef ref) {
 
 /// Provider for elevator status by ID
 @riverpod
-ElevatorStatus? elevatorStatus(String elevatorId) {
+ElevatorStatus? elevatorStatus(ElevatorStatusRef ref, String elevatorId) {
   final elevatorState = ref.watch(elevatorNotifierProvider);
   return elevatorState.elevatorStatuses[elevatorId];
 }

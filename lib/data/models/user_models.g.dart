@@ -116,7 +116,8 @@ Map<String, dynamic> _$UserSubscriptionToJson(UserSubscription instance) =>
       'nextBilling': instance.nextBilling?.toIso8601String(),
     };
 
-AuthState _$AuthStateFromJson(Map<String, dynamic> json) => AuthState(
+AuthenticationState _$AuthenticationStateFromJson(Map<String, dynamic> json) =>
+    AuthenticationState(
       isAuthenticated: json['isAuthenticated'] as bool? ?? false,
       user: json['user'] == null
           ? null
@@ -131,7 +132,9 @@ AuthState _$AuthStateFromJson(Map<String, dynamic> json) => AuthState(
           : AuthError.fromJson(json['error'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$AuthStateToJson(AuthState instance) => <String, dynamic>{
+Map<String, dynamic> _$AuthenticationStateToJson(
+        AuthenticationState instance) =>
+    <String, dynamic>{
       'isAuthenticated': instance.isAuthenticated,
       'user': instance.user,
       'accessToken': instance.accessToken,

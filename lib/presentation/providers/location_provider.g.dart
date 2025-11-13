@@ -6,13 +6,13 @@ part of 'location_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$currentLocationHash() => r'a0b1e15536e48093de2c06dafec80b7344db4b69';
+String _$currentLocationHash() => r'6595d3881c445aa6514c076cdf0dc5eba71ecccf';
 
 /// Provider for current location
 ///
 /// Copied from [currentLocation].
 @ProviderFor(currentLocation)
-final currentLocationProvider = AutoDisposeProvider<Location?>.internal(
+final currentLocationProvider = AutoDisposeProvider<AppLocation?>.internal(
   currentLocation,
   name: r'currentLocationProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -22,9 +22,7 @@ final currentLocationProvider = AutoDisposeProvider<Location?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CurrentLocationRef = AutoDisposeProviderRef<Location?>;
+typedef CurrentLocationRef = AutoDisposeProviderRef<AppLocation?>;
 String _$isLocationTrackingHash() =>
     r'cc96e568dcd3b56cd5f13a9a2c387d41266a78b5';
 
@@ -42,8 +40,6 @@ final isLocationTrackingProvider = AutoDisposeProvider<bool>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef IsLocationTrackingRef = AutoDisposeProviderRef<bool>;
 String _$locationPermissionHash() =>
     r'409640a6c7f3f5220e1a53423b7eec5680f97942';
@@ -63,18 +59,16 @@ final locationPermissionProvider =
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef LocationPermissionRef
     = AutoDisposeProviderRef<LocationPermissionStatus>;
-String _$locationHistoryHash() => r'8b3fdf4e7aaf924cea39da56e66aa78bdfcc3c1c';
+String _$locationHistoryHash() => r'157bbdeaa20aabc994fc75bf1bc765cb47f430d0';
 
 /// Provider for location history
 ///
 /// Copied from [locationHistory].
 @ProviderFor(locationHistory)
 final locationHistoryProvider =
-    AutoDisposeProvider<List<LocationHistory>>.internal(
+    AutoDisposeProvider<List<AppLocationHistory>>.internal(
   locationHistory,
   name: r'locationHistoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -84,10 +78,8 @@ final locationHistoryProvider =
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef LocationHistoryRef = AutoDisposeProviderRef<List<LocationHistory>>;
-String _$locationTrackerHash() => r'0cbd24cc7224d12087e4379b349a321398589c6b';
+typedef LocationHistoryRef = AutoDisposeProviderRef<List<AppLocationHistory>>;
+String _$locationTrackerHash() => r'a1637e12be080eb3807ed4ac0538ca7b6e51d44e';
 
 /// Location tracking state
 ///
@@ -105,7 +97,7 @@ final locationTrackerProvider =
 );
 
 typedef _$LocationTracker = AutoDisposeNotifier<LocationState>;
-String _$locationStateHash() => r'f6503da16aaddf128a448d3d7fa05067d445a1f7';
+String _$locationStateHash() => r'87b6781a03f152db832a62002ccf74c469984388';
 
 /// Location state model
 ///
@@ -124,4 +116,4 @@ final locationStateProvider =
 
 typedef _$LocationState = AutoDisposeNotifier<LocationState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

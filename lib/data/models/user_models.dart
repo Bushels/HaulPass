@@ -225,7 +225,7 @@ class UserSubscription {
 
 /// Authentication state and session info
 @JsonSerializable()
-class AuthState {
+class AuthenticationState {
   final bool isAuthenticated;
   final UserProfile? user;
   final String? accessToken;
@@ -233,7 +233,7 @@ class AuthState {
   final String? refreshToken;
   final AuthError? error;
 
-  const AuthState({
+  const AuthenticationState({
     this.isAuthenticated = false,
     this.user,
     this.accessToken,
@@ -242,8 +242,8 @@ class AuthState {
     this.error,
   });
 
-  factory AuthState.fromJson(Map<String, dynamic> json) => _$AuthStateFromJson(json);
-  Map<String, dynamic> toJson() => _$AuthStateToJson(this);
+  factory AuthenticationState.fromJson(Map<String, dynamic> json) => _$AuthenticationStateFromJson(json);
+  Map<String, dynamic> toJson() => _$AuthenticationStateToJson(this);
 
   /// Whether token is expired
   bool get isTokenExpired {
@@ -258,7 +258,7 @@ class AuthState {
     return remaining.inMinutes;
   }
 
-  AuthState copyWith({
+  AuthenticationState copyWith({
     bool? isAuthenticated,
     UserProfile? user,
     String? accessToken,
@@ -266,7 +266,7 @@ class AuthState {
     String? refreshToken,
     AuthError? error,
   }) {
-    return AuthState(
+    return AuthenticationState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       user: user ?? this.user,
       accessToken: accessToken ?? this.accessToken,
@@ -276,7 +276,7 @@ class AuthState {
     );
   }
 
-  AuthState clearError() {
+  AuthenticationState clearError() {
     return copyWith(error: null);
   }
 }

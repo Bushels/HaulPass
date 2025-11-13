@@ -21,28 +21,168 @@ final elevatorsProvider = AutoDisposeProvider<List<Elevator>>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef ElevatorsRef = AutoDisposeProviderRef<List<Elevator>>;
-String _$elevatorStatusHash() => r'6992f4d9d006089c1225485f98db910acbd01992';
+String _$elevatorStatusHash() => r'd9f23ce2cab5117b845d49e2c1b9d8046c43f478';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
 
 /// Provider for elevator status by ID
 ///
 /// Copied from [elevatorStatus].
 @ProviderFor(elevatorStatus)
-final elevatorStatusProvider = AutoDisposeProvider<ElevatorStatus?>.internal(
-  elevatorStatus,
-  name: r'elevatorStatusProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$elevatorStatusHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const elevatorStatusProvider = ElevatorStatusFamily();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef ElevatorStatusRef = AutoDisposeProviderRef<ElevatorStatus?>;
+/// Provider for elevator status by ID
+///
+/// Copied from [elevatorStatus].
+class ElevatorStatusFamily extends Family<ElevatorStatus?> {
+  /// Provider for elevator status by ID
+  ///
+  /// Copied from [elevatorStatus].
+  const ElevatorStatusFamily();
+
+  /// Provider for elevator status by ID
+  ///
+  /// Copied from [elevatorStatus].
+  ElevatorStatusProvider call(
+    String elevatorId,
+  ) {
+    return ElevatorStatusProvider(
+      elevatorId,
+    );
+  }
+
+  @override
+  ElevatorStatusProvider getProviderOverride(
+    covariant ElevatorStatusProvider provider,
+  ) {
+    return call(
+      provider.elevatorId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'elevatorStatusProvider';
+}
+
+/// Provider for elevator status by ID
+///
+/// Copied from [elevatorStatus].
+class ElevatorStatusProvider extends AutoDisposeProvider<ElevatorStatus?> {
+  /// Provider for elevator status by ID
+  ///
+  /// Copied from [elevatorStatus].
+  ElevatorStatusProvider(
+    String elevatorId,
+  ) : this._internal(
+          (ref) => elevatorStatus(
+            ref as ElevatorStatusRef,
+            elevatorId,
+          ),
+          from: elevatorStatusProvider,
+          name: r'elevatorStatusProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$elevatorStatusHash,
+          dependencies: ElevatorStatusFamily._dependencies,
+          allTransitiveDependencies:
+              ElevatorStatusFamily._allTransitiveDependencies,
+          elevatorId: elevatorId,
+        );
+
+  ElevatorStatusProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.elevatorId,
+  }) : super.internal();
+
+  final String elevatorId;
+
+  @override
+  Override overrideWith(
+    ElevatorStatus? Function(ElevatorStatusRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: ElevatorStatusProvider._internal(
+        (ref) => create(ref as ElevatorStatusRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        elevatorId: elevatorId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeProviderElement<ElevatorStatus?> createElement() {
+    return _ElevatorStatusProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ElevatorStatusProvider && other.elevatorId == elevatorId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, elevatorId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin ElevatorStatusRef on AutoDisposeProviderRef<ElevatorStatus?> {
+  /// The parameter `elevatorId` of this provider.
+  String get elevatorId;
+}
+
+class _ElevatorStatusProviderElement
+    extends AutoDisposeProviderElement<ElevatorStatus?> with ElevatorStatusRef {
+  _ElevatorStatusProviderElement(super.provider);
+
+  @override
+  String get elevatorId => (origin as ElevatorStatusProvider).elevatorId;
+}
+
 String _$isElevatorLoadingHash() => r'e4ba450e8b8fe1ce88dfa3fa20603c84443d396b';
 
 /// Provider for elevator loading state
@@ -59,8 +199,6 @@ final isElevatorLoadingProvider = AutoDisposeProvider<bool>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef IsElevatorLoadingRef = AutoDisposeProviderRef<bool>;
 String _$elevatorErrorHash() => r'ae6bc8ab0e89c27bdab0ea09ea1cb40b11bf3d5c';
 
@@ -78,10 +216,8 @@ final elevatorErrorProvider = AutoDisposeProvider<String?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef ElevatorErrorRef = AutoDisposeProviderRef<String?>;
-String _$elevatorNotifierHash() => r'ea9a05463c85cd78f581057c4fc56883b23a05f7';
+String _$elevatorNotifierHash() => r'1c0e34ce8de6cbcc8d40afef606e981ab0c7e87e';
 
 /// Elevator data provider using modern Riverpod patterns
 ///
@@ -99,7 +235,7 @@ final elevatorNotifierProvider =
 );
 
 typedef _$ElevatorNotifier = AutoDisposeNotifier<ElevatorState>;
-String _$elevatorStateHash() => r'e017edebee40e899e06e2ba2621fa51ae5d11bfa';
+String _$elevatorStateHash() => r'dc8f055696497ac2d82978523da39a34d2f600e3';
 
 /// Elevator state model
 ///
@@ -118,4 +254,4 @@ final elevatorStateProvider =
 
 typedef _$ElevatorState = AutoDisposeNotifier<ElevatorState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

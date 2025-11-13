@@ -42,8 +42,6 @@ class AppTheme {
     surface: _background,
     onSurface: _onBackground,
     surfaceContainerHighest: _surface,
-    onSurfaceVariant: _onSurface,
-    surfaceVariant: Color(0xFFF1F1F1),
     onSurfaceVariant: Color(0xFF424242), // Gray 700
     outline: Color(0xFFBDBDBD), // Gray 300
     outlineVariant: Color(0xFFE0E0E0), // Gray 200
@@ -76,8 +74,7 @@ class AppTheme {
     surface: Color(0xFF121212),
     onSurface: Color(0xFFE0E0E0), // Gray 300
     surfaceContainerHighest: Color(0xFF1E1E1E),
-    onSurfaceVariant: Color(0xFFBDBDBD), // Gray 300
-    surfaceVariant: Color(0xFF2C2C2C),
+    onSurfaceVariant: Color(0xFFBDBDBD),
     outline: Color(0xFF757575), // Gray 500
     outlineVariant: Color(0xFF424242), // Gray 600
     shadow: Color(0xFF000000),
@@ -182,7 +179,7 @@ class AppTheme {
   );
 
   // Card theme
-  static const CardTheme cardTheme = CardTheme(
+  static const CardThemeData cardTheme = CardThemeData(
     elevation: 2,
     margin: EdgeInsets.all(8),
     shape: RoundedRectangleBorder(

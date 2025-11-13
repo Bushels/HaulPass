@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../data/models/elevator_models.dart';
 import '../../../data/models/location_models.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/location_provider.dart';
+import '../../providers/location_provider.dart' hide AppLocation, AppLocationHistory;
 import '../../providers/elevator_provider.dart';
 
 /// Elevator search and listing screen
@@ -17,7 +17,7 @@ class ElevatorScreen extends ConsumerStatefulWidget {
 
 class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
   final _searchController = TextEditingController();
-  final _distanceFilterController = TextFilterController();
+  double _distanceFilter = 50.0; // Default 50km radius
   String _selectedGrainType = 'All Grains';
 
   @override
@@ -105,7 +105,7 @@ class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
     );
   }
 
-  Widget _buildLocationHeader(Location? location) {
+  Widget _buildLocationHeader(AppLocation? location) {
     if (location == null) {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -521,7 +521,7 @@ class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
             ListTile(
               leading: const Icon(Icons.phone),
               title: const Text('Call Elevator'),
-              subtitle: elevator.phoneNumber ?? 'No phone number',
+              subtitle: Text(elevator.phoneNumber ?? 'No phone number'),
               onTap: () {
                 Navigator.of(context).pop();
                 // TODO: Make phone call
@@ -530,7 +530,7 @@ class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
             ListTile(
               leading: const Icon(Icons.report_problem),
               title: const Text('Report Issue'),
-              subtitle: 'Report wait times or issues',
+              subtitle: const Text('Report wait times or issues'),
               onTap: () {
                 Navigator.of(context).pop();
                 // TODO: Show report dialog
@@ -547,7 +547,7 @@ class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Filter Elevators'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Add filter options here

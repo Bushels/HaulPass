@@ -10,17 +10,17 @@ Elevator _$ElevatorFromJson(Map<String, dynamic> json) => Elevator(
       id: json['id'] as String,
       name: json['name'] as String,
       company: json['company'] as String,
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      location: AppLocation.fromJson(json['location'] as Map<String, dynamic>),
       address: json['address'] as String?,
-      phoneNumber: json['phoneNumber'] as String?,
+      phoneNumber: json['phone_number'] as String?,
       email: json['email'] as String?,
-      acceptedGrains: (json['acceptedGrains'] as List<dynamic>?)
+      acceptedGrains: (json['grain_types'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      capacity: (json['capacity'] as num?)?.toDouble(),
-      dockageRate: (json['dockageRate'] as num?)?.toDouble(),
-      testWeight: (json['testWeight'] as num?)?.toDouble(),
+      capacity: (json['capacity_tonnes'] as num?)?.toDouble(),
+      dockageRate: (json['dockage_rate'] as num?)?.toDouble(),
+      testWeight: (json['test_weight'] as num?)?.toDouble(),
       hours: json['hours'] == null
           ? null
           : OperatingHours.fromJson(json['hours'] as Map<String, dynamic>),
@@ -29,8 +29,13 @@ Elevator _$ElevatorFromJson(Map<String, dynamic> json) => Elevator(
               .toList() ??
           const [],
       amenities: json['amenities'] as Map<String, dynamic>?,
-      isActive: json['isActive'] as bool? ?? true,
-      lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+      isActive: json['is_active'] as bool? ?? true,
+      lastUpdated: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
+      railway: json['railway'] as String?,
+      elevatorType: json['elevator_type'] as String?,
+      carSpots: json['car_spots'] as String?,
     );
 
 Map<String, dynamic> _$ElevatorToJson(Elevator instance) => <String, dynamic>{
@@ -39,17 +44,20 @@ Map<String, dynamic> _$ElevatorToJson(Elevator instance) => <String, dynamic>{
       'company': instance.company,
       'location': instance.location,
       'address': instance.address,
-      'phoneNumber': instance.phoneNumber,
+      'phone_number': instance.phoneNumber,
       'email': instance.email,
-      'acceptedGrains': instance.acceptedGrains,
-      'capacity': instance.capacity,
-      'dockageRate': instance.dockageRate,
-      'testWeight': instance.testWeight,
+      'grain_types': instance.acceptedGrains,
+      'capacity_tonnes': instance.capacity,
+      'dockage_rate': instance.dockageRate,
+      'test_weight': instance.testWeight,
       'hours': instance.hours,
       'contacts': instance.contacts,
       'amenities': instance.amenities,
-      'isActive': instance.isActive,
-      'lastUpdated': instance.lastUpdated.toIso8601String(),
+      'is_active': instance.isActive,
+      'created_at': instance.lastUpdated?.toIso8601String(),
+      'railway': instance.railway,
+      'elevator_type': instance.elevatorType,
+      'car_spots': instance.carSpots,
     };
 
 OperatingHours _$OperatingHoursFromJson(Map<String, dynamic> json) =>
@@ -149,7 +157,7 @@ TimerSession _$TimerSessionFromJson(Map<String, dynamic> json) => TimerSession(
       id: json['id'] as String,
       elevatorId: json['elevatorId'] as String,
       elevatorName: json['elevatorName'] as String,
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      location: AppLocation.fromJson(json['location'] as Map<String, dynamic>),
       grainType: json['grainType'] as String?,
       startTime: DateTime.parse(json['startTime'] as String),
       endTime: json['endTime'] == null

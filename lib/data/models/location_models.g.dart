@@ -6,7 +6,7 @@ part of 'location_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Location _$LocationFromJson(Map<String, dynamic> json) => Location(
+AppLocation _$AppLocationFromJson(Map<String, dynamic> json) => AppLocation(
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       altitude: (json['altitude'] as num?)?.toDouble(),
@@ -14,7 +14,8 @@ Location _$LocationFromJson(Map<String, dynamic> json) => Location(
       accuracy: (json['accuracy'] as num?)?.toDouble(),
     );
 
-Map<String, dynamic> _$LocationToJson(Location instance) => <String, dynamic>{
+Map<String, dynamic> _$AppLocationToJson(AppLocation instance) =>
+    <String, dynamic>{
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'altitude': instance.altitude,
@@ -27,7 +28,7 @@ NearbyElevator _$NearbyElevatorFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       company: json['company'] as String,
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      location: AppLocation.fromJson(json['location'] as Map<String, dynamic>),
       address: json['address'] as String?,
       currentLineupCount: (json['currentLineupCount'] as num?)?.toInt(),
       estimatedWaitTime: (json['estimatedWaitTime'] as num?)?.toInt(),
@@ -58,10 +59,10 @@ Map<String, dynamic> _$NearbyElevatorToJson(NearbyElevator instance) =>
       'lastUpdated': instance.lastUpdated.toIso8601String(),
     };
 
-LocationHistory _$LocationHistoryFromJson(Map<String, dynamic> json) =>
-    LocationHistory(
+AppLocationHistory _$AppLocationHistoryFromJson(Map<String, dynamic> json) =>
+    AppLocationHistory(
       id: json['id'] as String,
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      location: AppLocation.fromJson(json['location'] as Map<String, dynamic>),
       description: json['description'] as String?,
       activity: json['activity'] as String?,
       timestamp: DateTime.parse(json['timestamp'] as String),
@@ -71,7 +72,7 @@ LocationHistory _$LocationHistoryFromJson(Map<String, dynamic> json) =>
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
 
-Map<String, dynamic> _$LocationHistoryToJson(LocationHistory instance) =>
+Map<String, dynamic> _$AppLocationHistoryToJson(AppLocationHistory instance) =>
     <String, dynamic>{
       'id': instance.id,
       'location': instance.location,
@@ -85,11 +86,11 @@ Map<String, dynamic> _$LocationHistoryToJson(LocationHistory instance) =>
 RouteInfo _$RouteInfoFromJson(Map<String, dynamic> json) => RouteInfo(
       id: json['id'] as String,
       startLocation:
-          Location.fromJson(json['startLocation'] as Map<String, dynamic>),
+          AppLocation.fromJson(json['startLocation'] as Map<String, dynamic>),
       endLocation:
-          Location.fromJson(json['endLocation'] as Map<String, dynamic>),
+          AppLocation.fromJson(json['endLocation'] as Map<String, dynamic>),
       waypoints: (json['waypoints'] as List<dynamic>?)
-              ?.map((e) => Location.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => AppLocation.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       totalDistance: (json['totalDistance'] as num).toDouble(),
@@ -118,7 +119,7 @@ Map<String, dynamic> _$RouteInfoToJson(RouteInfo instance) => <String, dynamic>{
 RouteStep _$RouteStepFromJson(Map<String, dynamic> json) => RouteStep(
       stepNumber: (json['stepNumber'] as num).toInt(),
       instruction: json['instruction'] as String,
-      location: Location.fromJson(json['location'] as Map<String, dynamic>),
+      location: AppLocation.fromJson(json['location'] as Map<String, dynamic>),
       distance: (json['distance'] as num).toDouble(),
       duration: (json['duration'] as num).toInt(),
       roadName: json['roadName'] as String?,

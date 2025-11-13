@@ -1,6 +1,7 @@
 /// Supabase Configuration for HaulPass 2.0
 /// 
 /// Modern configuration with latest Supabase Flutter SDK patterns
+library;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// App configuration constants
@@ -119,7 +120,8 @@ class ConfigValidator {
     }
     
     if (SupabaseConfig.supabaseAnonKey != null) {
-      final keyPattern = RegExp(r'^[a-zA-Z0-9]{40,}$');
+      // JWT tokens contain dots, hyphens, and underscores (base64url encoding)
+      final keyPattern = RegExp(r'^[a-zA-Z0-9_\-\.]{40,}$');
       if (!keyPattern.hasMatch(SupabaseConfig.supabaseAnonKey!)) {
         errors.add('Invalid Supabase Anonymous Key format');
       }
@@ -152,7 +154,7 @@ Future<SupabaseClient> initializeSupabase({
   );
   
   // Configure global settings
-  Supabase.instance.client.auth.onAuthStateChange((data) {
+  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     // Handle auth state changes globally if needed
     print('Auth state changed: ${data.event}');
   });

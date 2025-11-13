@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/elevator_models.dart';
 import '../../../data/models/location_models.dart';
 import '../../providers/timer_provider.dart';
-import '../../providers/location_provider.dart';
+import '../../providers/location_provider.dart' hide AppLocation, AppLocationHistory;
 import '../../providers/auth_provider.dart';
 
 /// Timer screen for tracking unloading activities
@@ -324,7 +325,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     );
   }
 
-  Widget _buildTimerSetupView(TimerState timerState, Location? currentLocation) {
+  Widget _buildTimerSetupView(TimerState timerState, AppLocation? currentLocation) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -420,7 +421,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     );
   }
 
-  Widget _buildStartTimerForm(Location? currentLocation) {
+  Widget _buildStartTimerForm(AppLocation? currentLocation) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -446,7 +447,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_off,
                       color: Colors.orange,
                     ),
@@ -488,9 +489,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
               ),
               const SizedBox(height: 24),
               FilledButton.icon(
-                onPressed: currentLocation == null
-                    ? null
-                    : _startTimer,
+                onPressed: _startTimer,
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Start Timer'),
               ),

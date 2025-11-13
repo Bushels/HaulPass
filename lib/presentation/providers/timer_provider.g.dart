@@ -21,8 +21,6 @@ final activeTimerProvider = AutoDisposeProvider<TimerSession?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef ActiveTimerRef = AutoDisposeProviderRef<TimerSession?>;
 String _$completedTimersHash() => r'bcc497f55d153feda19344daa75edc9a0bc6c394';
 
@@ -41,8 +39,6 @@ final completedTimersProvider =
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef CompletedTimersRef = AutoDisposeProviderRef<List<TimerSession>>;
 String _$isTimerLoadingHash() => r'e05474d87aabdcb562f2252b3d0755c568e71da4';
 
@@ -60,8 +56,6 @@ final isTimerLoadingProvider = AutoDisposeProvider<bool>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef IsTimerLoadingRef = AutoDisposeProviderRef<bool>;
 String _$timerErrorHash() => r'8e421221af80c8af2a990a68219f6893ff7634da';
 
@@ -78,10 +72,8 @@ final timerErrorProvider = AutoDisposeProvider<String?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef TimerErrorRef = AutoDisposeProviderRef<String?>;
-String _$timerNotifierHash() => r'3ca6b007213d8c3e5571707952eae5d896614a66';
+String _$timerNotifierHash() => r'db434d636a6f3a9caff80c318ee536724aff7e95';
 
 /// Timer session provider using modern Riverpod patterns
 ///
@@ -99,7 +91,7 @@ final timerNotifierProvider =
 );
 
 typedef _$TimerNotifier = AutoDisposeNotifier<TimerState>;
-String _$timerStateHash() => r'a2ffdd88275cef3e08c1bb70718b96922e14a54e';
+String _$timerStateHash() => r'e6cb7206160e46cdbf2c002d6ea593272b99acfa';
 
 /// Timer state model
 ///
@@ -117,4 +109,4 @@ final timerStateProvider =
 
 typedef _$TimerState = AutoDisposeNotifier<TimerState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

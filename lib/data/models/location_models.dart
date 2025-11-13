@@ -4,14 +4,14 @@ part 'location_models.g.dart';
 
 /// Core location model for GPS coordinates
 @JsonSerializable()
-class Location {
+class AppLocation {
   final double latitude;
   final double longitude;
   final double? altitude;
   final DateTime timestamp;
   final double? accuracy;
 
-  const Location({
+  const AppLocation({
     required this.latitude,
     required this.longitude,
     this.altitude,
@@ -19,17 +19,17 @@ class Location {
     this.accuracy,
   });
 
-  factory Location.fromJson(Map<String, dynamic> json) => _$LocationFromJson(json);
-  Map<String, dynamic> toJson() => _$LocationToJson(this);
+  factory AppLocation.fromJson(Map<String, dynamic> json) => _$AppLocationFromJson(json);
+  Map<String, dynamic> toJson() => _$AppLocationToJson(this);
 
-  Location copyWith({
+  AppLocation copyWith({
     double? latitude,
     double? longitude,
     double? altitude,
     DateTime? timestamp,
     double? accuracy,
   }) {
-    return Location(
+    return AppLocation(
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       altitude: altitude ?? this.altitude,
@@ -40,13 +40,13 @@ class Location {
 
   @override
   String toString() {
-    return 'Location(latitude: $latitude, longitude: $longitude)';
+    return 'AppLocation(latitude: $latitude, longitude: $longitude)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Location &&
+    return other is AppLocation &&
         other.latitude == latitude &&
         other.longitude == longitude;
   }
@@ -61,7 +61,7 @@ class NearbyElevator {
   final String id;
   final String name;
   final String company;
-  final Location location;
+  final AppLocation location;
   final String? address;
   final int? currentLineupCount;
   final int? estimatedWaitTime;
@@ -127,16 +127,16 @@ class NearbyElevator {
 
 /// Location history for tracking user movements
 @JsonSerializable()
-class LocationHistory {
+class AppLocationHistory {
   final String id;
-  final Location location;
+  final AppLocation location;
   final String? description;
   final String? activity;
   final DateTime timestamp;
   final Duration? duration;
   final Map<String, dynamic>? metadata;
 
-  const LocationHistory({
+  const AppLocationHistory({
     required this.id,
     required this.location,
     this.description,
@@ -146,8 +146,8 @@ class LocationHistory {
     this.metadata,
   });
 
-  factory LocationHistory.fromJson(Map<String, dynamic> json) => _$LocationHistoryFromJson(json);
-  Map<String, dynamic> toJson() => _$LocationHistoryToJson(this);
+  factory AppLocationHistory.fromJson(Map<String, dynamic> json) => _$AppLocationHistoryFromJson(json);
+  Map<String, dynamic> toJson() => _$AppLocationHistoryToJson(this);
 
   /// Formatted timestamp
   String get formattedTimestamp {
@@ -157,7 +157,7 @@ class LocationHistory {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is LocationHistory && other.id == id;
+    return other is AppLocationHistory && other.id == id;
   }
 
   @override
@@ -168,9 +168,9 @@ class LocationHistory {
 @JsonSerializable()
 class RouteInfo {
   final String id;
-  final Location startLocation;
-  final Location endLocation;
-  final List<Location> waypoints;
+  final AppLocation startLocation;
+  final AppLocation endLocation;
+  final List<AppLocation> waypoints;
   final double totalDistance;
   final int estimatedDuration; // in minutes
   final String? routeName;
@@ -222,7 +222,7 @@ class RouteInfo {
 class RouteStep {
   final int stepNumber;
   final String instruction;
-  final Location location;
+  final AppLocation location;
   final double distance;
   final int duration; // in seconds
   final String? roadName;

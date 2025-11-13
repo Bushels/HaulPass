@@ -2,9 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/models/elevator_models.dart';
 import '../../data/models/location_models.dart';
-import '../../core/services/supabase_config.dart';
 import 'auth_provider.dart';
-import 'location_provider.dart';
 import 'dart:async';
 
 part 'timer_provider.g.dart';
@@ -17,7 +15,7 @@ class TimerNotifier extends _$TimerNotifier {
   @override
   TimerState build() {
     _initializeTimer();
-    return const TimerState();
+    return TimerState();
   }
 
   void _initializeTimer() {
@@ -50,7 +48,7 @@ class TimerNotifier extends _$TimerNotifier {
   Future<void> startTimer({
     required String elevatorId,
     required String elevatorName,
-    required Location location,
+    required AppLocation location,
     String? grainType,
     String? notes,
   }) async {
@@ -351,7 +349,7 @@ class TimerNotifier extends _$TimerNotifier {
       final user = ref.read(currentUserProvider);
       if (user == null) return null;
 
-      final response = await Supabase.instance.client.rpc('get_timer_stats', {
+      final response = await Supabase.instance.client.rpc('get_timer_stats', params: {
         'user_id': user.id,
         'start_date': startDate?.toIso8601String(),
         'end_date': endDate?.toIso8601String(),
@@ -401,11 +399,6 @@ class TimerNotifier extends _$TimerNotifier {
     state = state.copyWith(error: null);
   }
 
-  @override
-  void dispose() {
-    _periodicTimer?.cancel();
-    super.dispose();
-  }
 }
 
 /// Timer state model
@@ -413,7 +406,7 @@ class TimerNotifier extends _$TimerNotifier {
 class TimerState extends _$TimerState {
   @override
   TimerState build() {
-    return const TimerState();
+    return TimerState();
   }
 
   TimerState copyWith({
@@ -438,7 +431,7 @@ class TimerState extends _$TimerState {
     );
   }
 
-  const TimerState({
+  TimerState({
     this.activeSession,
     this.completedSessions = const [],
     this.recentEvents = const [],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../data/models/user_models.dart';
 import '../../providers/auth_provider.dart';
 
@@ -83,16 +84,20 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: 100,
+          height: 100,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Icon(
-            Icons.agriculture,
-            size: 40,
-            color: Theme.of(context).colorScheme.onPrimary,
+          child: SvgPicture.asset(
+            'assets/icons/grain_elevator_logo.svg',
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.onPrimary,
+              BlendMode.srcIn,
+            ),
+            fit: BoxFit.contain,
           ),
         ),
         const SizedBox(height: 16),
@@ -259,6 +264,50 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 labelText: 'Truck Number (Optional)',
                 prefixIcon: Icon(Icons.local_shipping_outlined),
               ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Checkbox(
+                  value: _acceptTerms,
+                  onChanged: (value) {
+                    setState(() {
+                      _acceptTerms = value ?? false;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _acceptTerms = !_acceptTerms;
+                      });
+                    },
+                    child: Text.rich(
+                      TextSpan(
+                        text: 'I agree to the ',
+                        children: [
+                          TextSpan(
+                            text: 'Terms and Conditions',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const TextSpan(text: ' and '),
+                          TextSpan(
+                            text: 'Privacy Policy',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
           if (!_isSignUp) ...[

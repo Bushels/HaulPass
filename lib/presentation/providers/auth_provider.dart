@@ -12,9 +12,9 @@ part 'auth_provider.g.dart';
 @riverpod
 class AuthNotifier extends _$AuthNotifier {
   @override
-  AuthState build() {
+  AuthenticationState build() {
     _initialize();
-    return const AuthState();
+    return const AuthenticationState();
   }
 
   void _initialize() {
@@ -24,13 +24,13 @@ class AuthNotifier extends _$AuthNotifier {
     });
   }
 
-  void _handleAuthStateChange(supabase.AuthStateChange<supabase.Session> data) {
+  void _handleAuthStateChange(AuthState data) {
     switch (data.event) {
       case AuthChangeEvent.signedIn:
         _handleSignedIn(data.session);
         break;
       case AuthChangeEvent.signedOut:
-        state = const AuthState();
+        state = const AuthenticationState();
         break;
       case AuthChangeEvent.tokenRefreshed:
         _handleTokenRefresh(data.session);
@@ -38,36 +38,36 @@ class AuthNotifier extends _$AuthNotifier {
       case AuthChangeEvent.userUpdated:
         _handleUserUpdated(data.session);
         break;
+      default:
+        break;
     }
   }
 
   void _handleSignedIn(supabase.Session? session) {
     if (session != null) {
       final user = session.user;
-      if (user != null) {
-        // Create user profile from Supabase user
-        final userProfile = UserProfile(
-          id: user.id,
-          email: user.email ?? '',
-          displayName: user.userMetadata?['display_name'] as String?,
-          firstName: user.userMetadata?['first_name'] as String?,
-          lastName: user.userMetadata?['last_name'] as String?,
-          settings: const UserSettings(),
-          createdAt: user.createdAt ?? DateTime.now(),
-          lastLogin: DateTime.now(),
-        );
+      // Create user profile from Supabase user
+      final userProfile = UserProfile(
+        id: user.id,
+        email: user.email ?? '',
+        displayName: user.userMetadata?['display_name'] as String?,
+        firstName: user.userMetadata?['first_name'] as String?,
+        lastName: user.userMetadata?['last_name'] as String?,
+        settings: const UserSettings(),
+        createdAt: DateTime.now(), // Supabase user.createdAt type varies, use current time for now
+        lastLogin: DateTime.now(),
+      );
 
-        state = AuthState(
-          isAuthenticated: true,
-          user: userProfile,
-          accessToken: session.accessToken,
-          tokenExpiry: session.expiresAt != null
-              ? DateTime.fromMillisecondsSinceEpoch(session.expiresAt! * 1000)
-              : null,
-          refreshToken: session.refreshToken,
-        );
-      }
-    }
+      state = AuthenticationState(
+        isAuthenticated: true,
+        user: userProfile,
+        accessToken: session.accessToken,
+        tokenExpiry: session.expiresAt != null
+            ? DateTime.fromMillisecondsSinceEpoch(session.expiresAt! * 1000)
+            : null,
+        refreshToken: session.refreshToken,
+      );
+        }
   }
 
   void _handleTokenRefresh(supabase.Session? session) {
@@ -181,7 +181,7 @@ class AuthNotifier extends _$AuthNotifier {
     } catch (e) {
       print('Sign out error: $e');
       // Even if sign out fails locally, clear the state
-      state = const AuthState();
+      state = const AuthenticationState();
     }
   }
 
@@ -247,7 +247,7 @@ class AuthNotifier extends _$AuthNotifier {
   bool needsTokenRefresh() {
     if (state.tokenExpiry == null) return true;
     
-    final buffer = SupabaseConfig.tokenRefreshBuffer;
+    const buffer = SupabaseConfig.tokenRefreshBuffer;
     return DateTime.now().isAfter(
       state.tokenExpiry!.subtract(buffer),
     );
@@ -265,7 +265,7 @@ class AuthNotifier extends _$AuthNotifier {
     } catch (e) {
       print('Token refresh failed: $e');
       // Sign out if refresh fails
-      state = const AuthState();
+      state = const AuthenticationState();
     }
   }
 }

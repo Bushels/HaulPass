@@ -9,19 +9,31 @@ class Elevator {
   final String id;
   final String name;
   final String company;
-  final Location location;
+  final AppLocation location;
   final String? address;
+  @JsonKey(name: 'phone_number')
   final String? phoneNumber;
   final String? email;
+  @JsonKey(name: 'grain_types')
   final List<String> acceptedGrains;
-  final double? capacity; // in bushels
+  @JsonKey(name: 'capacity_tonnes')
+  final double? capacity; // in tonnes
+  @JsonKey(name: 'dockage_rate')
   final double? dockageRate;
+  @JsonKey(name: 'test_weight')
   final double? testWeight;
   final OperatingHours? hours;
   final List<ContactInfo> contacts;
   final Map<String, dynamic>? amenities;
+  @JsonKey(name: 'is_active')
   final bool isActive;
-  final DateTime lastUpdated;
+  @JsonKey(name: 'created_at')
+  final DateTime? lastUpdated;
+  final String? railway;
+  @JsonKey(name: 'elevator_type')
+  final String? elevatorType;
+  @JsonKey(name: 'car_spots')
+  final String? carSpots;
 
   const Elevator({
     required this.id,
@@ -39,10 +51,49 @@ class Elevator {
     this.contacts = const [],
     this.amenities,
     this.isActive = true,
-    required this.lastUpdated,
+    this.lastUpdated,
+    this.railway,
+    this.elevatorType,
+    this.carSpots,
   });
 
-  factory Elevator.fromJson(Map<String, dynamic> json) => _$ElevatorFromJson(json);
+  factory Elevator.fromJson(Map<String, dynamic> json) {
+    // Convert BIGINT ID to String if needed
+    if (json['id'] is int) {
+      json['id'] = json['id'].toString();
+    }
+
+    // Handle PostGIS geography/geometry location format
+    if (json['location'] is String) {
+      // Parse PostGIS point format: "POINT(longitude latitude)"
+      final locationStr = json['location'] as String;
+      final match = RegExp(r'POINT\(([-\d.]+)\s+([-\d.]+)\)').firstMatch(locationStr);
+      if (match != null) {
+        json['location'] = {
+          'longitude': double.parse(match.group(1)!),
+          'latitude': double.parse(match.group(2)!),
+        };
+      }
+    } else if (json['location'] is Map) {
+      // Handle GeoJSON format from Supabase
+      final loc = json['location'] as Map<String, dynamic>;
+      if (loc['type'] == 'Point' && loc['coordinates'] is List) {
+        final coords = loc['coordinates'] as List;
+        json['location'] = {
+          'longitude': coords[0],
+          'latitude': coords[1],
+        };
+      }
+    }
+
+    // Ensure lastUpdated has a value
+    if (json['created_at'] == null && json['lastUpdated'] == null) {
+      json['created_at'] = DateTime.now().toIso8601String();
+    }
+
+    return _$ElevatorFromJson(json);
+  }
+
   Map<String, dynamic> toJson() => _$ElevatorToJson(this);
 
   /// Formatted address
@@ -258,7 +309,7 @@ class TimerSession {
   final String id;
   final String elevatorId;
   final String elevatorName;
-  final Location location;
+  final AppLocation location;
   final String? grainType;
   final DateTime startTime;
   final DateTime? endTime;
@@ -346,7 +397,7 @@ class TimerSession {
     String? id,
     String? elevatorId,
     String? elevatorName,
-    Location? location,
+    AppLocation? location,
     String? grainType,
     DateTime? startTime,
     DateTime? endTime,

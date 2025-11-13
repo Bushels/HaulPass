@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/models/location_models.dart';
+import '../../../data/models/elevator_models.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/location_provider.dart';
+import '../../providers/location_provider.dart' hide AppLocation, AppLocationHistory;
 import '../../providers/elevator_provider.dart';
 import '../../providers/timer_provider.dart';
 
@@ -148,7 +150,7 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildLocationCard(
     WidgetRef ref,
     BuildContext context,
-    Location? location,
+    AppLocation? location,
   ) {
     return Card(
       child: Padding(
@@ -391,7 +393,7 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildNearbyElevators(
     WidgetRef ref,
     BuildContext context,
-    AsyncValue<ElevatorState> nearbyElevatorsAsync,
+    ElevatorState elevatorState,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,71 +414,70 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 16),
-        nearbyElevatorsAsync.when(
-          data: (state) {
-            if (state.elevators.isEmpty) {
-              return Card(
+        elevatorState.isLoading
+            ? const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.search_off,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No elevators found',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Enable location services to find nearby elevators',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                  padding: EdgeInsets.all(32),
+                  child: CircularProgressIndicator(),
                 ),
-              );
-            }
-
-            return Column(
-              children: state.elevators.take(3).map((elevator) {
-                return _buildElevatorCard(context, elevator);
-              }).toList(),
-            );
-          },
-          loading: () => const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32),
-              child: CircularProgressIndicator(),
-            ),
-          ),
-          error: (error, stack) => Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Failed to load elevators',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
+              )
+            : elevatorState.error != null
+                ? Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Failed to load elevators',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+                  )
+                : elevatorState.elevators.isEmpty
+                    ? Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 48,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No elevators found',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Enable location services to find nearby elevators',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: elevatorState.elevators.take(3).map((elevator) {
+                          return _buildElevatorCard(context, elevator);
+                        }).toList(),
+                      ),
       ],
     );
   }

@@ -42,22 +42,17 @@ class EnvironmentService {
   /// Load environment variable from web window object
   String? _loadFromWindow(String key) {
     try {
-      if (html.window != null) {
-        final element = html.document.querySelector('meta[name="env-$key"]');
-        if (element != null) {
-          final content = element.getAttribute('content');
-          if (content != null && content.isNotEmpty) {
-            return content;
-          }
-        }
-        
-        // Alternative: check window object directly
-        final windowValue = html.window[key];
-        if (windowValue is String && windowValue.isNotEmpty) {
-          return windowValue;
+      final element = html.document.querySelector('meta[name="env-$key"]');
+      if (element != null) {
+        final content = element.getAttribute('content');
+        if (content != null && content.isNotEmpty) {
+          return content;
         }
       }
-    } catch (e) {
+      
+      // Alternative: window object access not supported in this context
+      // Return null if meta tag lookup failed
+        } catch (e) {
       debugPrint('Error loading env var $key from window: $e');
     }
     return null;

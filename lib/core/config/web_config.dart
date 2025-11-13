@@ -138,13 +138,13 @@ class WebConfig {
   // Service Worker Registration
   static Future<void> registerServiceWorker() async {
     if (!kIsWeb || !featureFlags.enableServiceWorker) return;
-    
+
     try {
-      if ('serviceWorker' in html.window.navigator) {
+      if (html.window.navigator.serviceWorker != null) {
         final registration = await html.window.navigator.serviceWorker?.register(
           'sw.js',
         );
-        
+
         if (registration != null) {
           debugPrint('Service Worker registered successfully');
         }
@@ -248,15 +248,13 @@ class WebConfig {
     
     try {
       // Track Core Web Vitals
-      if (html.window.performance != null) {
-        final navigation = html.window.performance.getEntriesByType('navigation')[0] as html.PerformanceNavigationTiming?;
-        
-        if (navigation != null) {
-          debugPrint('Page Load Time: ${navigation.loadEventEnd - navigation.fetchStart}ms');
-          debugPrint('DOM Content Loaded: ${navigation.domContentLoadedEventEnd - navigation.fetchStart}ms');
-        }
+      final navigation = html.window.performance.getEntriesByType('navigation')[0] as html.PerformanceNavigationTiming?;
+      
+      if (navigation != null) {
+        debugPrint('Page Load Time: ${navigation.loadEventEnd - navigation.fetchStart}ms');
+        debugPrint('DOM Content Loaded: ${navigation.domContentLoadedEventEnd - navigation.fetchStart}ms');
       }
-    } catch (e) {
+        } catch (e) {
       debugPrint('Performance tracking failed: $e');
     }
   }

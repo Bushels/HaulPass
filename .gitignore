@@ -10,6 +10,14 @@
 .svn/
 migrate_working_dir/
 
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -20,6 +28,10 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
+
+# MCP Configuration (contains project references)
+.mcp.json
+.vscode/mcp.json
 
 # Flutter/Dart/Pub related
 **/doc/api/

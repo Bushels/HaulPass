@@ -1,17 +1,17 @@
+import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import '../../data/models/location_models.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+import '../../data/models/location_models.dart' as models;
 import '../../core/services/supabase_config.dart';
 import 'auth_provider.dart';
 
-// Import geocoding types with alias to avoid conflicts
-import 'package:geocoding/geocoding.dart' as geo;
-
-// Import specific types to avoid conflicts
-typedef GeoPlacemark = geo.Placemark;
-
 part 'location_provider.g.dart';
+
+// Type aliases to avoid conflicts
+typedef GeoPlacemark = geo.Placemark;
+typedef AppLocation = models.AppLocation;
+typedef AppLocationHistory = models.AppLocationHistory;
 
 /// Location permission status
 enum LocationPermissionStatus {
@@ -35,7 +35,7 @@ class LocationTracker extends _$LocationTracker {
   @override
   LocationState build() {
     _initializeLocationService();
-    return const LocationState();
+    return LocationState();
   }
 
   void _initializeLocationService() {
@@ -91,7 +91,7 @@ class LocationTracker extends _$LocationTracker {
   }
 
   /// Get current location
-  Future<Location?> getCurrentLocation() async {
+  Future<AppLocation?> getCurrentLocation() async {
     try {
       state = state.copyWith(isLoading: true, error: null);
 
@@ -114,7 +114,7 @@ class LocationTracker extends _$LocationTracker {
         position.longitude,
       );
 
-      final location = Location(
+      final location = AppLocation(
         latitude: position.latitude,
         longitude: position.longitude,
         altitude: position.altitude,
@@ -163,7 +163,7 @@ class LocationTracker extends _$LocationTracker {
       // Listen to position updates
       final subscription = positionStream.listen(
         (Position position) {
-          final newLocation = Location(
+          final newLocation = AppLocation(
             latitude: position.latitude,
             longitude: position.longitude,
             altitude: position.altitude,
@@ -213,12 +213,12 @@ class LocationTracker extends _$LocationTracker {
   }
 
   /// Store location in history
-  void _storeLocationInHistory(Location location) {
+  void _storeLocationInHistory(AppLocation location) {
     // Get user ID from auth provider
     final user = ref.read(currentUserProvider);
     if (user == null || !_shouldStoreLocation()) return;
 
-    final historyEntry = LocationHistory(
+    final historyEntry = AppLocationHistory(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       location: location,
       timestamp: DateTime.now(),
@@ -242,7 +242,7 @@ class LocationTracker extends _$LocationTracker {
 
   /// Save location to Supabase database
   Future<void> _saveLocationToDatabase(
-    LocationHistory entry,
+    AppLocationHistory entry,
     String userId,
   ) async {
     try {
@@ -270,7 +270,7 @@ class LocationTracker extends _$LocationTracker {
   }
 
   /// Calculate distance between two locations
-  double calculateDistance(Location location1, Location location2) {
+  double calculateDistance(AppLocation location1, AppLocation location2) {
     return Geolocator.distanceBetween(
       location1.latitude,
       location1.longitude,
@@ -280,9 +280,9 @@ class LocationTracker extends _$LocationTracker {
   }
 
   /// Get locations within radius
-  List<Location> getLocationsWithinRadius(
-    List<Location> locations,
-    Location center,
+  List<AppLocation> getLocationsWithinRadius(
+    List<AppLocation> locations,
+    AppLocation center,
     double radiusMeters,
   ) {
     return locations.where((location) {
@@ -334,11 +334,6 @@ class LocationTracker extends _$LocationTracker {
     state = state.copyWith(error: null);
   }
 
-  @override
-  void dispose() {
-    state.subscription?.cancel();
-    super.dispose();
-  }
 }
 
 /// Location state model
@@ -346,13 +341,13 @@ class LocationTracker extends _$LocationTracker {
 class LocationState extends _$LocationState {
   @override
   LocationState build() {
-    return const LocationState();
+    return LocationState();
   }
 
   LocationState copyWith({
-    Location? currentLocation,
-    Placemark? address,
-    List<LocationHistory> locationHistory = const [],
+    AppLocation? currentLocation,
+    geo.Placemark? address,
+    List<AppLocationHistory> locationHistory = const [],
     bool? isLoading,
     bool? isTracking,
     StreamSubscription<Position>? subscription,
@@ -373,7 +368,7 @@ class LocationState extends _$LocationState {
     );
   }
 
-  const LocationState({
+  LocationState({
     this.currentLocation,
     this.address,
     this.locationHistory = const [],
@@ -385,9 +380,9 @@ class LocationState extends _$LocationState {
     this.lastUpdate,
   });
 
-  final Location? currentLocation;
-  final Placemark? address;
-  final List<LocationHistory> locationHistory;
+  final AppLocation? currentLocation;
+  final geo.Placemark? address;
+  final List<AppLocationHistory> locationHistory;
   final bool isLoading;
   final bool isTracking;
   final StreamSubscription<Position>? subscription;
@@ -398,7 +393,7 @@ class LocationState extends _$LocationState {
 
 /// Provider for current location
 @riverpod
-Location? currentLocation(CurrentLocationRef ref) {
+AppLocation? currentLocation(CurrentLocationRef ref) {
   final locationState = ref.watch(locationTrackerProvider);
   return locationState.currentLocation;
 }
@@ -419,7 +414,7 @@ LocationPermissionStatus locationPermission(LocationPermissionRef ref) {
 
 /// Provider for location history
 @riverpod
-List<LocationHistory> locationHistory(LocationHistoryRef ref) {
+List<AppLocationHistory> locationHistory(LocationHistoryRef ref) {
   final locationState = ref.watch(locationTrackerProvider);
   return locationState.locationHistory;
 }

@@ -21,8 +21,6 @@ final currentUserProvider = AutoDisposeProvider<UserProfile?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef CurrentUserRef = AutoDisposeProviderRef<UserProfile?>;
 String _$isAuthenticatedHash() => r'c5660636297ef81a2c90d4306903bd27ee97aedb';
 
@@ -40,8 +38,6 @@ final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef IsAuthenticatedRef = AutoDisposeProviderRef<bool>;
 String _$authErrorHash() => r'833430d356f0a9fa1f79274078311359b71004e3';
 
@@ -58,8 +54,6 @@ final authErrorProvider = AutoDisposeProvider<AuthError?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef AuthErrorRef = AutoDisposeProviderRef<AuthError?>;
 String _$accessTokenHash() => r'c7057402e39cb675dc9df7db7523d9e2b9dfc2e3';
 
@@ -76,8 +70,6 @@ final accessTokenProvider = AutoDisposeProvider<String?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef AccessTokenRef = AutoDisposeProviderRef<String?>;
 String _$userSettingsHash() => r'6658fd827528028f2d0b5646eaa4ce64f631cc9e';
 
@@ -94,17 +86,15 @@ final userSettingsProvider = AutoDisposeProvider<UserSettings?>.internal(
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef UserSettingsRef = AutoDisposeProviderRef<UserSettings?>;
-String _$authNotifierHash() => r'0289951b1c1f85806898d7c862c6fc147b3a5e31';
+String _$authNotifierHash() => r'093622dd2334a21b858b9357bbbb82032c6a1ca5';
 
 /// Authentication provider using modern Riverpod patterns
 ///
 /// Copied from [AuthNotifier].
 @ProviderFor(AuthNotifier)
 final authNotifierProvider =
-    AutoDisposeNotifierProvider<AuthNotifier, AuthState>.internal(
+    AutoDisposeNotifierProvider<AuthNotifier, AuthenticationState>.internal(
   AuthNotifier.new,
   name: r'authNotifierProvider',
   debugGetCreateSourceHash:
@@ -113,6 +103,6 @@ final authNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$AuthNotifier = AutoDisposeNotifier<AuthState>;
+typedef _$AuthNotifier = AutoDisposeNotifier<AuthenticationState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
