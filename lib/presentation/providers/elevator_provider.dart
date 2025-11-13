@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/models/elevator_models.dart';
 import '../../data/models/location_models.dart';
 import '../../core/services/supabase_config.dart';
+import '../../data/mock_data.dart';
 import 'auth_provider.dart';
 import 'location_provider.dart' hide AppLocation, AppLocationHistory;
 import 'dart:math';
@@ -76,36 +77,55 @@ class ElevatorNotifier extends _$ElevatorNotifier {
     try {
       state = state.copyWith(isLoading: true, error: null);
 
-      final response = await Supabase.instance.client
-          .from('elevators_import')
-          .select('*')
-          .order('name');
+      List<Elevator> elevators;
+      Map<String, ElevatorStatus> statuses;
 
-      final elevators = response.map((json) => Elevator.fromJson(json)).toList();
-      final statuses = <String, ElevatorStatus>{};
+      try {
+        // Try to load from Supabase
+        final response = await Supabase.instance.client
+            .from('elevators_import')
+            .select('*')
+            .order('name')
+            .limit(100);
 
-      for (final elevator in elevators) {
-        try {
-          final statusResponse = await Supabase.instance.client
-              .from('elevator_status')
-              .select()
-              .eq('elevator_id', elevator.id)
-              .single();
-          
-          statuses[elevator.id] = ElevatorStatus.fromJson(statusResponse);
-        } catch (e) {
-          // No status found for this elevator, create default
-          statuses[elevator.id] = ElevatorStatus(
-            elevatorId: elevator.id,
-            currentLineup: 0,
-            estimatedWaitTime: 0,
-            averageUnloadTime: 15,
-            dailyCapacity: 0,
-            dailyProcessed: 0,
-            status: 'open',
-            lastUpdated: DateTime.now(),
-          );
+        if (response.isEmpty) {
+          // No data in Supabase, use mock data
+          print('No data from Supabase, using mock data');
+          elevators = MockData.mockElevators;
+          statuses = MockData.mockElevatorStatuses;
+        } else {
+          elevators = response.map((json) => Elevator.fromJson(json)).toList();
+          statuses = <String, ElevatorStatus>{};
+
+          for (final elevator in elevators) {
+            try {
+              final statusResponse = await Supabase.instance.client
+                  .from('elevator_status')
+                  .select()
+                  .eq('elevator_id', elevator.id)
+                  .single();
+
+              statuses[elevator.id] = ElevatorStatus.fromJson(statusResponse);
+            } catch (e) {
+              // No status found for this elevator, create default
+              statuses[elevator.id] = ElevatorStatus(
+                elevatorId: elevator.id,
+                currentLineup: 0,
+                estimatedWaitTime: 0,
+                averageUnloadTime: 15,
+                dailyCapacity: 0,
+                dailyProcessed: 0,
+                status: 'open',
+                lastUpdated: DateTime.now(),
+              );
+            }
+          }
         }
+      } catch (supabaseError) {
+        // Supabase error, use mock data
+        print('Supabase error: $supabaseError, using mock data');
+        elevators = MockData.mockElevators;
+        statuses = MockData.mockElevatorStatuses;
       }
 
       state = state.copyWith(
@@ -114,11 +134,13 @@ class ElevatorNotifier extends _$ElevatorNotifier {
         isLoading: false,
       );
     } catch (e, stackTrace) {
+      // Final fallback to mock data
+      print('Load elevators error: $e\n$stackTrace, using mock data');
       state = state.copyWith(
-        error: 'Failed to load elevators: $e',
+        elevators: MockData.mockElevators,
+        elevatorStatuses: MockData.mockElevatorStatuses,
         isLoading: false,
       );
-      print('Load elevators error: $e\n$stackTrace');
     }
   }
 

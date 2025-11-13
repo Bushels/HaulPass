@@ -217,7 +217,7 @@ final elevatorErrorProvider = AutoDisposeProvider<String?>.internal(
 );
 
 typedef ElevatorErrorRef = AutoDisposeProviderRef<String?>;
-String _$elevatorNotifierHash() => r'1c0e34ce8de6cbcc8d40afef606e981ab0c7e87e';
+String _$elevatorNotifierHash() => r'eed8664b1a3b0ae4cbbb0c3f6a70dcc1aacb90ff';
 
 /// Elevator data provider using modern Riverpod patterns
 ///
