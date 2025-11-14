@@ -15,18 +15,30 @@
 
 ## 🎯 Overview
 
-HaulPass is a comprehensive Flutter application designed specifically for the grain hauling industry. It provides professional logistics management, real-time elevator tracking, GPS-enabled load monitoring, and timer-based hauling sessions.
+HaulPass is a farmer-first grain hauling efficiency application that reduces wait times at grain elevators through real-time queue intelligence and comprehensive haul tracking. By collecting GPS data, timing information, and farmer observations, HaulPass enables data-driven decisions about when to haul grain, ultimately saving farmers hours every week.
 
-### ✨ Key Features
+**The Problem**: Farmers waste 2-4 hours daily waiting in grain elevator lines without knowing queue lengths or wait times ahead of time.
 
-- **📱 Cross-Platform**: Web, iOS, and Android support
-- **🌍 Real-Time Tracking**: GPS-based location monitoring
-- **🏢 Elevator Integration**: Live elevator status and wait times
-- **⏱️ Load Timer**: Precise hauling session timing
-- **📊 Analytics**: Performance insights and reporting
-- **🔐 Secure Authentication**: Supabase-powered user management
-- **💾 Offline Support**: PWA capabilities for unreliable connectivity
-- **🎨 Modern UI**: Clean, professional Material 3 design
+**The Solution**: HaulPass collects farmer-side data (locations, routes, queue positions, timing) to provide real-time queue intelligence and predictive wait times. Unlike traditional elevator scheduling software, we start from the farmer's perspective to build trust and demonstrate value before enabling elevator-side features.
+
+### ✨ Core Features
+
+**MVP (Version 1.0)**:
+- **🚛 Complete Haul Tracking**: Track entire grain hauling workflow from loading to unloading
+- **📍 Single Favorite Elevator**: Focus on one elevator to prevent data errors
+- **⏱️ Phase-Based Timers**: Separate timers for loading, driving, queuing, unloading, and return
+- **👥 Queue Intelligence**: Real-time queue positions cross-validated between farmers
+- **⏳ Estimated Wait Times**: Calculated from user averages and current queue
+- **📊 Daily Summaries**: Comprehensive stats at end of each hauling day
+- **📈 Personal Analytics**: Track efficiency metrics over time
+
+**Future Features**:
+- Multiple favorite elevators (2-3)
+- Premium grain breakdown (weight, price, quality by grain type)
+- Predictive recommendations (best times to haul)
+- Historical pattern analysis
+- Elevator scheduling integration
+- Farm management tools (bin, field, combine tracking)
 
 ## 🚀 Quick Start
 
@@ -193,10 +205,28 @@ flutter test -d chrome
 
 ## 📋 Development Roadmap
 
-- [ ] **Q4 2024**: Advanced analytics dashboard
-- [ ] **Q1 2025**: Real-time collaboration features
-- [ ] **Q2 2025**: Multi-tenant support
-- [ ] **Q3 2025**: Advanced reporting and export
+### Phase 1: Foundation & Core Workflow (Weeks 1-4)
+- [ ] Extended user onboarding (farm, binyard, truck details)
+- [ ] Complete haul workflow implementation (7 phases)
+- [ ] Haul session state machine
+- [ ] Timer display with color coding
+- [ ] Single favorite elevator selection
+
+### Phase 2: Queue Intelligence (Weeks 5-8)
+- [ ] Queue entry and position tracking
+- [ ] Cross-validation between users
+- [ ] Wait time calculation algorithm
+- [ ] Real-time queue updates
+- [ ] Notification system
+
+### Phase 3: Analytics & Polish (Weeks 9-12)
+- [ ] Personal analytics dashboard
+- [ ] Daily summary generation
+- [ ] Historical pattern analysis
+- [ ] Performance optimization
+- [ ] Production launch preparation
+
+**See [GAP_ANALYSIS_AND_ROADMAP.md](docs/GAP_ANALYSIS_AND_ROADMAP.md) for detailed implementation plan**
 
 ## 🐛 Bug Reports
 
@@ -210,10 +240,11 @@ Use [GitHub Issues](https://github.com/Bushels/HaulPass/issues) with:
 ## 📚 Documentation
 
 - [📖 Setup Guide](SETUP.md) - Detailed setup instructions
+- [🎯 Vision & Specification](docs/HAULPASS_VISION_AND_SPECIFICATION.md) - Complete product vision and technical spec
+- [📊 Gap Analysis & Roadmap](docs/GAP_ANALYSIS_AND_ROADMAP.md) - Implementation roadmap and priorities
 - [🏗️ Architecture](docs/TECHNICAL_ARCHITECTURE.md) - System design
 - [🔄 Data Flow](docs/DATA_FLOW_PRIVACY.md) - Data handling and privacy
 - [👥 User Journey](docs/CUSTOMER_JOURNEY.md) - User experience flow
-- [🚀 Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Web deployment instructions
 
 ## 📄 License
 
