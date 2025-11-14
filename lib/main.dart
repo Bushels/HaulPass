@@ -127,37 +127,33 @@ class HaulPassApp extends ConsumerWidget {
 /// Main entry point with secure environment configuration
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
-    // Initialize environment service for secure configuration loading
-    EnvironmentService.instance.validateAll();
-    
+    // Initialize environment service to load .env file
+    await EnvironmentService.instance.initialize();
+
+    // Print configuration for debugging
+    if (kDebugMode) {
+      EnvironmentService.instance.printConfiguration();
+    }
+
     // Load Supabase configuration from environment variables
     final env = EnvironmentService.instance;
-    
+
     // Get configuration from environment service
     final supabaseUrl = env.supabaseUrl;
     final supabaseAnonKey = env.supabaseAnonKey;
-    
-    // Validate that we have valid configuration (not placeholder values)
-    if (supabaseUrl == 'https://your-project.supabase.co' || 
-        supabaseAnonKey == 'your-anon-key-here') {
-      throw const EnvironmentException(
-        'Supabase configuration not properly set. Please update your environment variables '
-        'with actual Supabase URL and anonymous key before running the app.'
-      );
-    }
-    
+
     // Initialize Supabase with secure environment configuration
     await initializeSupabase(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
     );
-    
+
     if (kDebugMode) {
-      debugPrint('✅ Supabase initialized successfully with environment configuration');
+      debugPrint('✅ Supabase initialized successfully');
       debugPrint('📱 Platform: ${kIsWeb ? "Web" : "Mobile"}');
-      debugPrint('🌍 Environment: ${EnvironmentService.instance.buildTimeConfig}');
+      debugPrint('🔗 Supabase URL: $supabaseUrl');
     }
     
   } catch (e) {
