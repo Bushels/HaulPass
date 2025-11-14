@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/models/user_models.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/buttons/primary_button.dart';
+import '../../widgets/privacy/privacy_badge.dart';
+import '../../../core/theme/app_theme.dart';
 
 /// Complete sign up and onboarding screen
 /// Collects: Email, Password, Name, Farm, Binyard, Truck, Favorite Elevator
@@ -251,13 +254,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            const PrivacyBadge(
+              message: 'Your data is encrypted and private',
+              icon: Icons.lock_outline,
+            ),
+            const SizedBox(height: 8),
+            const ConnectionStatusIndicator(
+              status: ConnectionStatus.secure,
+            ),
             const SizedBox(height: 24),
-            FilledButton(
+            PrimaryButton(
+              text: 'Continue',
               onPressed: _agreedToTerms ? _nextStep : null,
-              child: const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('Continue'),
-              ),
             ),
             const SizedBox(height: 16),
             TextButton(
@@ -325,12 +334,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             },
           ),
           const SizedBox(height: 32),
-          FilledButton(
+          PrimaryButton(
+            text: 'Continue',
             onPressed: _nextStep,
-            child: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Continue'),
-            ),
           ),
         ],
       ),
@@ -392,12 +398,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             },
           ),
           const SizedBox(height: 32),
-          FilledButton(
+          PrimaryButton(
+            text: 'Continue',
             onPressed: _nextStep,
-            child: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Continue'),
-            ),
           ),
         ],
       ),
@@ -505,12 +508,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 32),
-          FilledButton(
+          PrimaryButton(
+            text: 'Continue',
             onPressed: _nextStep,
-            child: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Continue'),
-            ),
           ),
         ],
       ),
@@ -561,27 +561,22 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          FilledButton.icon(
+          OutlinedButton.icon(
             onPressed: () {
               // Navigate to elevator selection screen
               // We'll implement this next
             },
             icon: const Icon(Icons.search),
-            label: const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Search for Elevator'),
-            ),
+            label: const Text('Search for Elevator'),
           ),
           const SizedBox(height: 16),
           TextButton(
             onPressed: _isLoading ? null : _completeSignUp,
-            child: _isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Skip for now (you can add this later)'),
+            child: Text(
+              _isLoading
+                  ? 'Creating account...'
+                  : 'Skip for now (you can add this later)',
+            ),
           ),
         ],
       ),

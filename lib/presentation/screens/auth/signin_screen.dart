@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/buttons/primary_button.dart';
+import '../../widgets/privacy/privacy_badge.dart';
 
 /// Sign in screen for returning users
 class SignInScreen extends ConsumerStatefulWidget {
@@ -145,24 +147,22 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+
+                    // Privacy indicator
+                    const Center(
+                      child: PrivacyBadge(
+                        message: 'Secure connection',
+                        icon: Icons.lock_outline,
+                      ),
+                    ),
                     const SizedBox(height: 24),
 
                     // Sign in button
-                    FilledButton(
-                      onPressed: _isLoading ? null : _signIn,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: _isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              )
-                            : const Text('Sign In'),
-                      ),
+                    PrimaryButton(
+                      text: 'Sign In',
+                      isLoading: _isLoading,
+                      onPressed: _signIn,
                     ),
                     const SizedBox(height: 16),
 

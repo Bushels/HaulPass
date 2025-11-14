@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../widgets/buttons/primary_button.dart';
 
 /// Main authentication landing screen
 /// Routes to either sign in or sign up
@@ -70,14 +71,12 @@ class AuthScreen extends ConsumerWidget {
                   const SizedBox(height: 48),
 
                   // Sign up button
-                  FilledButton(
+                  PrimaryButton(
+                    text: 'Get Started',
+                    icon: Icons.arrow_forward,
                     onPressed: () {
                       context.push('/auth/signup');
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text('Get Started'),
-                    ),
                   ),
                   const SizedBox(height: 16),
 
