@@ -32,6 +32,7 @@ credentials.json
 # MCP Configuration (contains project references)
 .mcp.json
 .vscode/mcp.json
+.claude/
 
 # Flutter/Dart/Pub related
 **/doc/api/

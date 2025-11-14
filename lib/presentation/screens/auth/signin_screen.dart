@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../providers/auth_provider.dart';
 
 /// Sign in screen for returning users
 class SignInScreen extends ConsumerStatefulWidget {
@@ -240,11 +241,17 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     try {
-      // TODO: Implement Supabase sign in
-      // 1. Sign in with email/password
-      // 2. Load user profile
-      // 3. Check if onboarding is complete
-      // 4. Navigate to home or onboarding
+      // Sign in via auth provider
+      await ref.read(authNotifierProvider.notifier).signIn(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+
+      // Check for errors
+      final authState = ref.read(authNotifierProvider);
+      if (authState.error != null) {
+        throw Exception(authState.error!.message);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -253,13 +260,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        context.go('/');
+
+        // Navigation will be handled by the router redirect
+        // based on authentication state
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('Sign in failed: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );

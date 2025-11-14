@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../data/models/user_models.dart';
+import '../../providers/auth_provider.dart';
 
 /// Complete sign up and onboarding screen
 /// Collects: Email, Password, Name, Farm, Binyard, Truck, Favorite Elevator
@@ -572,8 +574,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           ),
           const SizedBox(height: 16),
           TextButton(
-            onPressed: _completeSignUp,
-            child: const Text('Skip for now (you can add this later)'),
+            onPressed: _isLoading ? null : _completeSignUp,
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Skip for now (you can add this later)'),
           ),
         ],
       ),
@@ -616,10 +624,40 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     });
 
     try {
-      // TODO: Implement Supabase sign up
-      // 1. Create auth user
-      // 2. Create user profile with all details
-      // 3. Navigate to home screen
+      // Parse capacity if provided
+      double? capacityKg;
+      if (_grainCapacityController.text.isNotEmpty) {
+        final capacity = double.tryParse(_grainCapacityController.text);
+        if (capacity != null) {
+          // Convert to kg if needed
+          capacityKg = _preferredUnit == 'lbs' ? capacity / 2.20462 : capacity;
+        }
+      }
+
+      // Create registration request with all collected data
+      final request = RegisterRequest(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        confirmPassword: _confirmPasswordController.text,
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        farmName: _farmNameController.text.trim(),
+        binyardName: _binyardNameController.text.trim(),
+        grainTruckName: _grainTruckNameController.text.trim(),
+        grainCapacityKg: capacityKg,
+        preferredUnit: _preferredUnit,
+        favoriteElevatorId: null, // Will be set when elevator is selected
+        acceptTerms: _agreedToTerms,
+      );
+
+      // Sign up via auth provider
+      await ref.read(authNotifierProvider.notifier).signUp(request);
+
+      // Check for errors
+      final authState = ref.read(authNotifierProvider);
+      if (authState.error != null) {
+        throw Exception(authState.error!.message);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -628,13 +666,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             backgroundColor: Colors.green,
           ),
         );
+
+        // Navigate to home screen
         context.go('/');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('Sign up failed: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );

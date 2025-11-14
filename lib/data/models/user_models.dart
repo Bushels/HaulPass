@@ -396,6 +396,21 @@ class RegisterRequest {
   final String? lastName;
   final String? company;
   final String? truckNumber;
+
+  // HaulPass-specific fields for onboarding
+  @JsonKey(name: 'farm_name')
+  final String? farmName;
+  @JsonKey(name: 'binyard_name')
+  final String? binyardName;
+  @JsonKey(name: 'grain_truck_name')
+  final String? grainTruckName;
+  @JsonKey(name: 'grain_capacity_kg')
+  final double? grainCapacityKg;
+  @JsonKey(name: 'preferred_unit')
+  final String? preferredUnit;
+  @JsonKey(name: 'favorite_elevator_id')
+  final String? favoriteElevatorId;
+
   final bool acceptTerms;
 
   const RegisterRequest({
@@ -406,6 +421,12 @@ class RegisterRequest {
     this.lastName,
     this.company,
     this.truckNumber,
+    this.farmName,
+    this.binyardName,
+    this.grainTruckName,
+    this.grainCapacityKg,
+    this.preferredUnit,
+    this.favoriteElevatorId,
     this.acceptTerms = false,
   });
 

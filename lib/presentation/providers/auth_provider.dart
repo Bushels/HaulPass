@@ -53,6 +53,14 @@ class AuthNotifier extends _$AuthNotifier {
         displayName: user.userMetadata?['display_name'] as String?,
         firstName: user.userMetadata?['first_name'] as String?,
         lastName: user.userMetadata?['last_name'] as String?,
+        company: user.userMetadata?['company'] as String?,
+        truckNumber: user.userMetadata?['truck_number'] as String?,
+        farmName: user.userMetadata?['farm_name'] as String?,
+        binyardName: user.userMetadata?['binyard_name'] as String?,
+        grainTruckName: user.userMetadata?['grain_truck_name'] as String?,
+        grainCapacityKg: user.userMetadata?['grain_capacity_kg'] as double?,
+        preferredUnit: (user.userMetadata?['preferred_unit'] as String?) ?? 'kg',
+        favoriteElevatorId: user.userMetadata?['favorite_elevator_id'] as String?,
         settings: const UserSettings(),
         createdAt: DateTime.now(), // Supabase user.createdAt type varies, use current time for now
         lastLogin: DateTime.now(),
@@ -145,6 +153,12 @@ class AuthNotifier extends _$AuthNotifier {
           'last_name': request.lastName,
           'company': request.company,
           'truck_number': request.truckNumber,
+          'farm_name': request.farmName,
+          'binyard_name': request.binyardName,
+          'grain_truck_name': request.grainTruckName,
+          'grain_capacity_kg': request.grainCapacityKg,
+          'preferred_unit': request.preferredUnit ?? 'kg',
+          'favorite_elevator_id': request.favoriteElevatorId,
         },
       );
 
