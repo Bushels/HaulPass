@@ -7,6 +7,8 @@ import 'core/services/environment_service.dart';
 import 'core/services/supabase_config.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/screens/auth/auth_screen.dart';
+import 'presentation/screens/auth/signin_screen.dart';
+import 'presentation/screens/auth/signup_screen.dart';
 import 'presentation/screens/home/home_screen.dart';
 import 'presentation/screens/elevator/elevator_screen.dart';
 import 'presentation/screens/timer/timer_screen.dart';
@@ -61,12 +63,20 @@ class HaulPassApp extends ConsumerWidget {
         return null; // No redirect needed
       },
       routes: [
-        // Authentication route
+        // Authentication routes
         GoRoute(
           path: '/auth',
           builder: (context, state) => const AuthScreen(),
         ),
-        
+        GoRoute(
+          path: '/auth/signin',
+          builder: (context, state) => const SignInScreen(),
+        ),
+        GoRoute(
+          path: '/auth/signup',
+          builder: (context, state) => const SignUpScreen(),
+        ),
+
         // Main app routes
         GoRoute(
           path: '/',

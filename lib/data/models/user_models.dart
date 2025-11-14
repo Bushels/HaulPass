@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user_models.g.dart';
 
-/// User profile information
+/// User profile information with HaulPass-specific fields
 @JsonSerializable()
 class UserProfile {
   final String id;
@@ -11,13 +11,32 @@ class UserProfile {
   final String? firstName;
   final String? lastName;
   final String? phoneNumber;
+
+  // HaulPass-specific fields (required for onboarding)
+  @JsonKey(name: 'farm_name')
+  final String? farmName;
+  @JsonKey(name: 'binyard_name')
+  final String? binyardName;
+  @JsonKey(name: 'grain_truck_name')
+  final String? grainTruckName;
+  @JsonKey(name: 'grain_capacity_kg')
+  final double? grainCapacityKg;
+  @JsonKey(name: 'preferred_unit')
+  final String preferredUnit; // 'kg' or 'lbs'
+  @JsonKey(name: 'favorite_elevator_id')
+  final String? favoriteElevatorId;
+
+  // Legacy fields (kept for compatibility)
   final String? company;
   final String? truckNumber;
   final List<String> preferredGrains;
+
   final UserSettings settings;
   final UserSubscription? subscription;
   final DateTime createdAt;
+  @JsonKey(name: 'last_login')
   final DateTime lastLogin;
+  @JsonKey(name: 'is_active')
   final bool isActive;
   final Map<String, dynamic>? metadata;
 
@@ -28,6 +47,12 @@ class UserProfile {
     this.firstName,
     this.lastName,
     this.phoneNumber,
+    this.farmName,
+    this.binyardName,
+    this.grainTruckName,
+    this.grainCapacityKg,
+    this.preferredUnit = 'kg',
+    this.favoriteElevatorId,
     this.company,
     this.truckNumber,
     this.preferredGrains = const [],
@@ -57,8 +82,35 @@ class UserProfile {
 
   /// Whether user has premium features
   bool get hasPremiumAccess {
-    return subscription?.isActive == true && 
+    return subscription?.isActive == true &&
            subscription?.isValid == true;
+  }
+
+  /// Whether user has completed onboarding (all required fields filled)
+  bool get hasCompletedOnboarding {
+    return farmName != null &&
+           farmName!.isNotEmpty &&
+           binyardName != null &&
+           binyardName!.isNotEmpty &&
+           grainTruckName != null &&
+           grainTruckName!.isNotEmpty &&
+           favoriteElevatorId != null;
+  }
+
+  /// Get capacity in preferred unit
+  double? get capacityInPreferredUnit {
+    if (grainCapacityKg == null) return null;
+    if (preferredUnit == 'lbs') {
+      return grainCapacityKg! * 2.20462; // Convert kg to lbs
+    }
+    return grainCapacityKg;
+  }
+
+  /// Format capacity for display
+  String get formattedCapacity {
+    final capacity = capacityInPreferredUnit;
+    if (capacity == null) return 'Not set';
+    return '${capacity.toStringAsFixed(0)} $preferredUnit';
   }
 
   UserProfile copyWith({
@@ -68,6 +120,12 @@ class UserProfile {
     String? firstName,
     String? lastName,
     String? phoneNumber,
+    String? farmName,
+    String? binyardName,
+    String? grainTruckName,
+    double? grainCapacityKg,
+    String? preferredUnit,
+    String? favoriteElevatorId,
     String? company,
     String? truckNumber,
     List<String>? preferredGrains,
@@ -85,6 +143,12 @@ class UserProfile {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      farmName: farmName ?? this.farmName,
+      binyardName: binyardName ?? this.binyardName,
+      grainTruckName: grainTruckName ?? this.grainTruckName,
+      grainCapacityKg: grainCapacityKg ?? this.grainCapacityKg,
+      preferredUnit: preferredUnit ?? this.preferredUnit,
+      favoriteElevatorId: favoriteElevatorId ?? this.favoriteElevatorId,
       company: company ?? this.company,
       truckNumber: truckNumber ?? this.truckNumber,
       preferredGrains: preferredGrains ?? this.preferredGrains,
