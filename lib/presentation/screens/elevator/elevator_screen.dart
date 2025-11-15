@@ -17,7 +17,7 @@ class ElevatorScreen extends ConsumerStatefulWidget {
 
 class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
   final _searchController = TextEditingController();
-  double _distanceFilter = 50.0; // Default 50km radius
+  // double _distanceFilter = 50.0; // Default 50km radius - TODO: implement distance filtering
   String _selectedGrainType = 'All Grains';
 
   @override
@@ -28,7 +28,7 @@ class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider);
+    // final user = ref.watch(currentUserProvider); // TODO: use for personalization
     final currentLocation = ref.watch(currentLocationProvider);
     final elevatorState = ref.watch(elevatorNotifierProvider);
     final nearbyElevatorsAsync = ref.watch(elevatorNotifierProvider.notifier);

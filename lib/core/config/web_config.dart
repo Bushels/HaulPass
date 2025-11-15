@@ -2,12 +2,11 @@ import 'dart:html' as html;
 import 'dart:js' as js;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Web-specific configuration for the HaulPass application
 /// Handles GitHub Pages deployment, PWA features, and web browser optimizations
 class WebConfig {
-  static const String _baseConfigFileName = 'config.json';
+  // Note: _baseConfigFileName removed as it was unused
 
   // PWA Configuration
   static const String appName = 'HaulPass';
@@ -48,19 +47,19 @@ class WebConfig {
   // Environment Configuration
   static Environment get currentEnvironment {
     if (!kIsWeb) return Environment.development;
-    
-    final hostname = html.window.location.hostname;
-    
-    if (hostname.contains('github.io') || 
-        hostname.contains('netlify.app') || 
+
+    final hostname = html.window.location.hostname ?? '';
+
+    if (hostname.contains('github.io') ||
+        hostname.contains('netlify.app') ||
         hostname.contains('vercel.app')) {
       return Environment.production;
     }
-    
+
     if (hostname.contains('staging') || hostname.contains('test')) {
       return Environment.staging;
     }
-    
+
     return Environment.development;
   }
 
@@ -249,10 +248,13 @@ class WebConfig {
     try {
       // Track Core Web Vitals
       final navigation = html.window.performance.getEntriesByType('navigation')[0] as html.PerformanceNavigationTiming?;
-      
+
       if (navigation != null) {
-        debugPrint('Page Load Time: ${navigation.loadEventEnd - navigation.fetchStart}ms');
-        debugPrint('DOM Content Loaded: ${navigation.domContentLoadedEventEnd - navigation.fetchStart}ms');
+        final loadEventEnd = navigation.loadEventEnd ?? 0;
+        final fetchStart = navigation.fetchStart ?? 0;
+        final domContentLoadedEventEnd = navigation.domContentLoadedEventEnd ?? 0;
+        debugPrint('Page Load Time: ${loadEventEnd - fetchStart}ms');
+        debugPrint('DOM Content Loaded: ${domContentLoadedEventEnd - fetchStart}ms');
       }
         } catch (e) {
       debugPrint('Performance tracking failed: $e');
@@ -297,20 +299,34 @@ class WebConfig {
       // Try to load from meta tags first
       final metaTags = html.document.getElementsByTagName('meta');
       for (final meta in metaTags) {
-        final name = meta.getAttribute('name');
-        if (name != null && name.startsWith('env-')) {
-          final key = name.substring(4); // Remove 'env-' prefix
-          final value = meta.getAttribute('content') ?? '';
-          variables[key] = value;
+        if (meta is html.MetaElement) {
+          final name = meta.name;
+          if (name.isNotEmpty && name.startsWith('env-')) {
+            final key = name.substring(4); // Remove 'env-' prefix
+            final value = meta.content;
+            variables[key] = value;
+          }
         }
       }
       
       // Fallback to global window variables
       if (js.context.hasProperty('ENV')) {
-        final env = js.context['ENV'] as js.JsObject;
-        env.keys.forEach((key) {
-          variables[key] = env[key]?.toString() ?? '';
-        });
+        final env = js.context['ENV'];
+        // Note: Direct JsObject property iteration is complex in dart:js
+        // Using meta tags above is the preferred approach for web environment variables
+        if (env != null) {
+          // Try common environment variable names
+          for (final key in ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'GOOGLE_MAPS_API_KEY']) {
+            try {
+              final value = js.context.callMethod('eval', ['ENV.$key']);
+              if (value != null) {
+                variables[key] = value.toString();
+              }
+            } catch (_) {
+              // Skip if property doesn't exist
+            }
+          }
+        }
       }
     } catch (e) {
       debugPrint('Environment variables loading failed: $e');

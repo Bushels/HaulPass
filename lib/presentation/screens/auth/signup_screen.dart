@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../data/models/user_models.dart';
+import '../../../data/models/user_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/privacy/privacy_badge.dart';
-import '../../../core/theme/app_theme.dart';
 
 /// Complete sign up and onboarding screen
 /// Collects: Email, Password, Name, Farm, Binyard, Truck, Favorite Elevator

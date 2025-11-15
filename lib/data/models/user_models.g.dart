@@ -13,6 +13,12 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
       firstName: json['firstName'] as String?,
       lastName: json['lastName'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
+      farmName: json['farm_name'] as String?,
+      binyardName: json['binyard_name'] as String?,
+      grainTruckName: json['grain_truck_name'] as String?,
+      grainCapacityKg: (json['grain_capacity_kg'] as num?)?.toDouble(),
+      preferredUnit: json['preferred_unit'] as String? ?? 'kg',
+      favoriteElevatorId: json['favorite_elevator_id'] as String?,
       company: json['company'] as String?,
       truckNumber: json['truckNumber'] as String?,
       preferredGrains: (json['preferredGrains'] as List<dynamic>?)
@@ -25,8 +31,8 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
           : UserSubscription.fromJson(
               json['subscription'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      lastLogin: DateTime.parse(json['lastLogin'] as String),
-      isActive: json['isActive'] as bool? ?? true,
+      lastLogin: DateTime.parse(json['last_login'] as String),
+      isActive: json['is_active'] as bool? ?? true,
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
 
@@ -38,14 +44,20 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'phoneNumber': instance.phoneNumber,
+      'farm_name': instance.farmName,
+      'binyard_name': instance.binyardName,
+      'grain_truck_name': instance.grainTruckName,
+      'grain_capacity_kg': instance.grainCapacityKg,
+      'preferred_unit': instance.preferredUnit,
+      'favorite_elevator_id': instance.favoriteElevatorId,
       'company': instance.company,
       'truckNumber': instance.truckNumber,
       'preferredGrains': instance.preferredGrains,
       'settings': instance.settings,
       'subscription': instance.subscription,
       'createdAt': instance.createdAt.toIso8601String(),
-      'lastLogin': instance.lastLogin.toIso8601String(),
-      'isActive': instance.isActive,
+      'last_login': instance.lastLogin.toIso8601String(),
+      'is_active': instance.isActive,
       'metadata': instance.metadata,
     };
 
@@ -179,6 +191,12 @@ RegisterRequest _$RegisterRequestFromJson(Map<String, dynamic> json) =>
       lastName: json['lastName'] as String?,
       company: json['company'] as String?,
       truckNumber: json['truckNumber'] as String?,
+      farmName: json['farm_name'] as String?,
+      binyardName: json['binyard_name'] as String?,
+      grainTruckName: json['grain_truck_name'] as String?,
+      grainCapacityKg: (json['grain_capacity_kg'] as num?)?.toDouble(),
+      preferredUnit: json['preferred_unit'] as String?,
+      favoriteElevatorId: json['favorite_elevator_id'] as String?,
       acceptTerms: json['acceptTerms'] as bool? ?? false,
     );
 
@@ -191,5 +209,11 @@ Map<String, dynamic> _$RegisterRequestToJson(RegisterRequest instance) =>
       'lastName': instance.lastName,
       'company': instance.company,
       'truckNumber': instance.truckNumber,
+      'farm_name': instance.farmName,
+      'binyard_name': instance.binyardName,
+      'grain_truck_name': instance.grainTruckName,
+      'grain_capacity_kg': instance.grainCapacityKg,
+      'preferred_unit': instance.preferredUnit,
+      'favorite_elevator_id': instance.favoriteElevatorId,
       'acceptTerms': instance.acceptTerms,
     };

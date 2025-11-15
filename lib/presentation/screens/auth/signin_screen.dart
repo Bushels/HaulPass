@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/privacy/privacy_badge.dart';
+import '../../widgets/branding/grain_elevator_logo.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Sign in screen for returning users
 class SignInScreen extends ConsumerStatefulWidget {
@@ -44,10 +46,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Logo/Icon
-                    Icon(
-                      Icons.local_shipping_rounded,
-                      size: 80,
-                      color: Theme.of(context).colorScheme.primary,
+                    const Center(
+                      child: GrainElevatorIcon(
+                        size: 80,
+                        color: AppColors.primaryBlue,
+                      ),
                     ),
                     const SizedBox(height: 24),
 
@@ -232,20 +235,25 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _signIn() async {
+    print('👆 Sign in button pressed');
     if (!(_formKey.currentState?.validate() ?? false)) {
+      print('❌ Form validation failed');
       return;
     }
 
+    print('✅ Form validation passed');
     setState(() {
       _isLoading = true;
     });
 
     try {
+      print('📞 Calling auth provider signIn method...');
       // Sign in via auth provider
       await ref.read(authNotifierProvider.notifier).signIn(
             _emailController.text.trim(),
             _passwordController.text,
           );
+      print('✅ SignIn method completed');
 
       // Check for errors
       final authState = ref.read(authNotifierProvider);
@@ -261,8 +269,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           ),
         );
 
-        // Navigation will be handled by the router redirect
-        // based on authentication state
+        // Navigate to home screen
+        context.go('/');
       }
     } catch (e) {
       if (mounted) {

@@ -9,7 +9,7 @@ import 'presentation/providers/auth_provider.dart';
 import 'presentation/screens/auth/auth_screen.dart';
 import 'presentation/screens/auth/signin_screen.dart';
 import 'presentation/screens/auth/signup_screen.dart';
-import 'presentation/screens/home/home_screen.dart';
+import 'presentation/screens/home/enhanced_home_screen.dart';
 import 'presentation/screens/elevator/elevator_screen.dart';
 import 'presentation/screens/timer/timer_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
@@ -46,8 +46,7 @@ class HaulPassApp extends ConsumerWidget {
       redirect: (context, state) {
         // Check authentication status
         final isAuthenticated = ref.read(isAuthenticatedProvider);
-        final authState = ref.read(authNotifierProvider);
-        
+
         final currentLocation = state.uri.path;
         final isAuthRoute = currentLocation.startsWith('/auth');
         
@@ -80,7 +79,7 @@ class HaulPassApp extends ConsumerWidget {
         // Main app routes
         GoRoute(
           path: '/',
-          builder: (context, state) => const HomeScreen(),
+          builder: (context, state) => const EnhancedHomeScreen(),
         ),
         GoRoute(
           path: '/elevators',

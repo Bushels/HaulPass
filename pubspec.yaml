@@ -52,11 +52,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  
+
   # Code generation
   build_runner: ^2.4.8
   riverpod_generator: ^2.3.9
-  json_serializable: ^6.7.1
 
 flutter:
   uses-material-design: true

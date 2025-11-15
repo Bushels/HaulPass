@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/buttons/primary_button.dart';
+import '../../widgets/branding/grain_elevator_logo.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Main authentication landing screen
 /// Routes to either sign in or sign up
@@ -21,10 +23,11 @@ class AuthScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo
-                  Icon(
-                    Icons.local_shipping_rounded,
-                    size: 120,
-                    color: Theme.of(context).colorScheme.primary,
+                  const Center(
+                    child: GrainElevatorIcon(
+                      size: 120,
+                      color: AppColors.primaryBlue,
+                    ),
                   ),
                   const SizedBox(height: 32),
 

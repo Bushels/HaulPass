@@ -5,7 +5,6 @@ import '../../../data/models/elevator_models.dart';
 import '../../../data/models/location_models.dart';
 import '../../providers/timer_provider.dart';
 import '../../providers/location_provider.dart' hide AppLocation, AppLocationHistory;
-import '../../providers/auth_provider.dart';
 
 /// Timer screen for tracking unloading activities
 class TimerScreen extends ConsumerStatefulWidget {
@@ -46,7 +45,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   @override
   Widget build(BuildContext context) {
     final activeTimer = ref.watch(activeTimerProvider);
-    final completedTimers = ref.watch(completedTimersProvider);
+    // final completedTimers = ref.watch(completedTimersProvider); // TODO: use for history display
     final timerState = ref.watch(timerNotifierProvider);
     final currentLocation = ref.watch(currentLocationProvider);
 

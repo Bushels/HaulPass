@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import '../../data/models/location_models.dart' as models;
-import '../../core/services/supabase_config.dart';
 import 'auth_provider.dart';
 
 part 'location_provider.g.dart';

@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/models/elevator_models.dart';
 import '../../data/models/location_models.dart';
-import '../../core/services/supabase_config.dart';
 import '../../data/mock_data.dart';
 import 'auth_provider.dart';
 import 'location_provider.dart' hide AppLocation, AppLocationHistory;

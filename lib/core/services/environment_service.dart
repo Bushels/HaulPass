@@ -45,7 +45,7 @@ class EnvironmentService {
   /// Get environment variable with optional fallback
   String getEnvironmentVariable(String key, {String? fallback, bool required = false}) {
     if (!_isInitialized) {
-      throw EnvironmentException(
+      throw const EnvironmentException(
         'EnvironmentService not initialized. Call EnvironmentService.instance.initialize() first.'
       );
     }

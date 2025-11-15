@@ -2,23 +2,53 @@ import 'package:flutter/material.dart';
 
 /// App theme configuration with Material 3 design
 class AppTheme {
-  // Color palette
-  static const Color _primary = Color(0xFF1976D2); // Blue 700
-  static const Color _primaryVariant = Color(0xFF1565C0); // Blue 800
+  // Color palette (public for widget access)
+  static const Color primary = Color(0xFF1976D2); // Blue 700
+  static const Color primaryDark = Color(0xFF1565C0); // Blue 800
+  static const Color success = Color(0xFF4CAF50); // Green 500
+  static const Color warning = Color(0xFFFF9800); // Orange 500
+  static const Color error = Color(0xFFD32F2F); // Red 700
+  static const Color onSurfaceVariant = Color(0xFF424242); // Gray 700
+
+  // Private color palette for internal use
+  static const Color _primary = primary;
+  static const Color _primaryVariant = primaryDark;
   static const Color _secondary = Color(0xFF388E3C); // Green 700
   static const Color _secondaryVariant = Color(0xFF2E7D32); // Green 800
-  
+
   // Neutral colors
   static const Color _surface = Color(0xFFFAFAFA); // Gray 50
   static const Color _background = Color(0xFFF5F5F5); // Gray 100
-  static const Color _error = Color(0xFFD32F2F); // Red 700
-  
+  static const Color _error = error;
+
   // Text colors
   static const Color _onPrimary = Colors.white;
   static const Color _onSecondary = Colors.white;
   static const Color _onSurface = Color(0xFF212121); // Gray 900
   static const Color _onBackground = Color(0xFF212121);
   static const Color _onError = Colors.white;
+
+  // Spacing constants
+  static const double space4 = 4.0;
+  static const double space8 = 8.0;
+  static const double space12 = 12.0;
+  static const double space16 = 16.0;
+  static const double space24 = 24.0;
+  static const double space32 = 32.0;
+
+  // Border radius constants
+  static const double radiusSmall = 8.0;
+  static const double radiusMedium = 12.0;
+  static const double radiusLarge = 16.0;
+
+  // Shadow effects
+  static const List<BoxShadow> primaryGlow = [
+    BoxShadow(
+      color: Color(0x331976D2),
+      blurRadius: 12,
+      offset: Offset(0, 4),
+    ),
+  ];
 
   // Color scheme for light theme
   static const ColorScheme lightColorScheme = ColorScheme(
