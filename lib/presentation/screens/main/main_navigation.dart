@@ -5,6 +5,7 @@ import '../home/enhanced_home_screen.dart';
 import '../elevator/elevator_screen.dart';
 import '../timer/timer_screen.dart';
 import '../profile/profile_screen.dart';
+import '../../providers/connectivity_provider.dart';
 
 /// Main navigation screen with bottom navigation bar
 class MainNavigation extends ConsumerStatefulWidget {
@@ -26,12 +27,74 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final isOnline = ref.watch(isOnlineProvider);
+    final connectionType = ref.watch(connectionTypeProvider);
+
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: Column(
+        children: [
+          // Offline banner
+          if (!isOnline)
+            _buildOfflineBanner(context),
+          // Main content
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(context),
+    );
+  }
+
+  Widget _buildOfflineBanner(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.errorContainer,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          children: [
+            Icon(
+              Icons.cloud_off,
+              color: Theme.of(context).colorScheme.onErrorContainer,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'You\'re offline. Using cached data.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onErrorContainer,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                ref.read(connectivityNotifierProvider.notifier).checkConnectivity();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
