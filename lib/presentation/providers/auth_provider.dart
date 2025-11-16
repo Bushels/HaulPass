@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/models/user_models.dart';
 import '../../core/services/supabase_config.dart';
-import '../../core/config/demo_config.dart';
 
 // Import Supabase types with alias to avoid conflicts
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
@@ -112,15 +111,6 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       state = state.copyWith(error: null);
 
-      // Demo mode bypass for marketing screenshots
-      print('🔍 Checking demo mode: shouldBypassAuth=${DemoConfig.shouldBypassAuth}, email=$email');
-      if (DemoConfig.shouldBypassAuth &&
-          email.toLowerCase() == DemoConfig.demoEmail.toLowerCase()) {
-        print('✅ Demo mode activated - bypassing Supabase auth');
-        _signInAsDemo();
-        return;
-      }
-
       print('📡 Attempting Supabase authentication...');
 
       final response = await Supabase.instance.client.auth.signInWithPassword(
@@ -144,34 +134,6 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// Sign in as demo user for marketing purposes
-  void _signInAsDemo() {
-    print('🎬 Creating demo user session for Kyle Buperac');
-    final demoUser = UserProfile(
-      id: DemoConfig.demoUserId,
-      email: DemoConfig.demoEmail,
-      displayName: DemoConfig.demoDisplayName,
-      firstName: DemoConfig.demoFirstName,
-      lastName: DemoConfig.demoLastName,
-      farmName: DemoConfig.demoFarmName,
-      binyardName: DemoConfig.demoBinyardName,
-      grainTruckName: DemoConfig.demoTruckName,
-      grainCapacityKg: DemoConfig.demoTruckCapacity * 1000, // Convert tonnes to kg
-      preferredUnit: DemoConfig.demoPreferredUnit,
-      settings: const UserSettings(),
-      createdAt: DateTime.now(),
-      lastLogin: DateTime.now(),
-    );
-
-    state = AuthenticationState(
-      isAuthenticated: true,
-      user: demoUser,
-      accessToken: 'demo-token-${DateTime.now().millisecondsSinceEpoch}',
-      tokenExpiry: DateTime.now().add(const Duration(days: 365)),
-      refreshToken: 'demo-refresh-token',
-    );
-    print('✅ Demo user authenticated: ${demoUser.displayName}');
-  }
 
   /// Sign up with email and password
   Future<void> signUp(RegisterRequest request) async {

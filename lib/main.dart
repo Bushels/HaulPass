@@ -9,10 +9,7 @@ import 'presentation/providers/auth_provider.dart';
 import 'presentation/screens/auth/auth_screen.dart';
 import 'presentation/screens/auth/signin_screen.dart';
 import 'presentation/screens/auth/signup_screen.dart';
-import 'presentation/screens/home/enhanced_home_screen.dart';
-import 'presentation/screens/elevator/elevator_screen.dart';
-import 'presentation/screens/timer/timer_screen.dart';
-import 'presentation/screens/profile/profile_screen.dart';
+import 'presentation/screens/main/main_navigation.dart';
 
 /// Main app widget with Riverpod provider scope and routing
 class HaulPassApp extends ConsumerWidget {
@@ -76,22 +73,10 @@ class HaulPassApp extends ConsumerWidget {
           builder: (context, state) => const SignUpScreen(),
         ),
 
-        // Main app routes
+        // Main app with bottom navigation
         GoRoute(
           path: '/',
-          builder: (context, state) => const EnhancedHomeScreen(),
-        ),
-        GoRoute(
-          path: '/elevators',
-          builder: (context, state) => const ElevatorScreen(),
-        ),
-        GoRoute(
-          path: '/timer',
-          builder: (context, state) => const TimerScreen(),
-        ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+          builder: (context, state) => const MainNavigation(),
         ),
       ],
       

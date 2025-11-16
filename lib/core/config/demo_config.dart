@@ -1,7 +1,7 @@
 /// Demo configuration for marketing and screenshots
 class DemoConfig {
   // Enable demo mode to bypass authentication
-  static const bool isDemoMode = true;
+  static const bool isDemoMode = false;
 
   // Demo user credentials
   static const String demoEmail = 'buperac@gmail.com';
