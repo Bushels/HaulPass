@@ -15,12 +15,12 @@ enum ConnectivityStatus {
 /// Connectivity state
 class ConnectivityState {
   final ConnectivityStatus status;
-  final DateTime lastChecked;
+  final DateTime? lastChecked;
   final List<ConnectivityResult> connectionTypes;
 
   const ConnectivityState({
     required this.status,
-    required this.lastChecked,
+    this.lastChecked,
     required this.connectionTypes,
   });
 
@@ -44,7 +44,7 @@ class ConnectivityState {
 @riverpod
 class ConnectivityNotifier extends _$ConnectivityNotifier {
   final _connectivity = Connectivity();
-  StreamSubscription<List<ConnectivityResult>>? _subscription;
+  StreamSubscription<ConnectivityResult>? _subscription;
 
   @override
   ConnectivityState build() {
@@ -67,8 +67,8 @@ class ConnectivityNotifier extends _$ConnectivityNotifier {
   Future<void> _initializeConnectivity() async {
     try {
       // Get initial connectivity status
-      final results = await _connectivity.checkConnectivity();
-      _updateConnectivityStatus(results);
+      final result = await _connectivity.checkConnectivity();
+      _updateConnectivityStatus(result);
 
       // Listen to connectivity changes
       _subscription = _connectivity.onConnectivityChanged.listen(
@@ -91,11 +91,10 @@ class ConnectivityNotifier extends _$ConnectivityNotifier {
   }
 
   /// Update connectivity status
-  void _updateConnectivityStatus(List<ConnectivityResult> results) {
-    final hasConnection = results.any((result) =>
-        result == ConnectivityResult.mobile ||
+  void _updateConnectivityStatus(ConnectivityResult result) {
+    final hasConnection = result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi ||
-        result == ConnectivityResult.ethernet);
+        result == ConnectivityResult.ethernet;
 
     final newStatus = hasConnection
         ? ConnectivityStatus.online
@@ -106,11 +105,11 @@ class ConnectivityNotifier extends _$ConnectivityNotifier {
       state = ConnectivityState(
         status: newStatus,
         lastChecked: DateTime.now(),
-        connectionTypes: results,
+        connectionTypes: [result],
       );
 
       if (kDebugMode) {
-        debugPrint('📶 Connectivity: ${newStatus.name} (${results.join(', ')})');
+        debugPrint('📶 Connectivity: ${newStatus.name} ($result)');
       }
 
       // Trigger sync when coming back online
@@ -133,8 +132,8 @@ class ConnectivityNotifier extends _$ConnectivityNotifier {
   /// Manually check connectivity
   Future<void> checkConnectivity() async {
     try {
-      final results = await _connectivity.checkConnectivity();
-      _updateConnectivityStatus(results);
+      final result = await _connectivity.checkConnectivity();
+      _updateConnectivityStatus(result);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ Check connectivity error: $e');
