@@ -6,6 +6,7 @@ import '../elevator/elevator_screen.dart';
 import '../timer/timer_screen.dart';
 import '../profile/profile_screen.dart';
 import '../../providers/connectivity_provider.dart';
+import '../../providers/timer_provider.dart';
 
 /// Main navigation screen with bottom navigation bar
 class MainNavigation extends ConsumerStatefulWidget {
@@ -101,6 +102,8 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   Widget _buildBottomNavigationBar(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final activeTimer = ref.watch(activeTimerProvider);
+    final hasActiveTimer = activeTimer != null;
 
     return Container(
       decoration: BoxDecoration(
@@ -145,13 +148,14 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           ),
           NavigationDestination(
             icon: badges.Badge(
-              showBadge: false, // TODO: Show when active haul is running
+              showBadge: hasActiveTimer,
               badgeContent: const Text(
-                '!',
-                style: TextStyle(color: Colors.white, fontSize: 10),
+                '●',
+                style: TextStyle(color: Colors.white, fontSize: 8),
               ),
               badgeStyle: badges.BadgeStyle(
                 badgeColor: theme.colorScheme.error,
+                padding: const EdgeInsets.all(4),
               ),
               child: const Icon(Icons.timer_outlined),
             ),
@@ -160,7 +164,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
               color: theme.colorScheme.primary,
             ),
             label: 'Haul Timer',
-            tooltip: 'Haul Timer - Track your current haul',
+            tooltip: hasActiveTimer
+                ? 'Haul Timer - Active timer running'
+                : 'Haul Timer - Track your current haul',
           ),
           NavigationDestination(
             icon: const Icon(Icons.person_outline),

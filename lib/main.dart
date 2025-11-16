@@ -8,6 +8,7 @@ import 'core/services/supabase_config.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/sentry_service.dart';
 import 'core/services/offline_storage_service.dart';
+import 'core/services/notification_service.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/screens/auth/auth_screen.dart';
 import 'presentation/screens/auth/signin_screen.dart';
@@ -161,6 +162,9 @@ void main() async {
 
         // Initialize Hive for offline storage
         await OfflineStorageService.instance.initialize();
+
+        // Initialize local notifications
+        await NotificationService.instance.initialize();
 
         if (kDebugMode) {
           debugPrint('✅ All services initialized');

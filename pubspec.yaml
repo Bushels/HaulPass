@@ -50,11 +50,12 @@ dependencies:
   sentry_flutter: ^7.18.0
   flutter_native_splash: ^2.3.10
   flutter_secure_storage: ^9.0.0
-  package_info_plus: ^5.0.1
+  package_info_plus: ^8.0.0
   connectivity_plus: ^5.0.2
 
   # Notifications
   flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.2
 
   # Firebase (Analytics & Push Notifications only)
   firebase_core: ^2.27.0
