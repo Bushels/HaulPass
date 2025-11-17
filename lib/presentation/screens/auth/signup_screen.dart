@@ -17,6 +17,9 @@ class SignUpScreen extends ConsumerStatefulWidget {
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _personalInfoFormKey = GlobalKey<FormState>();
+  final _farmFormKey = GlobalKey<FormState>();
+  final _truckFormKey = GlobalKey<FormState>();
   final _pageController = PageController();
 
   // Step 1: Basic auth
@@ -284,60 +287,63 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget _buildPersonalInfoStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Tell us about yourself',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'We\'ll use this to personalize your experience',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-          const SizedBox(height: 32),
-          TextFormField(
-            controller: _firstNameController,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'First Name',
-              prefixIcon: Icon(Icons.person_outline),
-              border: OutlineInputBorder(),
+      child: Form(
+        key: _personalInfoFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Tell us about yourself',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your first name';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _lastNameController,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'Last Name',
-              prefixIcon: Icon(Icons.person_outline),
-              border: OutlineInputBorder(),
+            const SizedBox(height: 8),
+            Text(
+              'We\'ll use this to personalize your experience',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your last name';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 32),
-          PrimaryButton(
-            text: 'Continue',
-            onPressed: _nextStep,
-          ),
-        ],
+            const SizedBox(height: 32),
+            TextFormField(
+              controller: _firstNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'First Name',
+                prefixIcon: Icon(Icons.person_outline),
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your first name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _lastNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Last Name',
+                prefixIcon: Icon(Icons.person_outline),
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your last name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 32),
+            PrimaryButton(
+              text: 'Continue',
+              onPressed: _nextStep,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -346,7 +352,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget _buildFarmDetailsStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
+      child: Form(
+        key: _farmFormKey,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
@@ -402,6 +410,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             onPressed: _nextStep,
           ),
         ],
+        ),
       ),
     );
   }
@@ -410,7 +419,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget _buildTruckDetailsStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
+      child: Form(
+        key: _truckFormKey,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
@@ -512,6 +523,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             onPressed: _nextStep,
           ),
         ],
+        ),
       ),
     );
   }
@@ -583,7 +595,27 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   void _nextStep() {
-    if (_formKey.currentState?.validate() ?? false) {
+    // Validate the appropriate form based on current step
+    bool isValid = false;
+    switch (_currentStep) {
+      case 0:
+        isValid = _formKey.currentState?.validate() ?? false;
+        break;
+      case 1:
+        isValid = _personalInfoFormKey.currentState?.validate() ?? false;
+        break;
+      case 2:
+        isValid = _farmFormKey.currentState?.validate() ?? false;
+        break;
+      case 3:
+        isValid = _truckFormKey.currentState?.validate() ?? false;
+        break;
+      case 4:
+        isValid = true; // Elevator selection is optional
+        break;
+    }
+
+    if (isValid) {
       if (_currentStep < 4) {
         setState(() {
           _currentStep++;
