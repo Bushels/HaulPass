@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/user_models.dart';
+import '../../../data/models/elevator_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/privacy/privacy_badge.dart';
+import '../../widgets/dialogs/elevator_search_dialog.dart';
 
 /// Complete sign up and onboarding screen
 /// Collects: Email, Password, Name, Farm, Binyard, Truck, Favorite Elevator
@@ -45,6 +47,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _obscureConfirmPassword = true;
   String _preferredUnit = 'kg';
   bool _agreedToTerms = false;
+  Elevator? _selectedElevator;
 
   @override
   void dispose() {
@@ -572,13 +575,63 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 24),
+          // Selected elevator display
+          if (_selectedElevator != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _selectedElevator!.name,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        Text(
+                          _selectedElevator!.company,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedElevator = null;
+                      });
+                    },
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Remove',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          // Search button
           OutlinedButton.icon(
-            onPressed: () {
-              // Navigate to elevator selection screen
-              // We'll implement this next
-            },
+            onPressed: _showElevatorSearchDialog,
             icon: const Icon(Icons.search),
-            label: const Text('Search for Elevator'),
+            label: Text(_selectedElevator != null ? 'Change Elevator' : 'Search for Elevator'),
           ),
           const SizedBox(height: 16),
           TextButton(
@@ -592,6 +645,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _showElevatorSearchDialog() async {
+    final result = await showDialog<Elevator>(
+      context: context,
+      builder: (context) => ElevatorSearchDialog(
+        initialElevator: _selectedElevator,
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedElevator = result;
+      });
+    }
   }
 
   void _nextStep() {
@@ -672,7 +740,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         grainTruckName: _grainTruckNameController.text.trim(),
         grainCapacityKg: capacityKg,
         preferredUnit: _preferredUnit,
-        favoriteElevatorId: null, // Will be set when elevator is selected
+        favoriteElevatorId: _selectedElevator?.id,
         acceptTerms: _agreedToTerms,
       );
 
