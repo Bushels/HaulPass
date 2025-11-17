@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/models/user_models.dart';
 import '../../core/services/supabase_config.dart';
+import '../../core/config/demo_config.dart';
 
 // Import Supabase types with alias to avoid conflicts
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
@@ -121,6 +122,27 @@ class AuthNotifier extends _$AuthNotifier {
       if (response.user == null) {
         throw Exception('Sign in failed: No user data received');
       }
+
+      // Check email confirmation status
+      if (response.user!.emailConfirmedAt == null && !DemoConfig.shouldSkipEmailConfirmation) {
+        // Production mode: require email confirmation
+        await Supabase.instance.client.auth.signOut();
+        state = state.copyWith(
+          error: AuthError(
+            code: 'email_not_confirmed',
+            message: 'Please confirm your email address before signing in. Check your inbox for the confirmation link.',
+            timestamp: DateTime.now(),
+          ),
+        );
+        return;
+      }
+
+      if (response.user!.emailConfirmedAt == null && DemoConfig.shouldSkipEmailConfirmation) {
+        print('⚠️ Development mode: Allowing sign in without email confirmation');
+        print('⚠️ WARNING: Set isDevelopmentMode = false in production!');
+      }
+
+      // Auth state change listener will handle the rest
     } catch (e, stackTrace) {
       state = state.copyWith(
         error: AuthError(
@@ -167,18 +189,25 @@ class AuthNotifier extends _$AuthNotifier {
       );
 
       // Note: Email confirmation may be required depending on Supabase settings
-      if (response.user != null && response.user!.emailConfirmedAt != null) {
-        // User is immediately confirmed
-        _handleSignedIn(response.session);
-      } else {
-        // User needs to confirm email
-        state = state.copyWith(
-          error: AuthError(
-            code: 'email_confirmation_required',
-            message: 'Please check your email to confirm your account',
-            timestamp: DateTime.now(),
-          ),
-        );
+      if (response.user != null) {
+        if (response.user!.emailConfirmedAt != null) {
+          // User is immediately confirmed
+          _handleSignedIn(response.session);
+        } else if (DemoConfig.shouldSkipEmailConfirmation) {
+          // Development mode: skip email confirmation requirement
+          print('⚠️ Development mode: Skipping email confirmation check');
+          print('⚠️ WARNING: Set isDevelopmentMode = false in production!');
+          _handleSignedIn(response.session);
+        } else {
+          // Production mode: User needs to confirm email
+          state = state.copyWith(
+            error: AuthError(
+              code: 'email_confirmation_required',
+              message: 'Please check your email to confirm your account',
+              timestamp: DateTime.now(),
+            ),
+          );
+        }
       }
     } catch (e, stackTrace) {
       state = state.copyWith(

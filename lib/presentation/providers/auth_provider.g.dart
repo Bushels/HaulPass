@@ -87,7 +87,7 @@ final userSettingsProvider = AutoDisposeProvider<UserSettings?>.internal(
 );
 
 typedef UserSettingsRef = AutoDisposeProviderRef<UserSettings?>;
-String _$authNotifierHash() => r'06cf7e28caa094705f29178b8413a564aca35aa1';
+String _$authNotifierHash() => r'7b089f4a4c2078016bde48a91cb3f0aabb153730';
 
 /// Authentication provider using modern Riverpod patterns
 ///

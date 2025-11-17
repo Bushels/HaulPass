@@ -6,7 +6,7 @@ part of 'connectivity_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$isOnlineHash() => r'5f8c6e4a3b2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f';
+String _$isOnlineHash() => r'a0cb9ee48c40f7fdac3ec44c3d1c277e30cf8d18';
 
 /// Provider for connectivity status
 ///
@@ -22,7 +22,7 @@ final isOnlineProvider = AutoDisposeProvider<bool>.internal(
 );
 
 typedef IsOnlineRef = AutoDisposeProviderRef<bool>;
-String _$connectionTypeHash() => r'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0';
+String _$connectionTypeHash() => r'ca6606c54754e6a9026c254f35cc118eb0349ffc';
 
 /// Provider for connectivity status string
 ///
@@ -40,9 +40,11 @@ final connectionTypeProvider = AutoDisposeProvider<String>.internal(
 
 typedef ConnectionTypeRef = AutoDisposeProviderRef<String>;
 String _$connectivityNotifierHash() =>
-    r'b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9';
+    r'f05b5b9925f0588ea86be27e643ffb5264dbe159';
 
-/// See also [ConnectivityNotifier].
+/// Connectivity notifier
+///
+/// Copied from [ConnectivityNotifier].
 @ProviderFor(ConnectivityNotifier)
 final connectivityNotifierProvider = AutoDisposeNotifierProvider<
     ConnectivityNotifier, ConnectivityState>.internal(
