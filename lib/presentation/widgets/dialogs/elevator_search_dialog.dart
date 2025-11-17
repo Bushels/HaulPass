@@ -162,7 +162,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Showing ${_filteredElevators.length} elevators',
+                        'Showing ${_searchResults.length} elevators',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
@@ -211,14 +211,14 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                               ),
                               const SizedBox(height: 16),
                               ElevatedButton.icon(
-                                onPressed: _loadElevators,
+                                onPressed: () => _searchElevators(_searchController.text),
                                 icon: const Icon(Icons.refresh),
                                 label: const Text('Retry'),
                               ),
                             ],
                           ),
                         )
-                      : _filteredElevators.isEmpty
+                      : _searchResults.isEmpty
                           ? Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -246,9 +246,9 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                               ),
                             )
                           : ListView.builder(
-                              itemCount: _filteredElevators.length,
+                              itemCount: _searchResults.length,
                               itemBuilder: (context, index) {
-                                final elevator = _filteredElevators[index];
+                                final elevator = _searchResults[index];
                                 final elevatorId = elevator['id']?.toString() ?? '';
                                 final selectedId = _selectedElevator?['id']?.toString() ?? '';
                                 final isSelected = selectedId == elevatorId && elevatorId.isNotEmpty;
