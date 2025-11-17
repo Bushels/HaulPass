@@ -19,16 +19,15 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
   final _searchController = TextEditingController();
   final _elevatorService = ElevatorService();
 
-  List<Elevator> _filteredElevators = [];
-  List<Elevator> _allElevators = [];
-  Elevator? _selectedElevator;
+  List<Map<String, dynamic>> _filteredElevators = [];
+  List<Map<String, dynamic>> _allElevators = [];
+  Map<String, dynamic>? _selectedElevator;
   bool _isLoading = true;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _selectedElevator = widget.initialElevator;
     _loadElevators();
   }
 
@@ -45,8 +44,8 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
     });
 
     try {
-      // Load elevators from Supabase
-      final elevators = await _elevatorService.fetchElevators();
+      // Load elevators from Supabase elevators_import table (513 rows)
+      final elevators = await _elevatorService.fetchElevators(limit: 513);
 
       setState(() {
         _allElevators = elevators;
@@ -75,7 +74,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
 
     try {
       // Use server-side search for better performance
-      final results = await _elevatorService.searchElevators(query);
+      final results = await _elevatorService.searchElevators(name: query, limit: 100);
 
       setState(() {
         _filteredElevators = results;
@@ -85,9 +84,9 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
       // Fallback to client-side filtering if search fails
       setState(() {
         _filteredElevators = _allElevators.where((elevator) {
-          final nameLower = elevator.name.toLowerCase();
-          final companyLower = elevator.company.toLowerCase();
-          final addressLower = (elevator.address ?? '').toLowerCase();
+          final nameLower = (elevator['name'] as String? ?? '').toLowerCase();
+          final companyLower = (elevator['company'] as String? ?? '').toLowerCase();
+          final addressLower = (elevator['address'] as String? ?? '').toLowerCase();
           final queryLower = query.toLowerCase();
 
           return nameLower.contains(queryLower) ||
@@ -274,7 +273,13 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                               itemCount: _filteredElevators.length,
                               itemBuilder: (context, index) {
                                 final elevator = _filteredElevators[index];
-                                final isSelected = _selectedElevator?.id == elevator.id;
+                                final elevatorId = elevator['id']?.toString() ?? '';
+                                final selectedId = _selectedElevator?['id']?.toString() ?? '';
+                                final isSelected = selectedId == elevatorId && elevatorId.isNotEmpty;
+
+                                final name = elevator['name'] as String? ?? 'Unknown';
+                                final company = elevator['company'] as String? ?? '';
+                                final address = elevator['address'] as String?;
 
                                 return ListTile(
                                   selected: isSelected,
@@ -290,13 +295,13 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                                     ),
                                   ),
                                   title: Text(
-                                    elevator.name,
+                                    name,
                                     style: TextStyle(
                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                     ),
                                   ),
                                   subtitle: Text(
-                                    '${elevator.company}${elevator.address != null ? ' • ${elevator.address}' : ''}',
+                                    '$company${address != null && address.isNotEmpty ? ' • $address' : ''}',
                                   ),
                                   trailing: isSelected
                                       ? Icon(
