@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/elevator_models.dart';
-import '../../../data/services/mock_data_service.dart';
+import '../../../data/services/elevator_service.dart';
 
 /// Dialog for searching and selecting an elevator
 class ElevatorSearchDialog extends StatefulWidget {
@@ -17,9 +17,13 @@ class ElevatorSearchDialog extends StatefulWidget {
 
 class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
   final _searchController = TextEditingController();
+  final _elevatorService = ElevatorService();
+
   List<Elevator> _filteredElevators = [];
   List<Elevator> _allElevators = [];
   Elevator? _selectedElevator;
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -34,17 +38,52 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
     super.dispose();
   }
 
-  void _loadElevators() {
-    // Load from mock data - in production, this would load from Supabase
-    _allElevators = MockDataService.mockElevators;
-    _filteredElevators = _allElevators;
+  Future<void> _loadElevators() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Load elevators from Supabase
+      final elevators = await _elevatorService.fetchElevators();
+
+      setState(() {
+        _allElevators = elevators;
+        _filteredElevators = elevators;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load elevators: $e';
+        _isLoading = false;
+      });
+    }
   }
 
-  void _filterElevators(String query) {
-    setState(() {
-      if (query.isEmpty) {
+  Future<void> _searchElevators(String query) async {
+    if (query.trim().isEmpty) {
+      setState(() {
         _filteredElevators = _allElevators;
-      } else {
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Use server-side search for better performance
+      final results = await _elevatorService.searchElevators(query);
+
+      setState(() {
+        _filteredElevators = results;
+        _isLoading = false;
+      });
+    } catch (e) {
+      // Fallback to client-side filtering if search fails
+      setState(() {
         _filteredElevators = _allElevators.where((elevator) {
           final nameLower = elevator.name.toLowerCase();
           final companyLower = elevator.company.toLowerCase();
@@ -55,8 +94,9 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
               companyLower.contains(queryLower) ||
               addressLower.contains(queryLower);
         }).toList();
-      }
-    });
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -115,7 +155,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             _searchController.clear();
-                            _filterElevators('');
+                            _searchElevators('');
                           },
                         )
                       : null,
@@ -124,7 +164,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                   ),
                   filled: true,
                 ),
-                onChanged: _filterElevators,
+                onChanged: _searchElevators,
               ),
             ),
 
@@ -159,75 +199,119 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
 
             // Elevator list
             Expanded(
-              child: _filteredElevators.isEmpty
-                  ? Center(
+              child: _isLoading
+                  ? const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 64,
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No elevators found',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Try a different search term',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text('Loading elevators...'),
                         ],
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: _filteredElevators.length,
-                      itemBuilder: (context, index) {
-                        final elevator = _filteredElevators[index];
-                        final isSelected = _selectedElevator?.id == elevator.id;
+                  : _errorMessage != null
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 64,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Error loading elevators',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 32),
+                                child: Text(
+                                  _errorMessage!,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: _loadElevators,
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Retry'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : _filteredElevators.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_off,
+                                    size: 64,
+                                    color: Theme.of(context).colorScheme.outline,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No elevators found',
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Try a different search term',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: _filteredElevators.length,
+                              itemBuilder: (context, index) {
+                                final elevator = _filteredElevators[index];
+                                final isSelected = _selectedElevator?.id == elevator.id;
 
-                        return ListTile(
-                          selected: isSelected,
-                          leading: CircleAvatar(
-                            backgroundColor: isSelected
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.primaryContainer,
-                            child: Icon(
-                              Icons.location_city,
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context).colorScheme.onPrimaryContainer,
+                                return ListTile(
+                                  selected: isSelected,
+                                  leading: CircleAvatar(
+                                    backgroundColor: isSelected
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.primaryContainer,
+                                    child: Icon(
+                                      Icons.location_city,
+                                      color: isSelected
+                                          ? Theme.of(context).colorScheme.onPrimary
+                                          : Theme.of(context).colorScheme.onPrimaryContainer,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    elevator.name,
+                                    style: TextStyle(
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${elevator.company}${elevator.address != null ? ' • ${elevator.address}' : ''}',
+                                  ),
+                                  trailing: isSelected
+                                      ? Icon(
+                                          Icons.check_circle,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        )
+                                      : null,
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedElevator = elevator;
+                                    });
+                                  },
+                                );
+                              },
                             ),
-                          ),
-                          title: Text(
-                            elevator.name,
-                            style: TextStyle(
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            ),
-                          ),
-                          subtitle: Text(
-                            '${elevator.company}${elevator.address != null ? ' • ${elevator.address}' : ''}',
-                          ),
-                          trailing: isSelected
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: Theme.of(context).colorScheme.primary,
-                                )
-                              : null,
-                          onTap: () {
-                            setState(() {
-                              _selectedElevator = elevator;
-                            });
-                          },
-                        );
-                      },
-                    ),
             ),
 
             // Action buttons
