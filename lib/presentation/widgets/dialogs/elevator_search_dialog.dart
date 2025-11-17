@@ -48,12 +48,12 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
         _filteredElevators = _allElevators.where((elevator) {
           final nameLower = elevator.name.toLowerCase();
           final companyLower = elevator.company.toLowerCase();
-          final cityLower = (elevator.city ?? '').toLowerCase();
+          final addressLower = (elevator.address ?? '').toLowerCase();
           final queryLower = query.toLowerCase();
 
           return nameLower.contains(queryLower) ||
               companyLower.contains(queryLower) ||
-              cityLower.contains(queryLower);
+              addressLower.contains(queryLower);
         }).toList();
       }
     });
@@ -108,7 +108,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                 controller: _searchController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Type elevator name, company, or city...',
+                  hintText: 'Type elevator name, company, or address...',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -212,7 +212,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                             ),
                           ),
                           subtitle: Text(
-                            '${elevator.company}${elevator.city != null ? ' • ${elevator.city}' : ''}',
+                            '${elevator.company}${elevator.address != null ? ' • ${elevator.address}' : ''}',
                           ),
                           trailing: isSelected
                               ? Icon(
