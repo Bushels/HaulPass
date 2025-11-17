@@ -157,37 +157,79 @@ class ElevatorService {
     }
   }
 
-  /// Fetch elevators near a location
+  /// Fetch elevators near a location using PostGIS RPC function
   ///
-  /// Note: This is a placeholder. For production, use a PostGIS RPC function
-  /// like get_elevators_near(lat, lng, km) for proper distance-based queries.
+  /// Uses the get_elevators_near RPC which efficiently queries elevators
+  /// within a specified radius using ST_DWithin and returns them ordered by distance.
   Future<List<Map<String, dynamic>>> nearbyElevators({
     required double lat,
     required double lng,
+    double radiusKm = 50.0,
     int limit = 25,
   }) async {
     try {
       if (kDebugMode) {
-        debugPrint('📍 Fetching elevators near ($lat, $lng) - limit: $limit');
-        debugPrint('⚠️ Using placeholder query - recommend using PostGIS RPC for production');
+        debugPrint('📍 Fetching elevators near ($lat, $lng) within ${radiusKm}km - limit: $limit');
       }
 
-      // Placeholder: fetch all and filter client-side
-      // TODO: Replace with RPC call: supabase.rpc('get_elevators_near', {'lat': lat, 'lng': lng, 'km': 50})
-      final data = await _client
-          .from('elevators_import')
-          .select('id,name,address,location')
-          .order('created_at')
-          .limit(limit);
+      // Call PostGIS RPC function for efficient spatial queries
+      final data = await _client.rpc('get_elevators_near', params: {
+        'lat': lat,
+        'lng': lng,
+        'radius_km': radiusKm,
+        'max_results': limit,
+      });
 
       if (kDebugMode) {
-        debugPrint('✅ Fetched ${(data as List).length} elevators (placeholder query)');
+        debugPrint('✅ Found ${(data as List).length} nearby elevators');
       }
 
       return (data as List).cast<Map<String, dynamic>>();
     } catch (e, stackTrace) {
       if (kDebugMode) {
         debugPrint('❌ Error fetching nearby elevators: $e');
+        debugPrint('Stack trace: $stackTrace');
+      }
+      rethrow;
+    }
+  }
+
+  /// Fetch elevators with favorites flag for current user
+  ///
+  /// Uses the elevators_with_favorites view which includes is_favorite boolean
+  /// and favorite metadata (favorited_at, favorite_notes) for the authenticated user.
+  Future<List<Map<String, dynamic>>> fetchElevatorsWithFavorites({
+    int limit = 200,
+    int offset = 0,
+    bool favoritesOnly = false,
+  }) async {
+    try {
+      if (kDebugMode) {
+        debugPrint('📍 Fetching elevators with favorites (favoritesOnly: $favoritesOnly)');
+      }
+
+      PostgrestFilterBuilder query = _client
+          .from('elevators_with_favorites')
+          .select('id,name,company,address,capacity_tonnes,grain_types,railway,elevator_type,is_favorite,favorited_at,favorite_notes');
+
+      if (favoritesOnly) {
+        query = query.eq('is_favorite', true);
+      }
+
+      final transformedQuery = query
+          .order('name', ascending: true)
+          .range(offset, offset + limit - 1);
+
+      final data = await transformedQuery;
+
+      if (kDebugMode) {
+        debugPrint('✅ Fetched ${(data as List).length} elevators with favorites');
+      }
+
+      return (data as List).cast<Map<String, dynamic>>();
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        debugPrint('❌ Error fetching elevators with favorites: $e');
         debugPrint('Stack trace: $stackTrace');
       }
       rethrow;

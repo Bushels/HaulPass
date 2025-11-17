@@ -19,16 +19,16 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
   final _searchController = TextEditingController();
   final _elevatorService = ElevatorService();
 
-  List<Map<String, dynamic>> _filteredElevators = [];
-  List<Map<String, dynamic>> _allElevators = [];
+  List<Map<String, dynamic>> _searchResults = [];
   Map<String, dynamic>? _selectedElevator;
-  bool _isLoading = true;
+  bool _isLoading = false;
+  bool _hasSearched = false;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _loadElevators();
+    // Don't load elevators on init - wait for user to type
   }
 
   @override
@@ -37,62 +37,38 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
     super.dispose();
   }
 
-  Future<void> _loadElevators() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      // Load elevators from Supabase elevators_import table (513 rows)
-      final elevators = await _elevatorService.fetchElevators(limit: 513);
-
-      setState(() {
-        _allElevators = elevators;
-        _filteredElevators = elevators;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to load elevators: $e';
-        _isLoading = false;
-      });
-    }
-  }
-
   Future<void> _searchElevators(String query) async {
+    // Clear results if query is empty
     if (query.trim().isEmpty) {
       setState(() {
-        _filteredElevators = _allElevators;
+        _searchResults = [];
+        _hasSearched = false;
+        _errorMessage = null;
       });
       return;
     }
 
+    // Show loading state
     setState(() {
       _isLoading = true;
+      _hasSearched = true;
+      _errorMessage = null;
     });
 
     try {
-      // Use server-side search for better performance
-      final results = await _elevatorService.searchElevators(name: query, limit: 100);
+      // Server-side search with autocomplete
+      final results = await _elevatorService.searchElevators(
+        name: query,
+        limit: 50,  // Limit autocomplete results
+      );
 
       setState(() {
-        _filteredElevators = results;
+        _searchResults = results;
         _isLoading = false;
       });
     } catch (e) {
-      // Fallback to client-side filtering if search fails
       setState(() {
-        _filteredElevators = _allElevators.where((elevator) {
-          final nameLower = (elevator['name'] as String? ?? '').toLowerCase();
-          final companyLower = (elevator['company'] as String? ?? '').toLowerCase();
-          final addressLower = (elevator['address'] as String? ?? '').toLowerCase();
-          final queryLower = query.toLowerCase();
-
-          return nameLower.contains(queryLower) ||
-              companyLower.contains(queryLower) ||
-              addressLower.contains(queryLower);
-        }).toList();
+        _errorMessage = 'Search failed: $e';
         _isLoading = false;
       });
     }
@@ -147,7 +123,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                 controller: _searchController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Type elevator name, company, or address...',
+                  hintText: 'Search by name, company, or location...',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
