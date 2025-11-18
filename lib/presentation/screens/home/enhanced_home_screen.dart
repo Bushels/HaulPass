@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:badges/badges.dart' as badges;
-import '../../../core/theme/app_colors.dart';
 import '../../../data/services/mock_data_service.dart';
-import '../../widgets/cards/stat_card.dart';
 import '../../widgets/cards/elevator_card.dart';
 import '../../widgets/haul/active_haul_card.dart';
-import '../../widgets/loading/shimmer_loading.dart';
 
 /// Stunning redesigned home screen for marketing
 class EnhancedHomeScreen extends ConsumerWidget {

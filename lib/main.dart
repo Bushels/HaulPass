@@ -14,6 +14,7 @@ import 'presentation/screens/auth/auth_screen.dart';
 import 'presentation/screens/auth/signin_screen.dart';
 import 'presentation/screens/auth/signup_screen.dart';
 import 'presentation/screens/main/main_navigation.dart';
+import 'presentation/screens/haul/start_haul_screen.dart';
 
 /// Main app widget with Riverpod provider scope and routing
 class HaulPassApp extends ConsumerWidget {
@@ -50,16 +51,21 @@ class HaulPassApp extends ConsumerWidget {
 
         final currentLocation = state.uri.path;
         final isAuthRoute = currentLocation.startsWith('/auth');
-        
+
+        print('🔀 Router redirect check: location=$currentLocation, isAuthenticated=$isAuthenticated, isAuthRoute=$isAuthRoute');
+
         // Redirect logic
         if (!isAuthenticated && !isAuthRoute) {
+          print('🔀 Redirecting to /auth (not authenticated)');
           return '/auth';
         }
-        
+
         if (isAuthenticated && isAuthRoute) {
+          print('🔀 Redirecting to / (already authenticated)');
           return '/';
         }
-        
+
+        print('🔀 No redirect needed');
         return null; // No redirect needed
       },
       routes: [
@@ -81,6 +87,12 @@ class HaulPassApp extends ConsumerWidget {
         GoRoute(
           path: '/',
           builder: (context, state) => const MainNavigation(),
+        ),
+
+        // Haul workflow
+        GoRoute(
+          path: '/haul/start',
+          builder: (context, state) => const StartHaulScreen(),
         ),
       ],
       

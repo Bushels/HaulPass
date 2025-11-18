@@ -116,7 +116,6 @@ class WebConfig {
           enableFileAPI: true,
         );
       case Environment.development:
-      default:
         return const WebFeatureFlags(
           enableServiceWorker: false,
           enablePushNotifications: false,

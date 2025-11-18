@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/user_models.dart';
-import '../../../data/models/elevator_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/privacy/privacy_badge.dart';
@@ -47,7 +46,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _obscureConfirmPassword = true;
   String _preferredUnit = 'kg';
   bool _agreedToTerms = false;
-  Elevator? _selectedElevator;
+  Map<String, dynamic>? _selectedElevator;
 
   @override
   void dispose() {
@@ -461,7 +460,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           Row(
             children: [
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: TextFormField(
                   controller: _grainCapacityController,
                   keyboardType: TextInputType.number,
@@ -475,6 +474,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ),
               const SizedBox(width: 16),
               Expanded(
+                flex: 2,
                 child: DropdownButtonFormField<String>(
                   value: _preferredUnit,
                   decoration: const InputDecoration(
@@ -599,13 +599,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _selectedElevator!.name,
+                          _selectedElevator!['name'] as String? ?? 'Unknown',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
                         Text(
-                          _selectedElevator!.company,
+                          _selectedElevator!['company'] as String? ?? '',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
@@ -633,14 +633,17 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             icon: const Icon(Icons.search),
             label: Text(_selectedElevator != null ? 'Change Elevator' : 'Search for Elevator'),
           ),
+          const SizedBox(height: 32),
+          // Complete signup button
+          PrimaryButton(
+            text: _isLoading ? 'Creating account...' : 'Complete Sign Up',
+            onPressed: _isLoading ? null : _completeSignUp,
+          ),
           const SizedBox(height: 16),
+          // Skip option
           TextButton(
             onPressed: _isLoading ? null : _completeSignUp,
-            child: Text(
-              _isLoading
-                  ? 'Creating account...'
-                  : 'Skip for now (you can add this later)',
-            ),
+            child: const Text('Skip for now (you can add this later)'),
           ),
         ],
       ),
@@ -648,14 +651,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   Future<void> _showElevatorSearchDialog() async {
-    final result = await showDialog<Elevator>(
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) => ElevatorSearchDialog(
-        initialElevator: _selectedElevator,
-      ),
+      barrierDismissible: true,
+      builder: (context) => const ElevatorSearchDialog(),
     );
 
-    if (result != null) {
+    if (result != null && mounted) {
       setState(() {
         _selectedElevator = result;
       });
@@ -740,7 +742,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         grainTruckName: _grainTruckNameController.text.trim(),
         grainCapacityKg: capacityKg,
         preferredUnit: _preferredUnit,
-        favoriteElevatorId: _selectedElevator?.id,
+        favoriteElevatorId: _selectedElevator?['id']?.toString(),
         acceptTerms: _agreedToTerms,
       );
 

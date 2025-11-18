@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/elevator_models.dart';
 import '../../../data/models/location_models.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/location_provider.dart' hide AppLocation, AppLocationHistory;
 import '../../providers/elevator_provider.dart';
 import '../../widgets/loading/shimmer_loading.dart';

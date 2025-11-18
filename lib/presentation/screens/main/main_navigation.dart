@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:badges/badges.dart' as badges;
-import '../home/enhanced_home_screen.dart';
+import '../home/smart_dashboard_screen.dart';
 import '../elevator/elevator_screen.dart';
 import '../timer/timer_screen.dart';
 import '../profile/profile_screen.dart';
@@ -20,7 +20,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
-    EnhancedHomeScreen(),
+    SmartDashboardScreen(),
     ElevatorScreen(),
     TimerScreen(),
     ProfileScreen(),
@@ -29,7 +29,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     final isOnline = ref.watch(isOnlineProvider);
-    final connectionType = ref.watch(connectionTypeProvider);
 
     return Scaffold(
       body: Column(

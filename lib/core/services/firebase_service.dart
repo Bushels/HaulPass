@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -85,6 +84,8 @@ class FirebaseService {
     }
   }
 
+  // Uncomment when Firebase is configured
+  /*
   /// Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
     if (kDebugMode) {
@@ -94,6 +95,7 @@ class FirebaseService {
     // TODO: Show local notification or in-app alert
     // You can use flutter_local_notifications here
   }
+  */
 
   /// Log analytics event
   Future<void> logEvent({

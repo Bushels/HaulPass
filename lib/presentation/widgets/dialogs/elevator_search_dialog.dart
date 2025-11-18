@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../data/models/elevator_models.dart';
 import '../../../data/services/elevator_service.dart';
 
 /// Dialog for searching and selecting an elevator
 class ElevatorSearchDialog extends StatefulWidget {
-  final Elevator? initialElevator;
-
   const ElevatorSearchDialog({
     super.key,
-    this.initialElevator,
   });
 
   @override
@@ -22,7 +18,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
   List<Map<String, dynamic>> _searchResults = [];
   Map<String, dynamic>? _selectedElevator;
   bool _isLoading = false;
-  bool _hasSearched = false;
+  bool _isClosing = false;
   String? _errorMessage;
 
   @override
@@ -42,7 +38,6 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
     if (query.trim().isEmpty) {
       setState(() {
         _searchResults = [];
-        _hasSearched = false;
         _errorMessage = null;
       });
       return;
@@ -51,7 +46,6 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
     // Show loading state
     setState(() {
       _isLoading = true;
-      _hasSearched = true;
       _errorMessage = null;
     });
 
@@ -149,7 +143,7 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -317,8 +311,14 @@ class _ElevatorSearchDialogState extends State<ElevatorSearchDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton(
-                      onPressed: _selectedElevator != null
-                          ? () => Navigator.of(context).pop(_selectedElevator)
+                      onPressed: _selectedElevator != null && !_isClosing
+                          ? () {
+                              if (_isClosing || !mounted) return;
+                              setState(() {
+                                _isClosing = true;
+                              });
+                              Navigator.of(context).pop(_selectedElevator);
+                            }
                           : null,
                       child: const Text('Select'),
                     ),

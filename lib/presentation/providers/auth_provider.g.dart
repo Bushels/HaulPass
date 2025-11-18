@@ -6,13 +6,13 @@ part of 'auth_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$currentUserHash() => r'21d14c34f50ba07110b97db206c108ce2abee427';
+String _$currentUserHash() => r'ce1a174b42033af8a48c20ba5e934ea2a4a5fc69';
 
 /// Provider for current user
 ///
 /// Copied from [currentUser].
 @ProviderFor(currentUser)
-final currentUserProvider = AutoDisposeProvider<UserProfile?>.internal(
+final currentUserProvider = Provider<UserProfile?>.internal(
   currentUser,
   name: r'currentUserProvider',
   debugGetCreateSourceHash:
@@ -21,14 +21,14 @@ final currentUserProvider = AutoDisposeProvider<UserProfile?>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef CurrentUserRef = AutoDisposeProviderRef<UserProfile?>;
-String _$isAuthenticatedHash() => r'c5660636297ef81a2c90d4306903bd27ee97aedb';
+typedef CurrentUserRef = ProviderRef<UserProfile?>;
+String _$isAuthenticatedHash() => r'7fb0c32f05965e237dac2f3640a3995f50649cde';
 
 /// Provider for authentication status
 ///
 /// Copied from [isAuthenticated].
 @ProviderFor(isAuthenticated)
-final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
+final isAuthenticatedProvider = Provider<bool>.internal(
   isAuthenticated,
   name: r'isAuthenticatedProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -38,14 +38,14 @@ final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef IsAuthenticatedRef = AutoDisposeProviderRef<bool>;
-String _$authErrorHash() => r'833430d356f0a9fa1f79274078311359b71004e3';
+typedef IsAuthenticatedRef = ProviderRef<bool>;
+String _$authErrorHash() => r'c92805d583c38a1fdffadeaf12b96b2d0d8feaad';
 
 /// Provider for authentication errors
 ///
 /// Copied from [authError].
 @ProviderFor(authError)
-final authErrorProvider = AutoDisposeProvider<AuthError?>.internal(
+final authErrorProvider = Provider<AuthError?>.internal(
   authError,
   name: r'authErrorProvider',
   debugGetCreateSourceHash:
@@ -54,14 +54,14 @@ final authErrorProvider = AutoDisposeProvider<AuthError?>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AuthErrorRef = AutoDisposeProviderRef<AuthError?>;
-String _$accessTokenHash() => r'c7057402e39cb675dc9df7db7523d9e2b9dfc2e3';
+typedef AuthErrorRef = ProviderRef<AuthError?>;
+String _$accessTokenHash() => r'336af4ca36610063d29db5dd186212a74b0f2dc7';
 
 /// Provider for access token
 ///
 /// Copied from [accessToken].
 @ProviderFor(accessToken)
-final accessTokenProvider = AutoDisposeProvider<String?>.internal(
+final accessTokenProvider = Provider<String?>.internal(
   accessToken,
   name: r'accessTokenProvider',
   debugGetCreateSourceHash:
@@ -70,14 +70,14 @@ final accessTokenProvider = AutoDisposeProvider<String?>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef AccessTokenRef = AutoDisposeProviderRef<String?>;
-String _$userSettingsHash() => r'6658fd827528028f2d0b5646eaa4ce64f631cc9e';
+typedef AccessTokenRef = ProviderRef<String?>;
+String _$userSettingsHash() => r'8a6bca06bc4a07f6583b4c364403f601111b6b3f';
 
 /// Provider for user settings
 ///
 /// Copied from [userSettings].
 @ProviderFor(userSettings)
-final userSettingsProvider = AutoDisposeProvider<UserSettings?>.internal(
+final userSettingsProvider = Provider<UserSettings?>.internal(
   userSettings,
   name: r'userSettingsProvider',
   debugGetCreateSourceHash:
@@ -86,15 +86,18 @@ final userSettingsProvider = AutoDisposeProvider<UserSettings?>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef UserSettingsRef = AutoDisposeProviderRef<UserSettings?>;
-String _$authNotifierHash() => r'7b089f4a4c2078016bde48a91cb3f0aabb153730';
+typedef UserSettingsRef = ProviderRef<UserSettings?>;
+String _$authNotifierHash() => r'ec14aaa463430508cea9f61b92e240a49742fd05';
 
 /// Authentication provider using modern Riverpod patterns
+/// NOTE: We use Notifier (not AutoDisposeNotifier) because auth state
+/// must persist throughout the app lifecycle. AutoDispose would create
+/// new instances with fresh state, causing sign-in issues.
 ///
 /// Copied from [AuthNotifier].
 @ProviderFor(AuthNotifier)
 final authNotifierProvider =
-    AutoDisposeNotifierProvider<AuthNotifier, AuthenticationState>.internal(
+    NotifierProvider<AuthNotifier, AuthenticationState>.internal(
   AuthNotifier.new,
   name: r'authNotifierProvider',
   debugGetCreateSourceHash:
@@ -103,6 +106,6 @@ final authNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$AuthNotifier = AutoDisposeNotifier<AuthenticationState>;
+typedef _$AuthNotifier = Notifier<AuthenticationState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
