@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/privacy/privacy_badge.dart';
@@ -255,13 +256,44 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           );
       print('✅ SignIn method completed');
 
+      // Small delay to allow Riverpod state to propagate
+      // The auth provider already has delays, but this ensures we read the updated state
+      await Future.delayed(const Duration(milliseconds: 50));
+
       // Check for errors
       final authState = ref.read(authNotifierProvider);
+      print('🔍 Auth state after signIn: isAuthenticated=${authState.isAuthenticated}, user=${authState.user?.email}, error=${authState.error?.code}');
+
       if (authState.error != null) {
+        print('❌ Auth error detected: ${authState.error!.message}');
         throw Exception(authState.error!.message);
       }
 
+      // Verify we're actually authenticated before navigating
+      if (!authState.isAuthenticated) {
+        print('⚠️ Auth state not updated immediately, waiting...');
+        // Wait a bit more and check again
+        await Future.delayed(const Duration(milliseconds: 150));
+        final recheckState = ref.read(authNotifierProvider);
+        print('🔍 Re-check auth state: isAuthenticated=${recheckState.isAuthenticated}, user=${recheckState.user?.email}');
+
+        if (!recheckState.isAuthenticated) {
+          print('❌ Sign in completed but user not authenticated after waiting!');
+          throw Exception('Authentication state not updated. Please try again.');
+        }
+      }
+
+      // Verify session exists in Supabase
+      final session = Supabase.instance.client.auth.currentSession;
+      print('🔍 Supabase session check: ${session != null ? "present" : "null"}');
+
+      if (session == null) {
+        print('❌ No Supabase session found!');
+        throw Exception('Session not found. Please try again.');
+      }
+
       if (mounted) {
+        print('✅ All checks passed - showing success and navigating...');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Signed in successfully!'),
@@ -270,9 +302,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         );
 
         // Navigate to home screen
+        print('🚀 Navigating to home...');
         context.go('/');
+        print('✅ Navigation call completed');
       }
     } catch (e) {
+      print('❌ Sign in failed with error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

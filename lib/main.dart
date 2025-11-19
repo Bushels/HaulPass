@@ -5,14 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/environment_service.dart';
 import 'core/services/supabase_config.dart';
+import 'core/services/firebase_service.dart';
+import 'core/services/sentry_service.dart';
+import 'core/services/offline_storage_service.dart';
+import 'core/services/notification_service.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/screens/auth/auth_screen.dart';
 import 'presentation/screens/auth/signin_screen.dart';
 import 'presentation/screens/auth/signup_screen.dart';
-import 'presentation/screens/home/enhanced_home_screen.dart';
-import 'presentation/screens/elevator/elevator_screen.dart';
-import 'presentation/screens/timer/timer_screen.dart';
-import 'presentation/screens/profile/profile_screen.dart';
+import 'presentation/screens/main/main_navigation.dart';
+import 'presentation/screens/haul/start_haul_screen.dart';
 
 /// Main app widget with Riverpod provider scope and routing
 class HaulPassApp extends ConsumerWidget {
@@ -49,16 +51,21 @@ class HaulPassApp extends ConsumerWidget {
 
         final currentLocation = state.uri.path;
         final isAuthRoute = currentLocation.startsWith('/auth');
-        
+
+        print('🔀 Router redirect check: location=$currentLocation, isAuthenticated=$isAuthenticated, isAuthRoute=$isAuthRoute');
+
         // Redirect logic
         if (!isAuthenticated && !isAuthRoute) {
+          print('🔀 Redirecting to /auth (not authenticated)');
           return '/auth';
         }
-        
+
         if (isAuthenticated && isAuthRoute) {
+          print('🔀 Redirecting to / (already authenticated)');
           return '/';
         }
-        
+
+        print('🔀 No redirect needed');
         return null; // No redirect needed
       },
       routes: [
@@ -76,22 +83,16 @@ class HaulPassApp extends ConsumerWidget {
           builder: (context, state) => const SignUpScreen(),
         ),
 
-        // Main app routes
+        // Main app with bottom navigation
         GoRoute(
           path: '/',
-          builder: (context, state) => const EnhancedHomeScreen(),
+          builder: (context, state) => const MainNavigation(),
         ),
+
+        // Haul workflow
         GoRoute(
-          path: '/elevators',
-          builder: (context, state) => const ElevatorScreen(),
-        ),
-        GoRoute(
-          path: '/timer',
-          builder: (context, state) => const TimerScreen(),
-        ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+          path: '/haul/start',
+          builder: (context, state) => const StartHaulScreen(),
         ),
       ],
       
@@ -137,86 +138,104 @@ class HaulPassApp extends ConsumerWidget {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    // Initialize environment service to load .env file
-    await EnvironmentService.instance.initialize();
+  // Initialize Sentry with app runner
+  await SentryService.instance.initialize(
+    appRunner: () async {
+      try {
+        // Initialize environment service to load .env file
+        await EnvironmentService.instance.initialize();
 
-    // Print configuration for debugging
-    if (kDebugMode) {
-      EnvironmentService.instance.printConfiguration();
-    }
+        // Print configuration for debugging
+        if (kDebugMode) {
+          EnvironmentService.instance.printConfiguration();
+        }
 
-    // Load Supabase configuration from environment variables
-    final env = EnvironmentService.instance;
+        // Load Supabase configuration from environment variables
+        final env = EnvironmentService.instance;
 
-    // Get configuration from environment service
-    final supabaseUrl = env.supabaseUrl;
-    final supabaseAnonKey = env.supabaseAnonKey;
+        // Get configuration from environment service
+        final supabaseUrl = env.supabaseUrl;
+        final supabaseAnonKey = env.supabaseAnonKey;
 
-    // Initialize Supabase with secure environment configuration
-    await initializeSupabase(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
-    );
+        // Initialize Supabase with secure environment configuration
+        await initializeSupabase(
+          url: supabaseUrl,
+          anonKey: supabaseAnonKey,
+        );
 
-    if (kDebugMode) {
-      debugPrint('✅ Supabase initialized successfully');
-      debugPrint('📱 Platform: ${kIsWeb ? "Web" : "Mobile"}');
-      debugPrint('🔗 Supabase URL: $supabaseUrl');
-    }
-    
-  } catch (e) {
-    // Handle configuration errors gracefully
-    if (e is EnvironmentException) {
-      debugPrint('❌ Environment Configuration Error: $e');
-      
-      // Show user-friendly error message for configuration issues
-      if (kDebugMode) {
-        debugPrint('Environment variables needed:');
-        debugPrint('- SUPABASE_URL: Your Supabase project URL');
-        debugPrint('- SUPABASE_ANON_KEY: Your Supabase anonymous key');
-        debugPrint('- GOOGLE_MAPS_API_KEY: Your Google Maps API key');
-        debugPrint('For web deployment, add these as meta tags or window variables');
-      }
-    } else {
-      debugPrint('❌ Initialization Error: $e');
-    }
-    
-    // For development, continue with app initialization even if Supabase fails
-    // In production, you might want to exit or show a configuration screen
-    if (!kDebugMode) {
-      // In production, show error screen instead of continuing
-      runApp(MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                const Text(
-                  'Configuration Error',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        if (kDebugMode) {
+          debugPrint('✅ Supabase initialized successfully');
+          debugPrint('📱 Platform: ${kIsWeb ? "Web" : "Mobile"}');
+          debugPrint('🔗 Supabase URL: $supabaseUrl');
+        }
+
+        // Initialize Firebase (Analytics & Messaging)
+        await FirebaseService.instance.initialize();
+
+        // Initialize Hive for offline storage
+        await OfflineStorageService.instance.initialize();
+
+        // Initialize local notifications
+        await NotificationService.instance.initialize();
+
+        if (kDebugMode) {
+          debugPrint('✅ All services initialized');
+        }
+        } catch (e) {
+        // Handle configuration errors gracefully
+        if (e is EnvironmentException) {
+          debugPrint('❌ Environment Configuration Error: $e');
+
+          // Show user-friendly error message for configuration issues
+          if (kDebugMode) {
+            debugPrint('Environment variables needed:');
+            debugPrint('- SUPABASE_URL: Your Supabase project URL');
+            debugPrint('- SUPABASE_ANON_KEY: Your Supabase anonymous key');
+            debugPrint('- GOOGLE_MAPS_API_KEY: Your Google Maps API key');
+            debugPrint('For web deployment, add these as meta tags or window variables');
+          }
+        } else {
+          debugPrint('❌ Initialization Error: $e');
+        }
+
+        // For development, continue with app initialization even if Supabase fails
+        // In production, you might want to exit or show a configuration screen
+        if (!kDebugMode) {
+          // In production, show error screen instead of continuing
+          runApp(MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Configuration Error',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Please check your environment configuration.\n'
+                      'Contact support if the problem persists.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Please check your environment configuration.\n'
-                  'Contact support if the problem persists.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-              ],
+              ),
             ),
-          ),
+          ));
+          return;
+        }
+      }
+
+      // Run the app
+      runApp(
+        const ProviderScope(
+          child: HaulPassApp(),
         ),
-      ));
-      return;
-    }
-  }
-  
-  runApp(
-    const ProviderScope(
-      child: HaulPassApp(),
-    ),
+      );
+    },
   );
 }

@@ -1,7 +1,11 @@
 /// Demo configuration for marketing and screenshots
 class DemoConfig {
   // Enable demo mode to bypass authentication
-  static const bool isDemoMode = true;
+  static const bool isDemoMode = false;
+
+  // Development mode - set to true during development to bypass email confirmation
+  // WARNING: Set to false in production!
+  static const bool isDevelopmentMode = true;
 
   // Demo user credentials
   static const String demoEmail = 'buperac@gmail.com';
@@ -20,4 +24,7 @@ class DemoConfig {
 
   // Quick access for demo mode
   static bool get shouldBypassAuth => isDemoMode;
+
+  // Quick access for development mode
+  static bool get shouldSkipEmailConfirmation => isDevelopmentMode;
 }

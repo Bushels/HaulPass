@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
+import 'package:badges/badges.dart' as badges;
 import '../../../data/services/mock_data_service.dart';
-import '../../widgets/cards/stat_card.dart';
 import '../../widgets/cards/elevator_card.dart';
 import '../../widgets/haul/active_haul_card.dart';
 
@@ -87,32 +86,39 @@ class EnhancedHomeScreen extends ConsumerWidget {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {},
-                  icon: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
+                  onPressed: () {
+                    // TODO: Navigate to notifications screen
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Notifications screen coming soon!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: badges.Badge(
+                    badgeContent: const Text(
+                      '3',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    child: Stack(
-                      children: [
-                        const Center(
-                          child: Icon(Icons.notifications_outlined, color: Colors.white, size: 20),
-                        ),
-                        Positioned(
-                          right: 10,
-                          top: 10,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFF6B6B),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ],
+                    badgeStyle: const badges.BadgeStyle(
+                      badgeColor: Color(0xFFFF6B6B),
+                      padding: EdgeInsets.all(4),
+                    ),
+                    position: badges.BadgePosition.topEnd(top: -4, end: -4),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.notifications_outlined, color: Colors.white, size: 20),
+                      ),
                     ),
                   ),
                 ),

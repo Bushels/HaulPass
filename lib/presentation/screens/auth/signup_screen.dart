@@ -5,6 +5,7 @@ import '../../../data/models/user_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/privacy/privacy_badge.dart';
+import '../../widgets/dialogs/elevator_search_dialog.dart';
 
 /// Complete sign up and onboarding screen
 /// Collects: Email, Password, Name, Farm, Binyard, Truck, Favorite Elevator
@@ -17,6 +18,9 @@ class SignUpScreen extends ConsumerStatefulWidget {
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _personalInfoFormKey = GlobalKey<FormState>();
+  final _farmFormKey = GlobalKey<FormState>();
+  final _truckFormKey = GlobalKey<FormState>();
   final _pageController = PageController();
 
   // Step 1: Basic auth
@@ -42,6 +46,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _obscureConfirmPassword = true;
   String _preferredUnit = 'kg';
   bool _agreedToTerms = false;
+  Map<String, dynamic>? _selectedElevator;
 
   @override
   void dispose() {
@@ -284,60 +289,63 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget _buildPersonalInfoStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Tell us about yourself',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'We\'ll use this to personalize your experience',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-          const SizedBox(height: 32),
-          TextFormField(
-            controller: _firstNameController,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'First Name',
-              prefixIcon: Icon(Icons.person_outline),
-              border: OutlineInputBorder(),
+      child: Form(
+        key: _personalInfoFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Tell us about yourself',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your first name';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _lastNameController,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'Last Name',
-              prefixIcon: Icon(Icons.person_outline),
-              border: OutlineInputBorder(),
+            const SizedBox(height: 8),
+            Text(
+              'We\'ll use this to personalize your experience',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your last name';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 32),
-          PrimaryButton(
-            text: 'Continue',
-            onPressed: _nextStep,
-          ),
-        ],
+            const SizedBox(height: 32),
+            TextFormField(
+              controller: _firstNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'First Name',
+                prefixIcon: Icon(Icons.person_outline),
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your first name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _lastNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Last Name',
+                prefixIcon: Icon(Icons.person_outline),
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your last name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 32),
+            PrimaryButton(
+              text: 'Continue',
+              onPressed: _nextStep,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -346,7 +354,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget _buildFarmDetailsStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
+      child: Form(
+        key: _farmFormKey,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
@@ -402,6 +412,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             onPressed: _nextStep,
           ),
         ],
+        ),
       ),
     );
   }
@@ -410,7 +421,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget _buildTruckDetailsStep() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      child: Column(
+      child: Form(
+        key: _truckFormKey,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
@@ -447,7 +460,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           Row(
             children: [
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: TextFormField(
                   controller: _grainCapacityController,
                   keyboardType: TextInputType.number,
@@ -461,6 +474,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ),
               const SizedBox(width: 16),
               Expanded(
+                flex: 2,
                 child: DropdownButtonFormField<String>(
                   value: _preferredUnit,
                   decoration: const InputDecoration(
@@ -512,6 +526,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             onPressed: _nextStep,
           ),
         ],
+        ),
       ),
     );
   }
@@ -560,30 +575,117 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ),
           const SizedBox(height: 24),
+          // Selected elevator display
+          if (_selectedElevator != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _selectedElevator!['name'] as String? ?? 'Unknown',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        Text(
+                          _selectedElevator!['company'] as String? ?? '',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedElevator = null;
+                      });
+                    },
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Remove',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          // Search button
           OutlinedButton.icon(
-            onPressed: () {
-              // Navigate to elevator selection screen
-              // We'll implement this next
-            },
+            onPressed: _showElevatorSearchDialog,
             icon: const Icon(Icons.search),
-            label: const Text('Search for Elevator'),
+            label: Text(_selectedElevator != null ? 'Change Elevator' : 'Search for Elevator'),
+          ),
+          const SizedBox(height: 32),
+          // Complete signup button
+          PrimaryButton(
+            text: _isLoading ? 'Creating account...' : 'Complete Sign Up',
+            onPressed: _isLoading ? null : _completeSignUp,
           ),
           const SizedBox(height: 16),
+          // Skip option
           TextButton(
             onPressed: _isLoading ? null : _completeSignUp,
-            child: Text(
-              _isLoading
-                  ? 'Creating account...'
-                  : 'Skip for now (you can add this later)',
-            ),
+            child: const Text('Skip for now (you can add this later)'),
           ),
         ],
       ),
     );
   }
 
+  Future<void> _showElevatorSearchDialog() async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => const ElevatorSearchDialog(),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        _selectedElevator = result;
+      });
+    }
+  }
+
   void _nextStep() {
-    if (_formKey.currentState?.validate() ?? false) {
+    // Validate the appropriate form based on current step
+    bool isValid = false;
+    switch (_currentStep) {
+      case 0:
+        isValid = _formKey.currentState?.validate() ?? false;
+        break;
+      case 1:
+        isValid = _personalInfoFormKey.currentState?.validate() ?? false;
+        break;
+      case 2:
+        isValid = _farmFormKey.currentState?.validate() ?? false;
+        break;
+      case 3:
+        isValid = _truckFormKey.currentState?.validate() ?? false;
+        break;
+      case 4:
+        isValid = true; // Elevator selection is optional
+        break;
+    }
+
+    if (isValid) {
       if (_currentStep < 4) {
         setState(() {
           _currentStep++;
@@ -640,7 +742,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         grainTruckName: _grainTruckNameController.text.trim(),
         grainCapacityKg: capacityKg,
         preferredUnit: _preferredUnit,
-        favoriteElevatorId: null, // Will be set when elevator is selected
+        favoriteElevatorId: _selectedElevator?['id']?.toString(),
         acceptTerms: _agreedToTerms,
       );
 

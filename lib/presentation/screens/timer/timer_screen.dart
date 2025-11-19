@@ -45,7 +45,7 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
   @override
   Widget build(BuildContext context) {
     final activeTimer = ref.watch(activeTimerProvider);
-    // final completedTimers = ref.watch(completedTimersProvider); // TODO: use for history display
+    final completedTimers = ref.watch(completedTimersProvider);
     final timerState = ref.watch(timerNotifierProvider);
     final currentLocation = ref.watch(currentLocationProvider);
 

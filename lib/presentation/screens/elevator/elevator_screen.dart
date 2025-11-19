@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../data/models/elevator_models.dart';
 import '../../../data/models/location_models.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/location_provider.dart' hide AppLocation, AppLocationHistory;
 import '../../providers/elevator_provider.dart';
+import '../../widgets/loading/shimmer_loading.dart';
 
 /// Elevator search and listing screen
 class ElevatorScreen extends ConsumerStatefulWidget {
@@ -219,9 +219,7 @@ class _ElevatorScreenState extends ConsumerState<ElevatorScreen> {
     dynamic nearbyElevatorsAsync,
   ) {
     if (elevatorState.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const ElevatorListShimmer(itemCount: 5);
     }
 
     if (elevatorState.error != null) {

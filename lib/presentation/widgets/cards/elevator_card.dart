@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/elevator_models.dart';
 import '../../../data/services/mock_data_service.dart';
@@ -67,8 +68,52 @@ class ElevatorCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Distance badge
-                    if (distance != null)
+                    // Queue count badge (priority) or distance badge
+                    if (queueData != null)
+                      badges.Badge(
+                        badgeContent: Text(
+                          '${queueData!.currentQueueLength}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        badgeStyle: badges.BadgeStyle(
+                          badgeColor: _getQueueColor(),
+                          padding: const EdgeInsets.all(8),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getQueueColor().withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.groups,
+                                size: 14,
+                                color: _getQueueColor(),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Queue',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _getQueueColor(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else if (distance != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,

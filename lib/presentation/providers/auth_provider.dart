@@ -10,7 +10,10 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 part 'auth_provider.g.dart';
 
 /// Authentication provider using modern Riverpod patterns
-@riverpod
+/// NOTE: We use Notifier (not AutoDisposeNotifier) because auth state
+/// must persist throughout the app lifecycle. AutoDispose would create
+/// new instances with fresh state, causing sign-in issues.
+@Riverpod(keepAlive: true)
 class AuthNotifier extends _$AuthNotifier {
   @override
   AuthenticationState build() {
@@ -112,15 +115,6 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       state = state.copyWith(error: null);
 
-      // Demo mode bypass for marketing screenshots
-      print('🔍 Checking demo mode: shouldBypassAuth=${DemoConfig.shouldBypassAuth}, email=$email');
-      if (DemoConfig.shouldBypassAuth &&
-          email.toLowerCase() == DemoConfig.demoEmail.toLowerCase()) {
-        print('✅ Demo mode activated - bypassing Supabase auth');
-        _signInAsDemo();
-        return;
-      }
-
       print('📡 Attempting Supabase authentication...');
 
       final response = await Supabase.instance.client.auth.signInWithPassword(
@@ -128,8 +122,62 @@ class AuthNotifier extends _$AuthNotifier {
         password: password,
       );
 
+      print('✅ Supabase signInWithPassword completed');
+      print('📦 Response user: ${response.user?.id}');
+      print('📦 Response session: ${response.session != null ? "present" : "null"}');
+
       if (response.user == null) {
         throw Exception('Sign in failed: No user data received');
+      }
+
+      // Check email confirmation status
+      if (response.user!.emailConfirmedAt == null && !DemoConfig.shouldSkipEmailConfirmation) {
+        print('❌ Production mode: Email not confirmed');
+        // Production mode: require email confirmation
+        await Supabase.instance.client.auth.signOut();
+        state = state.copyWith(
+          error: AuthError(
+            code: 'email_not_confirmed',
+            message: 'Please confirm your email address before signing in. Check your inbox for the confirmation link.',
+            timestamp: DateTime.now(),
+          ),
+        );
+        return;
+      }
+
+      if (response.user!.emailConfirmedAt == null && DemoConfig.shouldSkipEmailConfirmation) {
+        print('⚠️ Development mode: Allowing sign in without email confirmation');
+        print('⚠️ WARNING: Set isDevelopmentMode = false in production!');
+      }
+
+      // Explicitly handle signed in state to ensure immediate state update
+      // This prevents race conditions with the auth state listener
+      if (response.session != null) {
+        print('📝 Calling _handleSignedIn with session...');
+        _handleSignedIn(response.session);
+        print('✅ _handleSignedIn completed');
+
+        // Force a small delay to allow state propagation
+        // This is necessary because Riverpod AutoDisposeNotifier state updates
+        // may not be immediately visible to other parts of the app
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Verify session was stored correctly
+        final currentSession = Supabase.instance.client.auth.currentSession;
+        print('🔍 Verification - Current session after sign-in: ${currentSession != null ? "present" : "null"}');
+        print('🔍 Verification - isAuthenticated state: ${state.isAuthenticated}');
+        print('🔍 Verification - User in state: ${state.user?.email}');
+
+        if (!state.isAuthenticated) {
+          print('⚠️ State not updated after delay, waiting for listener...');
+          // Wait a bit more for the auth state listener to fire
+          await Future.delayed(const Duration(milliseconds: 200));
+          print('🔍 Re-check - isAuthenticated state: ${state.isAuthenticated}');
+          print('🔍 Re-check - User in state: ${state.user?.email}');
+        }
+      } else {
+        print('❌ No session in response!');
+        throw Exception('Sign in succeeded but no session returned');
       }
     } catch (e, stackTrace) {
       state = state.copyWith(
@@ -140,38 +188,10 @@ class AuthNotifier extends _$AuthNotifier {
         ),
       );
       // Log error for debugging
-      print('Sign in error: $e\n$stackTrace');
+      print('❌ Sign in error: $e\n$stackTrace');
     }
   }
 
-  /// Sign in as demo user for marketing purposes
-  void _signInAsDemo() {
-    print('🎬 Creating demo user session for Kyle Buperac');
-    final demoUser = UserProfile(
-      id: DemoConfig.demoUserId,
-      email: DemoConfig.demoEmail,
-      displayName: DemoConfig.demoDisplayName,
-      firstName: DemoConfig.demoFirstName,
-      lastName: DemoConfig.demoLastName,
-      farmName: DemoConfig.demoFarmName,
-      binyardName: DemoConfig.demoBinyardName,
-      grainTruckName: DemoConfig.demoTruckName,
-      grainCapacityKg: DemoConfig.demoTruckCapacity * 1000, // Convert tonnes to kg
-      preferredUnit: DemoConfig.demoPreferredUnit,
-      settings: const UserSettings(),
-      createdAt: DateTime.now(),
-      lastLogin: DateTime.now(),
-    );
-
-    state = AuthenticationState(
-      isAuthenticated: true,
-      user: demoUser,
-      accessToken: 'demo-token-${DateTime.now().millisecondsSinceEpoch}',
-      tokenExpiry: DateTime.now().add(const Duration(days: 365)),
-      refreshToken: 'demo-refresh-token',
-    );
-    print('✅ Demo user authenticated: ${demoUser.displayName}');
-  }
 
   /// Sign up with email and password
   Future<void> signUp(RegisterRequest request) async {
@@ -205,18 +225,25 @@ class AuthNotifier extends _$AuthNotifier {
       );
 
       // Note: Email confirmation may be required depending on Supabase settings
-      if (response.user != null && response.user!.emailConfirmedAt != null) {
-        // User is immediately confirmed
-        _handleSignedIn(response.session);
-      } else {
-        // User needs to confirm email
-        state = state.copyWith(
-          error: AuthError(
-            code: 'email_confirmation_required',
-            message: 'Please check your email to confirm your account',
-            timestamp: DateTime.now(),
-          ),
-        );
+      if (response.user != null) {
+        if (response.user!.emailConfirmedAt != null) {
+          // User is immediately confirmed
+          _handleSignedIn(response.session);
+        } else if (DemoConfig.shouldSkipEmailConfirmation) {
+          // Development mode: skip email confirmation requirement
+          print('⚠️ Development mode: Skipping email confirmation check');
+          print('⚠️ WARNING: Set isDevelopmentMode = false in production!');
+          _handleSignedIn(response.session);
+        } else {
+          // Production mode: User needs to confirm email
+          state = state.copyWith(
+            error: AuthError(
+              code: 'email_confirmation_required',
+              message: 'Please check your email to confirm your account',
+              timestamp: DateTime.now(),
+            ),
+          );
+        }
       }
     } catch (e, stackTrace) {
       state = state.copyWith(
@@ -327,35 +354,35 @@ class AuthNotifier extends _$AuthNotifier {
 }
 
 /// Provider for current user
-@riverpod
+@Riverpod(keepAlive: true)
 UserProfile? currentUser(CurrentUserRef ref) {
   final authState = ref.watch(authNotifierProvider);
   return authState.user;
 }
 
 /// Provider for authentication status
-@riverpod
+@Riverpod(keepAlive: true)
 bool isAuthenticated(IsAuthenticatedRef ref) {
   final authState = ref.watch(authNotifierProvider);
   return authState.isAuthenticated;
 }
 
 /// Provider for authentication errors
-@riverpod
+@Riverpod(keepAlive: true)
 AuthError? authError(AuthErrorRef ref) {
   final authState = ref.watch(authNotifierProvider);
   return authState.error;
 }
 
 /// Provider for access token
-@riverpod
+@Riverpod(keepAlive: true)
 String? accessToken(AccessTokenRef ref) {
   final authState = ref.watch(authNotifierProvider);
   return authState.accessToken;
 }
 
 /// Provider for user settings
-@riverpod
+@Riverpod(keepAlive: true)
 UserSettings? userSettings(UserSettingsRef ref) {
   final authState = ref.watch(authNotifierProvider);
   return authState.user?.settings;

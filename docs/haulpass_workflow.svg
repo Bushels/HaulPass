@@ -1,0 +1,693 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1800" style="background: #f8f9fa;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2196F3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="successGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#388E3C;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="warningGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9C27B0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7B1FA2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="infoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00BCD4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0097A7;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.2"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="700" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#1a1a1a">
+    HaulPass Workflow
+  </text>
+  <text x="700" y="65" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#666">
+    Grain Hauling Tracking &amp; Comparative Intelligence Platform
+  </text>
+
+  <!-- ========== AUTHENTICATION FLOW ========== -->
+  <g id="auth-section">
+    <rect x="50" y="90" width="600" height="180" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <text x="350" y="115" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#1976D2">
+      🔐 Authentication Flow
+    </text>
+
+    <!-- Sign Up -->
+    <g id="signup">
+      <rect x="80" y="135" width="160" height="120" rx="8" fill="url(#primaryGrad)" filter="url(#shadow)"/>
+      <text x="160" y="160" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
+        Sign Up
+      </text>
+      <text x="160" y="180" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Step 0: Email/Password
+      </text>
+      <text x="160" y="195" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Step 1: Personal Info
+      </text>
+      <text x="160" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Step 2: Farm Details
+      </text>
+      <text x="160" y="225" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Step 3: Truck Details
+      </text>
+      <text x="160" y="240" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Step 4: Select Elevator
+      </text>
+    </g>
+
+    <!-- Arrow -->
+    <path d="M 240 195 L 290 195" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+    <!-- Sign In -->
+    <g id="signin">
+      <rect x="290" y="145" width="130" height="100" rx="8" fill="url(#successGrad)" filter="url(#shadow)"/>
+      <text x="355" y="170" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
+        Sign In
+      </text>
+      <text x="355" y="190" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Email/Password
+      </text>
+      <text x="355" y="205" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Remember Me
+      </text>
+      <text x="355" y="220" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Forgot Password
+      </text>
+      <text x="355" y="235" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        Email Verification
+      </text>
+    </g>
+
+    <!-- Arrow -->
+    <path d="M 420 195 L 460 195" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+    <!-- Supabase Auth -->
+    <g id="supabase">
+      <rect x="460" y="160" width="160" height="70" rx="8" fill="#3ECF8E" filter="url(#shadow)"/>
+      <text x="540" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">
+        Supabase Auth
+      </text>
+      <text x="540" y="203" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        PostgreSQL Database
+      </text>
+      <text x="540" y="218" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+        User Metadata Storage
+      </text>
+    </g>
+  </g>
+
+  <!-- Arrow from auth to main app -->
+  <path d="M 350 270 L 350 320" stroke="#333" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="360" y="300" font-family="Arial, sans-serif" font-size="12" fill="#666">Authenticated</text>
+
+  <!-- ========== MAIN NAVIGATION ========== -->
+  <g id="main-nav">
+    <rect x="50" y="320" width="600" height="80" rx="10" fill="url(#primaryGrad)" filter="url(#shadow)"/>
+    <text x="350" y="345" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">
+      📱 Main Navigation (Bottom Nav Bar)
+    </text>
+    <text x="350" y="370" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="white">
+      4 Main Screens: Home | Elevators | Haul Timer | Profile
+    </text>
+    <text x="350" y="388" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">
+      Glassmorphic Design • Soft Glows • Backdrop Blur • Real-time Updates
+    </text>
+  </g>
+
+  <!-- ========== FOUR MAIN SCREENS ========== -->
+  <g id="four-screens">
+    <!-- Screen 1: Home -->
+    <g id="home-screen">
+      <rect x="50" y="440" width="280" height="260" rx="10" fill="white" stroke="#2196F3" stroke-width="3" filter="url(#shadow)"/>
+      <rect x="50" y="440" width="280" height="40" rx="10" fill="url(#primaryGrad)"/>
+      <text x="190" y="465" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">
+        🏠 Home Screen
+      </text>
+
+      <text x="190" y="500" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Dashboard</text>
+
+      <!-- Quick Actions -->
+      <rect x="70" y="515" width="240" height="30" rx="5" fill="#E3F2FD" stroke="#2196F3" stroke-width="1"/>
+      <text x="190" y="535" font-family="Arial, sans-serif" font-size="11" text-anchor="middle">🚚 Start New Haul</text>
+
+      <rect x="70" y="550" width="240" height="30" rx="5" fill="#E3F2FD" stroke="#2196F3" stroke-width="1"/>
+      <text x="190" y="570" font-family="Arial, sans-serif" font-size="11" text-anchor="middle">🏢 Find Elevator</text>
+
+      <rect x="70" y="585" width="240" height="30" rx="5" fill="#E3F2FD" stroke="#2196F3" stroke-width="1"/>
+      <text x="190" y="605" font-family="Arial, sans-serif" font-size="11" text-anchor="middle">📊 View History &amp; Analytics</text>
+
+      <rect x="70" y="620" width="240" height="30" rx="5" fill="#E3F2FD" stroke="#2196F3" stroke-width="1"/>
+      <text x="190" y="640" font-family="Arial, sans-serif" font-size="11" text-anchor="middle">⏱️ Active Timer Status</text>
+
+      <text x="190" y="670" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#666">
+        Welcome Message • Recent Activity
+      </text>
+      <text x="190" y="685" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#666">
+        Comparative Intelligence Dashboard
+      </text>
+    </g>
+
+    <!-- Screen 2: Elevators -->
+    <g id="elevator-screen">
+      <rect x="370" y="440" width="280" height="260" rx="10" fill="white" stroke="#4CAF50" stroke-width="3" filter="url(#shadow)"/>
+      <rect x="370" y="440" width="280" height="40" rx="10" fill="url(#successGrad)"/>
+      <text x="510" y="465" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">
+        🏢 Elevators Screen
+      </text>
+
+      <text x="510" y="500" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">513 Grain Elevators</text>
+
+      <!-- Features -->
+      <text x="390" y="525" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Autocomplete Search</text>
+      <text x="390" y="545" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Filter by Company/Grain</text>
+      <text x="390" y="565" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Sort by Distance/Name</text>
+      <text x="390" y="585" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Real-time Queue Updates</text>
+      <text x="390" y="605" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Dockage Comparison</text>
+      <text x="390" y="625" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Moisture Variance Trends</text>
+      <text x="390" y="645" font-family="Arial, sans-serif" font-size="11" text-anchor="start">✓ Map View (Location)</text>
+
+      <text x="510" y="670" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#666">
+        PostGIS Geospatial Search
+      </text>
+      <text x="510" y="685" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#666">
+        Aggregated Intelligence Layer
+      </text>
+    </g>
+
+    <!-- Screen 3: Timer (UPDATED) -->
+    <g id="timer-screen">
+      <rect x="50" y="740" width="280" height="310" rx="10" fill="white" stroke="#FF9800" stroke-width="3" filter="url(#shadow)"/>
+      <rect x="50" y="740" width="280" height="40" rx="10" fill="url(#warningGrad)"/>
+      <text x="190" y="765" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">
+        ⏱️ Haul Timer Screen
+      </text>
+
+      <text x="190" y="800" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Track Your Haul</text>
+
+      <!-- Loading Phase -->
+      <rect x="60" y="815" width="260" height="85" rx="5" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+      <text x="190" y="830" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">📦 LOADING DATA</text>
+      <text x="70" y="850" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Select Elevator</text>
+      <text x="70" y="865" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Grain Type (Wheat, Canola, etc.)</text>
+      <text x="70" y="880" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Weight - optional (kg/tonnes/bushels)</text>
+      <text x="70" y="895" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Bin Moisture - optional (%)</text>
+
+      <!-- Timer Controls -->
+      <rect x="70" y="910" width="110" height="25" rx="5" fill="#4CAF50" stroke="#388E3C" stroke-width="1"/>
+      <text x="125" y="927" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">▶️ START</text>
+
+      <rect x="200" y="910" width="110" height="25" rx="5" fill="#FFF3E0" stroke="#FF9800" stroke-width="1"/>
+      <text x="255" y="927" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">⏸️ PAUSE</text>
+
+      <!-- Unloading Phase -->
+      <rect x="60" y="945" width="260" height="90" rx="5" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+      <text x="190" y="960" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">🏢 UNLOADING DATA</text>
+      <text x="70" y="980" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Weight - optional (elevator scale)</text>
+      <text x="70" y="995" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Elevator Moisture - optional (%)</text>
+      <text x="70" y="1010" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Dockage % - optional</text>
+      <text x="70" y="1025" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">  (Foreign material deduction)</text>
+
+      <text x="190" y="1045" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#FF9800" font-weight="bold">
+        🔴 Red Badge When Active
+      </text>
+    </g>
+
+    <!-- Screen 4: Profile -->
+    <g id="profile-screen">
+      <rect x="370" y="740" width="280" height="310" rx="10" fill="white" stroke="#9C27B0" stroke-width="3" filter="url(#shadow)"/>
+      <rect x="370" y="740" width="280" height="40" rx="10" fill="url(#purpleGrad)"/>
+      <text x="510" y="765" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">
+        👤 Profile Screen
+      </text>
+
+      <text x="510" y="800" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Settings &amp; Stats</text>
+
+      <!-- Profile Info -->
+      <text x="390" y="825" font-family="Arial, sans-serif" font-size="11" text-anchor="start">📧 Email &amp; Name</text>
+      <text x="390" y="845" font-family="Arial, sans-serif" font-size="11" text-anchor="start">🚜 Farm Name &amp; Binyard</text>
+      <text x="390" y="865" font-family="Arial, sans-serif" font-size="11" text-anchor="start">🚚 Truck Details &amp; Capacity</text>
+      <text x="390" y="885" font-family="Arial, sans-serif" font-size="11" text-anchor="start">⭐ Favorite Elevators</text>
+
+      <text x="510" y="910" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Statistics</text>
+      <text x="390" y="930" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Total Hauls • Avg Duration</text>
+      <text x="390" y="945" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Distance Traveled • Top Elevators</text>
+      <text x="390" y="960" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Avg Dockage • Moisture Variance</text>
+
+      <text x="510" y="985" font-family="Arial, sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Comparative Analytics</text>
+      <text x="390" y="1005" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Elevator Dockage Ranking</text>
+      <text x="390" y="1020" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Moisture Calibration Insights</text>
+      <text x="390" y="1035" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• Best Time to Haul (ML Predictions)</text>
+    </g>
+  </g>
+
+  <!-- ========== DATABASE LAYER ========== -->
+  <g id="database-layer">
+    <rect x="700" y="90" width="650" height="960" rx="10" fill="white" stroke="#333" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="700" y="90" width="650" height="50" rx="10" fill="#333"/>
+    <text x="1025" y="125" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">
+      🗄️ Supabase Backend Architecture
+    </text>
+
+    <!-- Database Tables -->
+    <g id="db-tables">
+      <text x="1025" y="170" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">
+        Database Tables
+      </text>
+
+      <!-- Table 1: elevators_import -->
+      <rect x="720" y="185" width="290" height="180" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+      <text x="865" y="205" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">
+        elevators_import (513 rows)
+      </text>
+      <text x="735" y="225" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• id: BIGINT (PK)</text>
+      <text x="735" y="240" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• name: TEXT</text>
+      <text x="735" y="255" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• company: TEXT</text>
+      <text x="735" y="270" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• address: TEXT</text>
+      <text x="735" y="285" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• location: GEOGRAPHY (PostGIS)</text>
+      <text x="735" y="300" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• capacity_tonnes: NUMERIC</text>
+      <text x="735" y="315" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• grain_types: TEXT[]</text>
+      <text x="735" y="330" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• railway: TEXT</text>
+      <text x="735" y="345" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• elevator_type: TEXT</text>
+      <text x="735" y="360" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• car_spots: TEXT</text>
+
+      <!-- Table 2: favorite_elevators -->
+      <rect x="1040" y="185" width="290" height="120" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+      <text x="1185" y="205" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">
+        favorite_elevators
+      </text>
+      <text x="1055" y="225" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• id: UUID (PK)</text>
+      <text x="1055" y="240" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• user_id: UUID (FK auth.users)</text>
+      <text x="1055" y="255" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• elevator_id: BIGINT (FK)</text>
+      <text x="1055" y="270" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• notes: TEXT</text>
+      <text x="1055" y="285" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• created_at: TIMESTAMP</text>
+
+      <!-- Table 3: haul_timers (UPDATED) -->
+      <rect x="720" y="380" width="290" height="240" rx="8" fill="#E1F5FE" stroke="#2196F3" stroke-width="2"/>
+      <text x="865" y="400" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">
+        haul_timers (ENHANCED)
+      </text>
+      <text x="735" y="420" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• id: UUID (PK)</text>
+      <text x="735" y="435" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• user_id: UUID (FK auth.users)</text>
+      <text x="735" y="450" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• elevator_id: BIGINT (FK)</text>
+      <text x="735" y="465" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• start_time, end_time: TIMESTAMP</text>
+      <text x="735" y="480" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• duration_seconds: INTEGER</text>
+      <text x="735" y="495" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• grain_type: TEXT</text>
+      <text x="735" y="510" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• weight_bin_kg: NUMERIC (optional)</text>
+      <text x="735" y="525" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• weight_elevator_kg: NUMERIC (optional)</text>
+      <text x="735" y="540" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• moisture_bin_%: NUMERIC (optional)</text>
+      <text x="735" y="555" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• moisture_elevator_%: NUMERIC (optional)</text>
+      <text x="735" y="570" font-family="Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#FF6B6B">• dockage_%: NUMERIC (optional) 🆕</text>
+      <text x="735" y="585" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• distance_km: NUMERIC</text>
+      <text x="735" y="600" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• status: TEXT (active/completed)</text>
+
+      <!-- Table 4: auth.users -->
+      <rect x="1040" y="320" width="290" height="135" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+      <text x="1185" y="340" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle">
+        auth.users (Supabase Auth)
+      </text>
+      <text x="1055" y="360" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• id: UUID (PK)</text>
+      <text x="1055" y="375" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• email: TEXT</text>
+      <text x="1055" y="390" font-family="Arial, sans-serif" font-size="10" text-anchor="start">• user_metadata: JSONB</text>
+      <text x="1065" y="405" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">- first_name, last_name</text>
+      <text x="1065" y="418" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">- farm_name, binyard_name</text>
+      <text x="1065" y="431" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">- grain_truck_name, capacity</text>
+      <text x="1065" y="444" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">- favorite_elevator_id</text>
+    </g>
+
+    <!-- PostGIS Functions -->
+    <g id="postgis">
+      <text x="1025" y="650" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">
+        PostGIS Geospatial Functions
+      </text>
+
+      <rect x="720" y="665" width="610" height="90" rx="8" fill="#FFFDE7" stroke="#FBC02D" stroke-width="2"/>
+      <text x="1025" y="685" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">
+        get_elevators_near(lat, lng, radius_km, max_results)
+      </text>
+      <text x="735" y="705" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        • Finds elevators within specified radius using ST_DWithin
+      </text>
+      <text x="735" y="720" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        • Returns elevators ordered by distance (closest first)
+      </text>
+      <text x="735" y="735" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        • Includes calculated distance_km column for each result
+      </text>
+      <text x="735" y="750" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        • Optimized spatial indexing for fast queries
+      </text>
+    </g>
+
+    <!-- Comparative Intelligence (NEW SECTION) -->
+    <g id="comparative-intelligence">
+      <text x="1025" y="785" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">
+        🧠 Comparative Intelligence Analytics
+      </text>
+
+      <rect x="720" y="800" width="290" height="230" rx="8" fill="#FFE5E5" stroke="#FF6B6B" stroke-width="2" filter="url(#glow)"/>
+      <text x="865" y="820" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">
+        📊 Dockage Intelligence
+      </text>
+      <text x="735" y="840" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        Aggregates dockage % across users
+      </text>
+      <text x="735" y="860" font-family="Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold">
+        Queries:
+      </text>
+      <text x="745" y="875" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Avg dockage by elevator
+      </text>
+      <text x="745" y="888" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Dockage by grain type
+      </text>
+      <text x="745" y="901" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Historical trends (seasonal)
+      </text>
+      <text x="745" y="914" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Compare elevators in 50km radius
+      </text>
+      <text x="745" y="927" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • "Is 3% dockage normal here?"
+      </text>
+      <text x="735" y="950" font-family="Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold">
+        Insights:
+      </text>
+      <text x="745" y="965" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#D32F2F">
+        "Elevator A averages 2.1% dockage"
+      </text>
+      <text x="745" y="978" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#388E3C">
+        "Elevator B averages 0.8% dockage"
+      </text>
+      <text x="745" y="991" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">
+        "Save $X by choosing better elevator"
+      </text>
+      <text x="745" y="1004" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">
+        "User anonymity preserved"
+      </text>
+      <text x="745" y="1017" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#1976D2">
+        "Network effect: More data = Better"
+      </text>
+
+      <rect x="1040" y="800" width="290" height="230" rx="8" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="2" filter="url(#glow)"/>
+      <text x="1185" y="820" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">
+        💧 Moisture Intelligence
+      </text>
+      <text x="1055" y="840" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        Tracks moisture variance
+      </text>
+      <text x="1055" y="860" font-family="Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold">
+        Analysis:
+      </text>
+      <text x="1065" y="875" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Bin vs Elevator moisture delta
+      </text>
+      <text x="1065" y="888" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Equipment calibration drift
+      </text>
+      <text x="1065" y="901" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Seasonal moisture patterns
+      </text>
+      <text x="1065" y="914" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Transit moisture loss detection
+      </text>
+      <text x="1065" y="927" font-family="Arial, sans-serif" font-size="9" text-anchor="start">
+        • Per-elevator calibration profile
+      </text>
+      <text x="1055" y="950" font-family="Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold">
+        Insights:
+      </text>
+      <text x="1065" y="965" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#D32F2F">
+        "Elevator C reads 1.5% higher"
+      </text>
+      <text x="1065" y="978" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">
+        "Your bin sensor may need calibration"
+      </text>
+      <text x="1065" y="991" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#388E3C">
+        "Transit moisture loss: 0.3% avg"
+      </text>
+      <text x="1065" y="1004" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#1976D2">
+        "Predicted elevator reading: 14.2%"
+      </text>
+      <text x="1065" y="1017" font-family="Arial, sans-serif" font-size="9" text-anchor="start" fill="#666">
+        "ML learns calibration patterns"
+      </text>
+    </g>
+
+    <!-- Real-time Features -->
+    <g id="realtime">
+      <text x="1025" y="860" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle">
+        Real-time Features
+      </text>
+
+      <rect x="720" y="875" width="290" height="140" rx="8" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+      <text x="865" y="895" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">
+        Supabase Realtime
+      </text>
+      <text x="735" y="915" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Elevator queue updates
+      </text>
+      <text x="735" y="930" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Live wait time changes
+      </text>
+      <text x="735" y="945" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Timer synchronization
+      </text>
+      <text x="735" y="960" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Favorite elevator updates
+      </text>
+      <text x="735" y="975" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Dockage alerts (anomalies)
+      </text>
+      <text x="735" y="990" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Multi-device sync
+      </text>
+      <text x="735" y="1005" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ WebSocket connections
+      </text>
+
+      <rect x="1040" y="875" width="290" height="140" rx="8" fill="#F1F8E9" stroke="#8BC34A" stroke-width="2"/>
+      <text x="1185" y="895" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle">
+        Offline Mode
+      </text>
+      <text x="1055" y="915" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Cached elevator data
+      </text>
+      <text x="1055" y="930" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Local timer storage
+      </text>
+      <text x="1055" y="945" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Queue when offline
+      </text>
+      <text x="1055" y="960" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Sync dockage on reconnect
+      </text>
+      <text x="1055" y="975" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Offline banner UI
+      </text>
+      <text x="1055" y="990" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Connectivity detection
+      </text>
+      <text x="1055" y="1005" font-family="Arial, sans-serif" font-size="10" text-anchor="start">
+        ✓ Background data submission
+      </text>
+    </g>
+  </g>
+
+  <!-- ========== DATA FLOW ARROWS ========== -->
+  <g id="data-flow" stroke="#666" stroke-width="2" fill="none" stroke-dasharray="5,5">
+    <!-- Home to Database -->
+    <path d="M 330 570 L 700 300" marker-end="url(#arrowhead-dashed)"/>
+    <text x="500" y="420" font-family="Arial, sans-serif" font-size="10" fill="#666">User Data</text>
+
+    <!-- Elevators to Database -->
+    <path d="M 650 570 L 720 300" marker-end="url(#arrowhead-dashed)"/>
+    <text x="680" y="420" font-family="Arial, sans-serif" font-size="10" fill="#666">Elevator Search</text>
+
+    <!-- Timer to Database -->
+    <path d="M 330 920 L 720 550" marker-end="url(#arrowhead-dashed)"/>
+    <text x="500" y="720" font-family="Arial, sans-serif" font-size="10" fill="#666">Haul + Dockage Data</text>
+
+    <!-- Profile to Database -->
+    <path d="M 650 920 L 1040 550" marker-end="url(#arrowhead-dashed)"/>
+    <text x="820" y="720" font-family="Arial, sans-serif" font-size="10" fill="#666">Analytics Query</text>
+  </g>
+
+  <!-- ========== USER JOURNEY ========== -->
+  <g id="user-journey">
+    <rect x="50" y="1090" width="1300" height="660" rx="10" fill="white" stroke="#333" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="50" y="1090" width="1300" height="40" rx="10" fill="#333"/>
+    <text x="700" y="1117" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">
+      🚜 Complete User Journey (with Enhanced Data Capture)
+    </text>
+
+    <!-- Journey 1 (UPDATED) -->
+    <g id="journey1">
+      <text x="70" y="1155" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2196F3">
+        Journey 1: First Haul with Full Data Capture
+      </text>
+
+      <circle cx="90" cy="1180" r="15" fill="#2196F3"/>
+      <text x="90" y="1185" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">1</text>
+      <text x="115" y="1185" font-family="Arial, sans-serif" font-size="11">Sign In (buperac@gmail.com)</text>
+
+      <circle cx="90" cy="1215" r="15" fill="#2196F3"/>
+      <text x="90" y="1220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">2</text>
+      <text x="115" y="1220" font-family="Arial, sans-serif" font-size="11">Home Screen → See welcome and comparative analytics</text>
+
+      <circle cx="90" cy="1250" r="15" fill="#2196F3"/>
+      <text x="90" y="1255" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">3</text>
+      <text x="115" y="1255" font-family="Arial, sans-serif" font-size="11">Tap "Start New Haul" → Navigate to Timer screen</text>
+
+      <circle cx="90" cy="1285" r="15" fill="#2196F3"/>
+      <text x="90" y="1290" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">4</text>
+      <text x="115" y="1290" font-family="Arial, sans-serif" font-size="11">Select Elevator → Search with dockage comparison view</text>
+
+      <circle cx="90" cy="1320" r="15" fill="#FF9800"/>
+      <text x="90" y="1325" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">5</text>
+      <text x="115" y="1325" font-family="Arial, sans-serif" font-size="11" font-weight="bold">LOADING: Grain Type + Weight (optional) + Bin Moisture % (optional)</text>
+
+      <circle cx="90" cy="1355" r="15" fill="#4CAF50"/>
+      <text x="90" y="1360" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">6</text>
+      <text x="115" y="1360" font-family="Arial, sans-serif" font-size="11">▶️ Start Timer → Timer begins tracking (red badge appears)</text>
+
+      <circle cx="90" cy="1390" r="15" fill="#2196F3"/>
+      <text x="90" y="1395" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">7</text>
+      <text x="115" y="1395" font-family="Arial, sans-serif" font-size="11">Drive to elevator → Timer runs in background</text>
+
+      <circle cx="90" cy="1425" r="15" fill="#FF9800"/>
+      <text x="90" y="1430" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">8</text>
+      <text x="115" y="1430" font-family="Arial, sans-serif" font-size="11" font-weight="bold">⏹️ UNLOADING: Weight (opt) + Elevator Moisture % (opt) + Dockage % (opt)</text>
+
+      <circle cx="90" cy="1460" r="15" fill="#9C27B0"/>
+      <text x="90" y="1465" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">9</text>
+      <text x="115" y="1465" font-family="Arial, sans-serif" font-size="11">💾 Save to Database → Aggregate analytics update instantly</text>
+
+      <circle cx="90" cy="1495" r="15" fill="#00BCD4"/>
+      <text x="90" y="1500" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">10</text>
+      <text x="115" y="1500" font-family="Arial, sans-serif" font-size="11">📊 View Insights: "Your dockage: 1.2% | Elevator avg: 1.8% | You got a better grade!"</text>
+
+      <circle cx="90" cy="1530" r="15" fill="#4CAF50"/>
+      <text x="90" y="1535" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">11</text>
+      <text x="115" y="1535" font-family="Arial, sans-serif" font-size="11">✅ Haul Complete → Stats updated, next user benefits from your data</text>
+    </g>
+
+    <!-- Journey 2 -->
+    <g id="journey2">
+      <text x="700" y="1155" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#4CAF50">
+        Journey 2: Compare Elevators Before Hauling
+      </text>
+
+      <circle cx="720" cy="1180" r="15" fill="#4CAF50"/>
+      <text x="720" y="1185" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">1</text>
+      <text x="745" y="1185" font-family="Arial, sans-serif" font-size="11">Home → Tap "Find Elevator"</text>
+
+      <circle cx="720" cy="1215" r="15" fill="#4CAF50"/>
+      <text x="720" y="1220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">2</text>
+      <text x="745" y="1220" font-family="Arial, sans-serif" font-size="11">Elevators Screen → Browse 513 elevators</text>
+
+      <circle cx="720" cy="1250" r="15" fill="#4CAF50"/>
+      <text x="720" y="1255" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">3</text>
+      <text x="745" y="1255" font-family="Arial, sans-serif" font-size="11">Search → Type town/company name (autocomplete)</text>
+
+      <circle cx="720" cy="1285" r="15" fill="#4CAF50"/>
+      <text x="720" y="1290" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">4</text>
+      <text x="745" y="1290" font-family="Arial, sans-serif" font-size="11">Select Elevator A → View details</text>
+
+      <circle cx="720" cy="1320" r="15" fill="#FF6B6B"/>
+      <text x="720" y="1325" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">5</text>
+      <text x="745" y="1325" font-family="Arial, sans-serif" font-size="11" font-weight="bold">📊 Dockage: Avg 2.5% | Moisture delta: +1.2% | Wait: 20min</text>
+
+      <circle cx="720" cy="1355" r="15" fill="#4CAF50"/>
+      <text x="720" y="1360" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">6</text>
+      <text x="745" y="1360" font-family="Arial, sans-serif" font-size="11">Select Elevator B → View details</text>
+
+      <circle cx="720" cy="1390" r="15" fill="#4CAF50"/>
+      <text x="720" y="1395" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">7</text>
+      <text x="745" y="1395" font-family="Arial, sans-serif" font-size="11" font-weight="bold">📊 Dockage: Avg 0.9% | Moisture delta: +0.3% | Wait: 15min</text>
+
+      <circle cx="720" cy="1425" r="15" fill="#2196F3"/>
+      <text x="720" y="1430" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">8</text>
+      <text x="745" y="1430" font-family="Arial, sans-serif" font-size="11">🧠 Decision: Choose Elevator B (better dockage, better moisture, shorter wait)</text>
+
+      <circle cx="720" cy="1460" r="15" fill="#4CAF50"/>
+      <text x="720" y="1465" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">9</text>
+      <text x="745" y="1465" font-family="Arial, sans-serif" font-size="11">⭐ Star as Favorite → Quick access for next time</text>
+
+      <circle cx="720" cy="1495" r="15" fill="#FF9800"/>
+      <text x="720" y="1500" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">10</text>
+      <text x="745" y="1500" font-family="Arial, sans-serif" font-size="11">▶️ Start Timer → Begin haul with confidence</text>
+    </g>
+
+    <!-- Journey 3 -->
+    <g id="journey3">
+      <text x="700" y="1555" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#9C27B0">
+        Journey 3: Review Performance &amp; Trends
+      </text>
+
+      <circle cx="720" cy="1580" r="15" fill="#9C27B0"/>
+      <text x="720" y="1585" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">1</text>
+      <text x="745" y="1585" font-family="Arial, sans-serif" font-size="11">Profile → View stats dashboard</text>
+
+      <circle cx="720" cy="1615" r="15" fill="#9C27B0"/>
+      <text x="720" y="1620" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">2</text>
+      <text x="745" y="1620" font-family="Arial, sans-serif" font-size="11">Total Hauls: 47 | Avg Duration: 1.2 hrs | Distance: 1,240 km</text>
+
+      <circle cx="720" cy="1650" r="15" fill="#FF6B6B"/>
+      <text x="720" y="1655" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">3</text>
+      <text x="745" y="1655" font-family="Arial, sans-serif" font-size="11">📊 Avg Dockage: 1.4% | Network avg: 1.8% | "You're doing great!"</text>
+
+      <circle cx="720" cy="1685" r="15" fill="#0EA5E9"/>
+      <text x="720" y="1690" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">4</text>
+      <text x="745" y="1690" font-family="Arial, sans-serif" font-size="11">💧 Moisture Variance: Your bin reads 0.8% higher than elevators on average</text>
+
+      <circle cx="720" cy="1720" r="15" fill="#9C27B0"/>
+      <text x="720" y="1725" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">5</text>
+      <text x="745" y="1725" font-family="Arial, sans-serif" font-size="11">🏆 Top Elevator: Elevator B (visited 15x, avg dockage 0.9%, 5min wait)</text>
+
+      <circle cx="1060" cy="1580" r="15" fill="#00BCD4"/>
+      <text x="1060" y="1585" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">6</text>
+      <text x="1085" y="1585" font-family="Arial, sans-serif" font-size="11">🤖 ML Insight: "Best time to haul: Tuesday 10am (avg wait: 8min)"</text>
+
+      <circle cx="1060" cy="1615" r="15" fill="#4CAF50"/>
+      <text x="1060" y="1620" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">7</text>
+      <text x="1085" y="1620" font-family="Arial, sans-serif" font-size="11">💰 Savings: Choosing better elevators saved ~$2,400 this season</text>
+
+      <circle cx="1060" cy="1650" r="15" fill="#9C27B0"/>
+      <text x="1060" y="1655" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">8</text>
+      <text x="1085" y="1655" font-family="Arial, sans-serif" font-size="11">📈 Edit Profile → Update equipment calibration settings</text>
+    </g>
+  </g>
+
+  <!-- ========== ARROW MARKERS ========== -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+    <marker id="arrowhead-dashed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666" />
+    </marker>
+  </defs>
+
+  <!-- Footer -->
+  <text x="700" y="1780" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#999">
+    HaulPass v2.0 • Comparative Intelligence Platform • Glassmorphic UI • Network Effect Data Aggregation
+  </text>
+</svg>
