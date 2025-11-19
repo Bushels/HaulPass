@@ -1,124 +1,164 @@
 import 'package:flutter/material.dart';
 
-/// Extended color palette for HaulPass with modern gradients and effects
+/// HaulPass color palette - Slate & Amber aesthetic
+///
+/// This theme matches the industrial, modern design language
+/// inspired by the landing page design.
 class AppColors {
-  // Brand Colors - Vibrant and modern
-  static const Color primaryBlue = Color(0xFF2196F3);
-  static const Color primaryBlueDark = Color(0xFF1976D2);
-  static const Color primaryBlueLight = Color(0xFF64B5F6);
+  // Prevent instantiation
+  AppColors._();
 
-  static const Color accentGreen = Color(0xFF4CAF50);
-  static const Color accentGreenDark = Color(0xFF388E3C);
-  static const Color accentGreenLight = Color(0xFF81C784);
+  // ==================== Slate Colors ====================
+  /// Lightest slate - used for backgrounds
+  static const slate50 = Color(0xFFF8FAFC);
 
-  static const Color accentOrange = Color(0xFFFF9800);
-  static const Color accentOrangeDark = Color(0xFFF57C00);
-  static const Color accentOrangeLight = Color(0xFFFFB74D);
+  /// Light slate - used for borders and dividers
+  static const slate200 = Color(0xFFE2E8F0);
 
-  // Status Colors
-  static const Color success = Color(0xFF4CAF50);
-  static const Color warning = Color(0xFFFF9800);
-  static const Color error = Color(0xFFF44336);
-  static const Color info = Color(0xFF2196F3);
+  /// Medium slate - used for subtle borders
+  static const slate300 = Color(0xFFCBD5E1);
 
-  // Neutral Colors
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color black = Color(0xFF000000);
-  static const Color gray50 = Color(0xFFFAFAFA);
-  static const Color gray100 = Color(0xFFF5F5F5);
-  static const Color gray200 = Color(0xFFEEEEEE);
-  static const Color gray300 = Color(0xFFE0E0E0);
-  static const Color gray400 = Color(0xFFBDBDBD);
-  static const Color gray500 = Color(0xFF9E9E9E);
-  static const Color gray600 = Color(0xFF757575);
-  static const Color gray700 = Color(0xFF616161);
-  static const Color gray800 = Color(0xFF424242);
-  static const Color gray900 = Color(0xFF212121);
+  /// Slate for secondary text and icons
+  static const slate400 = Color(0xFF94A3B8);
 
-  // Gradients for stunning effects
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primaryBlue, primaryBlueDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  /// Slate for muted text
+  static const slate500 = Color(0xFF64748B);
 
-  static const LinearGradient successGradient = LinearGradient(
-    colors: [accentGreen, accentGreenDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  /// Darker slate for body text
+  static const slate600 = Color(0xFF475569);
 
-  static const LinearGradient warningGradient = LinearGradient(
-    colors: [accentOrange, accentOrangeDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  /// Dark slate for card headers and accents
+  static const slate800 = Color(0xFF1E293B);
 
-  static const LinearGradient cardGradient = LinearGradient(
-    colors: [white, gray50],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  /// Darkest slate - used for headers and primary text
+  static const slate900 = Color(0xFF0F172A);
 
-  // Shimmer gradient for loading states
-  static const LinearGradient shimmerGradient = LinearGradient(
-    colors: [
-      Color(0xFFEBEBF4),
-      Color(0xFFF4F4F4),
-      Color(0xFFEBEBF4),
-    ],
-    stops: [0.1, 0.3, 0.4],
-    begin: Alignment(-1.0, -0.3),
-    end: Alignment(1.0, 0.3),
-  );
+  // ==================== Amber Colors ====================
+  /// Amber for highlights and hover states
+  static const amber100 = Color(0xFFFEF3C7);
 
-  // Shadows for depth
+  /// Primary amber accent color
+  static const amber500 = Color(0xFFF59E0B);
+
+  /// Darker amber for buttons and CTAs
+  static const amber600 = Color(0xFFD97706);
+
+  // ==================== Status Colors ====================
+  /// Success green (light)
+  static const green400 = Color(0xFF4ADE80);
+
+  /// Success green (standard)
+  static const green500 = Color(0xFF22C55E);
+
+  /// Success green (dark)
+  static const green600 = Color(0xFF16A34A);
+
+  /// Warning/moderate status
+  static const yellow500 = Color(0xFFEAB308);
+
+  /// Error/danger red
+  static const red500 = Color(0xFFEF4444);
+
+  /// Error/danger red (dark)
+  static const red600 = Color(0xFFDC2626);
+
+  // ==================== Semantic Colors ====================
+  /// Primary brand color
+  static const primary = amber600;
+
+  /// Success state color
+  static const success = green600;
+
+  /// Warning state color
+  static const warning = amber500;
+
+  /// Danger/error state color
+  static const danger = red500;
+
+  /// Background color for the app
+  static const background = slate50;
+
+  /// Surface color for cards
+  static const surface = Colors.white;
+
+  /// Border color for cards and containers
+  static const border = slate200;
+
+  /// Divider color
+  static const divider = slate200;
+
+  // ==================== Legacy Color Aliases (Backward Compatibility) ====================
+  /// @deprecated Use amber600 instead
+  static const primaryBlue = amber600;
+
+  /// @deprecated Use amber500 instead
+  static const primaryBlueDark = amber500;
+
+  /// @deprecated Use amber600 instead
+  static const primaryBlueLight = amber600;
+
+  /// @deprecated Use green600 instead
+  static const accentGreen = green600;
+
+  /// @deprecated Use green600 instead
+  static const accentGreenDark = green600;
+
+  /// @deprecated Use green400 instead
+  static const accentGreenLight = green400;
+
+  /// @deprecated Use amber600 instead
+  static const accentOrange = amber600;
+
+  /// @deprecated Use amber600 instead
+  static const accentOrangeDark = amber600;
+
+  /// @deprecated Use amber500 instead
+  static const accentOrangeLight = amber500;
+
+  /// @deprecated Use red500 instead
+  static const error = red500;
+
+  /// @deprecated Use amber600 instead
+  static const info = amber600;
+
+  // ==================== Text Colors ====================
+  /// Primary text color
+  static const textPrimary = slate900;
+
+  /// Secondary text color
+  static const textSecondary = slate600;
+
+  /// Muted text color
+  static const textMuted = slate500;
+
+  /// Disabled text color
+  static const textDisabled = slate400;
+
+  /// Text on dark backgrounds
+  static const textOnDark = Colors.white;
+
+  // ==================== Shadows for depth ====================
   static List<BoxShadow> get cardShadow => [
-    BoxShadow(
-      color: black.withOpacity(0.08),
-      blurRadius: 16,
-      offset: const Offset(0, 4),
-    ),
-    BoxShadow(
-      color: black.withOpacity(0.04),
-      blurRadius: 8,
-      offset: const Offset(0, 2),
-    ),
-  ];
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ];
 
   static List<BoxShadow> get elevatedShadow => [
-    BoxShadow(
-      color: black.withOpacity(0.12),
-      blurRadius: 24,
-      offset: const Offset(0, 8),
-    ),
-    BoxShadow(
-      color: black.withOpacity(0.06),
-      blurRadius: 12,
-      offset: const Offset(0, 4),
-    ),
-  ];
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 20,
+          offset: const Offset(0, 10),
+        ),
+      ];
 
-  static List<BoxShadow> primaryGlow = [
-    BoxShadow(
-      color: primaryBlue.withOpacity(0.3),
-      blurRadius: 16,
-      offset: const Offset(0, 4),
-    ),
-  ];
-
-  static List<BoxShadow> successGlow = [
-    BoxShadow(
-      color: success.withOpacity(0.3),
-      blurRadius: 16,
-      offset: const Offset(0, 4),
-    ),
-  ];
-
-  // Background gradients for screens
-  static const LinearGradient screenBackground = LinearGradient(
-    colors: [gray50, white],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+  static List<BoxShadow> amberGlow(double opacity) => [
+        BoxShadow(
+          color: amber600.withOpacity(opacity),
+          blurRadius: 16,
+          offset: const Offset(0, 4),
+        ),
+      ];
 }

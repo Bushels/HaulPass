@@ -18,6 +18,9 @@ migrate_working_dir/
 *.pem
 credentials.json
 
+# Web index.html contains secrets - use index.html.template instead
+web/index.html
+
 # IntelliJ related
 *.iml
 *.ipr

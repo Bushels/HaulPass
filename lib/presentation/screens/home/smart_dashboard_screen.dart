@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../data/models/elevator_insights.dart';
-import '../../../data/models/truck_models.dart';
-import '../../../core/services/queue_alert_manager.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../providers/dashboard_providers.dart';
 import '../../widgets/dashboard/favorite_elevator_card.dart';
 import '../../widgets/dashboard/haul_performance_card.dart';
-import '../../widgets/dashboard/analytics_summary_card.dart';
-import '../../widgets/dashboard/quick_stats_card.dart';
 import '../../widgets/dashboard/recent_activity_card.dart';
 
-/// Smart Dashboard - Primary screen optimized for farmers
-/// Shows favorite elevator insights, truck metrics, and quick actions
+/// Smart Dashboard - Facelift Version
+/// Matches the "Slate & Amber" aesthetic of the HaulPass Landing Page
 class SmartDashboardScreen extends ConsumerStatefulWidget {
   const SmartDashboardScreen({super.key});
 
   @override
-  ConsumerState<SmartDashboardScreen> createState() => _SmartDashboardScreenState();
+  ConsumerState<SmartDashboardScreen> createState() =>
+      _SmartDashboardScreenState();
 }
 
 class _SmartDashboardScreenState extends ConsumerState<SmartDashboardScreen>
@@ -58,43 +55,78 @@ class _SmartDashboardScreenState extends ConsumerState<SmartDashboardScreen>
   @override
   Widget build(BuildContext context) {
     // Watch live elevator insights
-    final elevatorInsightsAsync = ref.watch(
-      liveElevatorInsightsProvider(ref.watch(favoriteElevatorIdProvider)),
-    );
+    final favoriteElevatorId = ref.watch(favoriteElevatorIdProvider);
+    final elevatorInsightsAsync =
+        ref.watch(liveElevatorInsightsProvider(favoriteElevatorId));
     final userStats = ref.watch(userStatisticsProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            // Invalidate providers to trigger refresh
             ref.invalidate(liveElevatorInsightsProvider);
+            ref.invalidate(userStatisticsProvider);
             await Future.delayed(const Duration(milliseconds: 500));
           },
-          child: elevatorInsightsAsync.when(
-            data: (insights) => CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                _buildAppBar(context),
-                SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      // Favorite Elevator Card - Primary Focus
-                      FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: SlideTransition(
-                          position: _slideAnimation,
-                          child: FavoriteElevatorCard(
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildAppBar(context),
+              SliverPadding(
+                padding: const EdgeInsets.all(16),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // 1. Favorite Elevator Card with null handling
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: elevatorInsightsAsync.when(
+                          data: (insights) => FavoriteElevatorCard(
                             insights: insights,
-                            onTap: () => context.push('/elevators'),
+                            onTap: () =>
+                                context.push('/elevators/${insights.elevatorId}'),
                           ),
+                          loading: () => _buildLoadingCard(),
+                          error: (e, s) => _buildErrorCard(e),
                         ),
                       ),
-                    const SizedBox(height: 20),
+                    ),
+                    const SizedBox(height: 24),
 
-                    // Haul Performance - New Metrics
+                    // 2. Metrics Grid with real userStats data
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildMetricTile(
+                                  "Total Hauls",
+                                  "${userStats.totalHauls}",
+                                  userStats.totalWeightDisplay,
+                                  AppColors.green600,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildMetricTile(
+                                  "Avg Moisture",
+                                  "${userStats.averageMoisture.toStringAsFixed(1)}%",
+                                  "Wait: ${userStats.avgWaitDisplay}",
+                                  AppColors.slate500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 3. Haul Performance (with hardcoded data for now)
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: const HaulPerformanceCard(
@@ -105,229 +137,159 @@ class _SmartDashboardScreenState extends ConsumerState<SmartDashboardScreen>
                         binMoisture: 13.8,
                       ),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Analytics Summary - Graphs
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: const AnalyticsSummaryCard(),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Quick Stats Row
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: QuickStatsCard(
-                              title: 'Total Hauls',
-                              value: userStats.totalHauls.toString(),
-                              subtitle: 'Last 24h: ${userStats.last24HoursHauls}',
-                              icon: Icons.local_shipping,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: QuickStatsCard(
-                              title: 'Avg Wait',
-                              value: userStats.avgWaitDisplay,
-                              subtitle: insights.waitTimeDisplay,
-                              icon: Icons.timer,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: QuickStatsCard(
-                              title: 'Hauls/Day',
-                              value: '4.2',
-                              subtitle: 'This week avg',
-                              icon: Icons.analytics,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: QuickStatsCard(
-                              title: 'Avg Price',
-                              value: '\$6.48',
-                              subtitle: 'per bushel',
-                              icon: Icons.attach_money,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF10B981), Color(0xFF059669)],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: QuickStatsCard(
-                              title: 'Total Weight',
-                              value: userStats.totalWeightLbsDisplay,
-                              subtitle: userStats.totalWeightDisplay,
-                              icon: Icons.scale,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF0EA5E9), Color(0xFF0284C7)],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: QuickStatsCard(
-                              title: 'Top Grain',
-                              value: userStats.topGrainType,
-                              subtitle: '${userStats.grainTypeBreakdown[userStats.topGrainType] ?? 0} hauls',
-                              icon: Icons.agriculture,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFEC4899), Color(0xFFDB2777)],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 24),
 
-                    // Recent Activity
+                    // 4. Recent Activity
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: RecentActivityCard(
                         onViewAll: () => context.push('/history'),
                       ),
                     ),
-                    const SizedBox(height: 100), // Space for bottom navigation
+                    const SizedBox(height: 100), // Space for bottom nav
                   ]),
                 ),
               ),
             ],
           ),
-            loading: _buildLoadingState,
-            error: (error, stack) => _buildErrorState(error),
-          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _handleStartLoad,
-        backgroundColor: const Color(0xFF667EEA),
-        icon: const Icon(Icons.play_arrow_rounded),
+        backgroundColor: AppColors.amber600,
+        icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
         label: const Text(
           'Start Load',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMetricTile(
+      String label, String value, String subtext, Color subTextColor) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textMuted,
+                  fontWeight: FontWeight.w500)),
+          const SizedBox(height: 4),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(subtext,
+              style: TextStyle(
+                  fontSize: 12, color: subTextColor, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingCard() {
+    return Container(
+      height: 320,
+      decoration: BoxDecoration(
+        color: AppColors.slate200,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(color: AppColors.amber600),
+      ),
+    );
+  }
+
+  Widget _buildErrorCard(Object error) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.red500, width: 2),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.error_outline, size: 48, color: AppColors.red500),
+          const SizedBox(height: 16),
+          const Text(
+            'Failed to Load Elevator',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error.toString(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () => ref.invalidate(liveElevatorInsightsProvider),
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            label: const Text('Retry', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.amber600,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 140, // Increased height to fix overflow
+      expandedHeight: 120,
       floating: false,
       pinned: true,
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.slate900,
       flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+        title: const Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'HaulPass',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
         background: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)], // Soft glow gradient
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: AppColors.slate900,
           ),
           child: Stack(
             children: [
-              // Decorative glow
               Positioned(
-                right: -50,
-                top: -50,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white.withOpacity(0.1),
-                        blurRadius: 50,
-                        spreadRadius: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 60, 20, 16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.dashboard_rounded,
-                        color: Colors.white,
-                        size: 32,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            'Dashboard',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _getGreeting(),
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                right: -20,
+                top: -20,
+                child: Icon(
+                  Icons.agriculture,
+                  size: 150,
+                  color: Colors.white.withOpacity(0.05),
                 ),
               ),
             ],
@@ -346,17 +308,10 @@ class _SmartDashboardScreenState extends ConsumerState<SmartDashboardScreen>
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFEF4444),
+                    color: AppColors.amber600,
                     shape: BoxShape.circle,
                   ),
-                  child: const Text(
-                    '2',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const SizedBox(width: 4, height: 4),
                 ),
               ),
             ],
@@ -367,98 +322,7 @@ class _SmartDashboardScreenState extends ConsumerState<SmartDashboardScreen>
     );
   }
 
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
   void _handleStartLoad() {
     context.push('/haul/start');
-  }
-
-  IconData _getAlertIcon(QueueAlertType type) {
-    switch (type) {
-      case QueueAlertType.queueGrowing:
-        return Icons.trending_up;
-      case QueueAlertType.queueShrinking:
-        return Icons.trending_down;
-      case QueueAlertType.waitTimeIncreased:
-        return Icons.schedule;
-      case QueueAlertType.waitTimeDecreased:
-        return Icons.speed;
-      case QueueAlertType.elevatorStatusChanged:
-        return Icons.info_outline;
-    }
-  }
-
-  Color _getAlertColor(QueueAlertType type) {
-    switch (type) {
-      case QueueAlertType.queueGrowing:
-      case QueueAlertType.waitTimeIncreased:
-        return const Color(0xFFF59E0B); // Amber - warning
-      case QueueAlertType.queueShrinking:
-      case QueueAlertType.waitTimeDecreased:
-        return const Color(0xFF10B981); // Green - good news
-      case QueueAlertType.elevatorStatusChanged:
-        return const Color(0xFF667EEA); // Purple - info
-    }
-  }
-
-  Widget _buildLoadingState() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text(
-            'Loading elevator data...',
-            style: TextStyle(color: Color(0xFF64748B)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(Object? error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.error_outline,
-            size: 64,
-            color: Color(0xFFEF4444),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Failed to load elevator data',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            error.toString(),
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFF64748B)),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => ref.invalidate(liveElevatorInsightsProvider),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF667EEA),
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
